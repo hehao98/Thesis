@@ -1,0 +1,232 @@
+\documentclass[12pt, openany]{cmuthesis}
+
+\usepackage{mathptmx} 
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{comment}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+\usepackage[skins]{tcolorbox}
+\usepackage{fontawesome}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{calc}
+\usepackage{xspace}
+\usepackage{subcaption}
+\usepackage{minted}
+\usepackage{balance}
+\usepackage[backend=biber, style=numeric]{biblatex}\let\citet\textcite
+\usepackage[letterpaper,twoside,vscale=.8,hscale=.75,nomarginpar,hmarginratio=1:1]{geometry}
+\usepackage[
+    pageanchor=true,
+    plainpages=false,
+    pdfpagelabels, 
+    bookmarks,
+    bookmarksnumbered, 
+    hidelinks
+]{hyperref}
+
+%%%%%%%%%% Begin: JSON Syntax Definition %%%%%%%%%%
+\makeatletter
+% switch used as state variable
+\newif\ifcolonfoundonthisline
+\newcommand\JSONnumbervaluestyle{\color{blue!80!black}}
+\newcommand\JSONstringvaluestyle{\color{red!80!black}}
+\lstdefinestyle{json}{
+  showstringspaces    = false,
+  keywords            = {false,true},
+  alsoletter          = 0123456789.,
+  morestring          = [s]{"}{"},
+  stringstyle         = \ifcolonfoundonthisline\JSONstringvaluestyle\fi,
+  MoreSelectCharTable = \lst@DefSaveDef{`:}\colon@json{\processColon@json},
+  basicstyle          = \footnotesize\ttfamily\linespread{0.5},
+  keywordstyle        = \ttfamily\bfseries,
+  numbers             = left,
+  numberstyle         = \scriptsize,
+  stepnumber          = 1,
+  numbersep           = 6pt,
+  showstringspaces    = false,
+  breaklines          = true,
+  frame               = lines,
+  escapeinside        = {(*}{*)}
+}
+% flip the switch if a colon is found in Pmode
+\newcommand\processColon@json{%
+  \colon@json%
+  \ifnum\lst@mode=\lst@Pmode%
+    \global\colonfoundonthislinetrue%
+  \fi
+}
+\lst@AddToHook{Output}{%
+  \ifcolonfoundonthisline%
+    \ifnum\lst@mode=\lst@Pmode%
+      \def\lst@thestyle{\JSONnumbervaluestyle}%
+    \fi
+  \fi
+  %override by keyword style if a keyword is detected!
+  \lsthk@DetectKeywords% 
+}
+% reset the switch at the end of line
+\lst@AddToHook{EOL}{\global\colonfoundonthislinefalse}
+%%%%%%%%%% End:   JSON Syntax Definition %%%%%%%%%%
+
+%%%%%%%%%% Begin: Finding Box Definition %%%%%%%%%%
+\tcbset{
+  my box2/.style={
+    enhanced,
+    colframe=#1!80,
+    colback=#1!5,
+  },
+}
+\newtcolorbox{finding}{
+  my box2=black,
+  boxrule=1pt,top=3pt,bottom=3pt,left=4pt,right=4pt
+}
+%%%%%%%%%% End:   Finding Box Definition %%%%%%%%%%
+
+%%%%%%%%%% Begin: Custom Commands and Colors %%%%%%%%%%
+\renewcommand*{\ttdefault}{lmtt} % Change texttt font
+
+\newcommand{\TODO}[1]{{\textbf{\color{red}[[TODO: #1]]}}}
+\newcommand{\Code}[1]{\texttt{#1}}
+\newcommand{\SmallCode}[1]{\begin{small}\texttt{#1}\end{small}}
+\newcommand{\SystemName}[0]{\texttt{StarScout}\xspace}
+\newcommand{\RQOne}[0]{\textbf{RQ1} (\textsf{Prevalance}): \emph{How prevalent are fake GitHub stars?}\xspace}
+\newcommand{\RQTwo}[0]{\textbf{RQ2} (\textsf{Activity Patterns}): \emph{What are the activity patterns of GitHub repositories and accounts with fake star campaigns?}}
+\newcommand{\RQThree}[0]{\textbf{RQ3} (\textsf{Repository Charactersitics}): \emph{What are the GitHub repositories with fake star campaigns?}}
+\newcommand{\RQFour}[0]{\textbf{RQ4} (\textsf{Promotional Effect}): \emph{To what extent are fake stars effective in promoting the target GitHub repositories?}}
+
+\definecolor{darkred}{rgb}{0.9, 0.0, 0.0}
+\definecolor{darkgreen}{rgb}{0.0, 0.8, 0.0}
+\definecolor{amber}{rgb}{1.0, 0.75, 0.0}
+%%%%%%%%%% End: Custom Commands and Colors %%%%%%%%%%
+
+\addbibresource{references-pinning.bib}
+\addbibresource{references-fake-stars.bib}
+\addbibresource{references-cursor.bib} 
+
+\begin{document} 
+\frontmatter
+
+\pagestyle{empty}
+
+\title{{\it Thesis Proposal}\\
+{\bf Settling Software Engineering Controversies through Robust Causal Inference Methods
+}}
+\author{Hao He}
+\date{January 2026}
+\Year{2026}
+\trnumber{}
+
+\committee{
+Bogdan Vasilescu, Co-Chair \\
+Christian Kästner, Co-Chair \\
+Rohan Padhye \\
+Narayan Ramasubbu
+}
+
+\support{}
+\disclaimer{}
+
+% copyright notice generated automatically from Year and author.
+% permission added if \permission{} given.
+
+%\keywords{Stuff, More Stuff}
+
+\maketitle
+
+%\begin{dedication}
+%For my dog
+%\end{dedication}
+
+\pagestyle{plain} % for toc, was empty
+
+\begin{abstract}
+Software engineering practice is plagued with controversies and unverified beliefs about best practices. 
+Unfortunately, empirical software engineering research often fails to resolve these controversies if it relies solely on descriptive or correlational evidence without distinguishing causation from confounding factors. 
+In this thesis, I propose that \emph{software engineering controversies can be resolved with rigorous causal inference methods}, which are particularly useful in providing confidence and avoiding false positives in empirical software engineering findings.
+
+Through three empirical studies, I demonstrate how the appropriate use of robust causal inference methods provides solid, yet surprising, answers to important software engineering problems. 
+First, using counterfactual analysis and simulations on npm dependency data, I challenge the conventional wisdom that pinning dependency versions improves overall project security, revealing that it paradoxically increases attack exposure as long as upstream packages are not pinning their own dependencies. 
+Second, through a longitudinal analysis of GitHub starring patterns, I uncover a massive inflation of fake GitHub stars and show that these artificial signals provide only short-term promotional benefits before becoming long-term liabilities. 
+Finally, through a difference-in-differences framework, I quantify the causal impact of a widely popular AI Coding tool, Cursor, on software development velocity and code quality, finding that the initial velocity gains are offset by sustained technical debt accumulation, which eventually erodes velocity.
+Collectively, these studies demonstrate that the application of robust causal inference methods moves empirical software engineering research toward trustworthy evidence and concrete practitioner guidance for navigating complex software engineering decisions.
+
+Building on these contributions, I propose to further explore whether the use of robust causal inference methods leads to \emph{different} findings compared to the use of only descriptive or correlational evidence.
+Consequently, this thesis would provide a new standard, a methodological blueprint, and concrete guidance for the design and implementation of future empirical software engineering research.
+\end{abstract}
+
+%\begin{acknowledgments}
+%My advisor is cool.
+%\end{acknowledgments}
+
+\tableofcontents
+
+%\listoffigures
+
+%\listoftables
+
+\mainmatter
+
+\chapter{Introduction}
+
+Motivation: The Prevalence of Myths and Unverified Beliefs in Software Engineering  
+The Problem: Correlation vs. Causation in SE Research
+Thesis Statement and Research Questions 
+Overview of Approach: Three Case Studies  
+Contributions  
+Thesis Organization  
+
+\chapter{Background and Related Work}
+
+1.  Causal Inference in Observational Studies    
+- The Fundamental Problem of Causal Inference    
+-  Potential Outcomes Framework    
+- Common Pitfalls in Correlational SE Research    
+2. Causal Inference Methodologies    
+- Counterfactual Analysis and Simulation    
+- Difference-in-Differences Estimation    
+- Propensity Score Matching    
+- Panel Generalized Method of Moments    
+- Threats to Causal Validity    
+3. Empirical Software Engineering Research     
+- Controlled Experiments  
+- Large-Scale Observational Studies    
+- The Need for Causal Methods on Observational Data  
+4. Summary
+
+\chapter{Empirical Study I:  Dependency Pinning and Software Supply Chain Security}
+
+\include{main-pinning}
+
+\chapter{Empirical Study II: Fake GitHub Stars and Repository Promotion}
+
+\include{main-fake-stars}
+
+\chapter{Empirical Study III: LLM Agent Assistants and the Velocity \& Quality Tradeoff}
+
+- He, Hao, et al. "Speed at the Cost of Quality? The Impact of LLM Agent Assistance on Software Development." arXiv preprint arXiv:2511.04427 (2025).
+
+\chapter{Proposed Work}
+
+1. Strengthening Causal Evidence in the Fake Star Study (GMM Analysis)    
+2. Sensitivity Analysis: DiD vs. Alternative Designs in the Cursor Study (Importance of causal inference techniques in )
+
+\chapter{Conclusion}
+
+1. Summary of Contributions    
+2. Revisiting the Thesis Statement    
+3. Final Thoughts
+
+%\appendix
+%\include{appendix}
+
+\backmatter
+
+\chapter{\bibname}
+
+\printbibliography
+
+\end{document}
