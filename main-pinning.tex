@@ -60,8 +60,16 @@ This discussion clearly reaches practitioners---as we show in Figure~\ref{fig:ve
 
 \begin{figure}[t]
     \centering
-    \subfigure[The distribution of version constraint types.]{\includegraphics[width=0.49\linewidth]{figs-pinning/versioning_trend_all.pdf}\label{fig:versioning}}
-    \subfigure[The distribution of project-level versioning strategies.]{\includegraphics[width=0.46\linewidth]{figs-pinning/versioning_strategy_trend_all.pdf}\label{fig:versioning-strategy}}
+    \begin{subfigure}[b]{0.49\linewidth}
+        \includegraphics[width=\linewidth]{figs-pinning/versioning_trend_all.pdf}
+        \caption{The distribution of version constraint types.}
+        \label{fig:versioning}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.46\linewidth}
+        \includegraphics[width=\linewidth]{figs-pinning/versioning_strategy_trend_all.pdf}
+        \caption{The distribution of project-level versioning strategies.}
+        \label{fig:versioning-strategy}
+    \end{subfigure}
     \caption{
     The distribution of version constraint types and project-level versioning strategies in each year in the dataset we use for answering RQ1 (see Section~\ref{sec:data-collection} for details) - we observe that after years of increasing floating adoption, since about 2020 the trend reverses with a shift toward pinning. In Figure~\ref{fig:versioning}, we ignore non-floating/pinning version constraints as they only occupy 0.83\% of version constraints in our dataset.
     }
@@ -512,12 +520,19 @@ Intuitively, $risk(A) \in [0, 1]$ is an estimation of the expected average perce
 
 \begin{figure}[t]
     \centering
-    \subfigure[\textbf{Attack Impact Computation:} Packages C to H all directly or indirectly depend on B and are hence reachable if B is attacked, but package A is not. The impact of compromising package B is the sum of downloads of all reachable packages (C--H) divided by the total number of downloads across all packages. In this case, $\textit{impact}(B) = (1m+10k+5k+2k+1k+900+500) / (90k+1m+10k+5k+2k+1k+900+500) \approx 0.92$. ]
-    {\includegraphics[width=0.48\linewidth]{figs-pinning/example-reachability.pdf}\label{fig:example-reachability}}
+    \begin{subfigure}[b]{0.48\linewidth}
+        \includegraphics[width=\linewidth]{figs-pinning/example-reachability.pdf}
+        \caption{\textbf{Attack Impact Computation:} Packages C to H all directly or indirectly depend on B and are hence reachable if B is attacked, but package A is not. The impact of compromising package B is the sum of downloads of all reachable packages (C--H) divided by the total number of downloads across all packages. In this case, $\textit{impact}(B) = (1m+10k+5k+2k+1k+900+500) / (90k+1m+10k+5k+2k+1k+900+500) \approx 0.92$.}
+        \label{fig:example-reachability}
+    \end{subfigure}
     \hfill
-    \subfigure[\textbf{Local/Transitive Pinning:} Assume B is being attacked.
-    If C pins its dependencies, the attack would not reach E, as C would not update to the malicious version. 
-    However, local pinning of F would have no effect, since the attack still propagates through the floating edges originating from C and D. In contrast, transitive pinning of F would protect G and H (and F's other dependents) from the attack.]{\includegraphics[width=0.48\linewidth]{figs-pinning/example-transitive-pinning.pdf}\label{fig:example-transitive-pinning}}
+    \begin{subfigure}[b]{0.48\linewidth}
+        \includegraphics[width=\linewidth]{figs-pinning/example-transitive-pinning.pdf}
+        \caption{\textbf{Local/Transitive Pinning:} Assume B is being attacked.
+        If C pins its dependencies, the attack would not reach E, as C would not update to the malicious version. 
+        However, local pinning of F would have no effect, since the attack still propagates through the floating edges originating from C and D. In contrast, transitive pinning of F would protect G and H (and F's other dependents) from the attack.}
+        \label{fig:example-transitive-pinning}
+    \end{subfigure}
     \vspace{-1mm}
     \caption{Examples to illustrate attack impact computation and how local/transitive pinning works.}
     \vspace{-1mm}
@@ -579,8 +594,16 @@ but transitive pinning is usually two to three times more effective than local p
 
 \begin{figure}[t]
     \centering
-    \subfigure[Not pinning (\textbf{5} floating edges)]{\includegraphics[width=0.46\linewidth]{figs-pinning/example-wo-pinning.pdf}\label{fig:floating-example}}
-    \subfigure[Pinning (\textbf{6} floating edges)]{\includegraphics[width=0.46\linewidth]{figs-pinning/example-with-pinning.pdf}\label{fig:pinning-example}}
+    \begin{subfigure}[b]{0.46\linewidth}
+        \includegraphics[width=\linewidth]{figs-pinning/example-wo-pinning.pdf}
+        \caption{Not pinning (\textbf{5} floating edges)}
+        \label{fig:floating-example}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.46\linewidth}
+        \includegraphics[width=\linewidth]{figs-pinning/example-with-pinning.pdf}
+        \caption{Pinning (\textbf{6} floating edges)}
+        \label{fig:pinning-example}
+    \end{subfigure}
     \vspace{-1mm}
     \caption{A minimal example illustrating how pinning direct dependencies can cause dependency conflicts and lead to a bloated dependency graph with more transitive floating dependencies. Note that this is only an artificial example for simplicity; real-world cases happen mostly in much larger dependency graphs.
     }
