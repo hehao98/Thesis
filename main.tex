@@ -17,7 +17,7 @@
 \usepackage{subcaption}
 \usepackage{minted}
 \usepackage{balance}
-\usepackage[backend=biber, style=numeric]{biblatex}\let\citet\textcite
+\usepackage[backend=biber, style=numeric]{biblatex}\let\citet\textcite\let\citep\parencite
 \usepackage[letterpaper,twoside,vscale=.8,hscale=.75,nomarginpar,hmarginratio=1:1]{geometry}
 \usepackage[
     pageanchor=true,
@@ -81,6 +81,10 @@
   },
 }
 \newtcolorbox{finding}{
+  my box2=black,
+  boxrule=1pt,top=3pt,bottom=3pt,left=4pt,right=4pt
+}
+\newtcolorbox{summary-rq}{
   my box2=black,
   boxrule=1pt,top=3pt,bottom=3pt,left=4pt,right=4pt
 }
