@@ -93,13 +93,13 @@ Second, we provide a comprehensive analysis of the impact of LLM agent assistanc
 
 In this study, we estimate the causal effects of adopting the Cursor agentic IDE on \emph{development velocity} and \emph{software quality}, both of which are considered important project outcomes, commonly measured in prior research, and are closely tied to perceived overall project productivity~\cite{DBLP:journals/queue/ForsgrenSMZHB21, DBLP:journals/ese/OliveiraFSCCG20, DBLP:conf/sigsoft/ChengMCJGKZ022}.
 %Development velocity is a commonly measured outcome in software projects~\cite{DBLP:journals/corr/abs-2410-02091, DBLP:conf/icis/YeverechyahuMO24} and represents an important dimension of productivity~\cite{DBLP:journals/queue/ForsgrenSMZHB21, DBLP:journals/ese/OliveiraFSCCG20}. 
-We start by building a dataset with: (1) repositories adopting Cursor at different times, and (2) comparable repositories that never adopted Cursor (Section~\ref{sec:data-collection}).
+We start by building a dataset with: (1) repositories adopting Cursor at different times, and (2) comparable repositories that never adopted Cursor (Section~\ref{sec:cursor-data-collection}).
 Then, we define our specific outcomes of interest and additional covariates (Section~\ref{sec:metrics}).
 The estimation of Cursor's causal effect on these outcomes is enabled by a difference-in-differences (DiD) design with staggered adoption~\cite{borusyak2024revisiting} (Section~\ref{sec:modeling}): Under the assumption that similar repositories would, on average, evolve similarly in the absence of Cursor adoption (i.e., the \emph{parallel trend assumption}), later-adopters and never-adopters can effectively serve as a quasi-experimental comparison group for earlier-adopters while accounting for observable covariates and macro trends (e.g., open-source repositories getting more or less active over time).
 Finally, since the results from DiD suggest \emph{interactions} between development velocity and software quality, as also indicated in prior work~\cite{DBLP:conf/sigsoft/ChengMCJGKZ022, besker2018technical}, we fit dynamic panel generalized method of moments (GMM) models~\cite{arellano1991some} to support our interpretation of the DiD results (Section~\ref{sec:interaction}).
 
 \subsection{Data Collection}
-\label{sec:data-collection}
+\label{sec:cursor-data-collection}
 
 \subsubsection{The Cursor IDE}
 \label{sec:cursor}
@@ -112,7 +112,7 @@ They are able to choose between frontier models from OpenAI, Anthropic, and Goog
 We chose Cursor as our main study case for two reasons. 
 First, our preliminary exploration found widespread and growing adoption compared to competing tools, providing sufficient statistical power for causal inference. 
 Second, Cursor is among the earliest to allow optional configuration files (e.g., \Code{.cursorrules}) in the git repository to direct AI behavior~\cite{cursor-rules}, leading to a clear and timestamped adoption event in the version control history and a scalable identification strategy based on these files.
-However, this identification strategy also has important limitations (Section~\ref{sec:limitations}), which we will address through robustness checks (Section~\ref{sec:robustness}).
+However, this identification strategy also has important limitations (Section~\ref{sec:cursor-limitations}), which we will address through robustness checks (Section~\ref{sec:robustness}).
 
 \subsubsection{Identifying GitHub Projects Adopting Cursor}
 \label{sec:find-cursor-repo}
@@ -154,7 +154,7 @@ Pull Requests & 719.6 & 0 & 1.0 & 18.0 & 161.8 & 72,015\\
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.95\linewidth]{figs/cursor_adoption_time.pdf}
+    \includegraphics[width=0.95\linewidth]{figs-cursor/cursor_adoption_time.pdf}
     \caption{The Cursor adoption time of the \numtreated repositories in our study,  which all have $\ge$10 stars and Cursor configuration files at the time of data collection (April 2025).}
     \label{fig:time-cursor-adoption}
 \end{figure}
@@ -335,7 +335,7 @@ Specifically, we test the following temporal interactions:
 These models complement DiD by decomposing the mechanisms through which Cursor affects long-term outcomes, revealing whether quality degradation leads to subsequent velocity declines.
 
 \subsection{Limitations and Threats to Validity}
-\label{sec:limitations}
+\label{sec:cursor-limitations}
 
 \subsubsection{Internal Validity}
 Our identification strategy has important limitations that we address through robustness checks (Section~\ref{sec:robustness}).
@@ -402,7 +402,7 @@ Code Complexity & 0.3481$^{***}$ (0.0538) & +41.64\% ($\pm$7.62\%)\\
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\linewidth]{figs/dynamic_effects_borusyak.pdf}
+    \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_borusyak.pdf}
     \caption{The estimated ``horizon-average'' treatment effects ($ATT_h$, Equation~\ref{eq:atth}) 0 to +6 months after adoption, plus the ``placebo'' pre-adoption treatment effect estimates ($\hat\tau_h$ for testing the parallel trend assumption, Equation~\ref{eq:parallel-trend}) -6 to -2 months before adoption. All outcome variables are log-transformed same as the estimated average treatment effects in Table~\ref{tab:average-te}.}
     \label{fig:dynamic-te}
 \end{figure*}
@@ -500,9 +500,9 @@ To summarize, the dynamic panel GMM models suggest that: (1) \emph{The adoption 
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\linewidth]{figs/dynamic_effects_confidence_main.pdf}
-    \includegraphics[width=\linewidth]{figs/dynamic_effects_activity_main.pdf}
-    \includegraphics[width=\linewidth]{figs/dynamic_effects_other_tools_main.pdf}
+    \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_confidence_main.pdf}
+    \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_activity_main.pdf}
+    \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_other_tools_main.pdf}
     \caption{The estimated ``horizon-average'' treatment effects in alternative dataset settings as robustness checks. We only display three outcome variables (lines added, static analysis warnings, and code complexity) due to space constraints (full results in the Appendix).
     \emph{Row 1}: Robustness check on subsets with higher Cursor adoption confidence, showing generally stronger effects in high-confidence adoption observations. 
     \emph{Row 2}: Robustness check on subsets of different activity levels, showing the persistence of our findings even in very active repositories. 
@@ -510,10 +510,10 @@ To summarize, the dynamic panel GMM models suggest that: (1) \emph{The adoption 
     \label{fig:robustness-checks}
 \end{figure*}
 
-The above overall findings and the internal validity concerns behind it (Section~\ref{sec:limitations}) present significant interpretation challenges.
+The above overall findings and the internal validity concerns behind it (Section~\ref{sec:cursor-limitations}) present significant interpretation challenges.
 In this section, we present additional robustness checks to explore and rule out alternative explanations for our observed results.
 
-Recall that one limitation of our identification strategy is that it merely displays an ``intent-to-treat'' (ITT) signal without us knowing how Cursor was actually used in each treatment repository (Section~\ref{sec:limitations}).
+Recall that one limitation of our identification strategy is that it merely displays an ``intent-to-treat'' (ITT) signal without us knowing how Cursor was actually used in each treatment repository (Section~\ref{sec:cursor-limitations}).
 To test whether our findings are driven by repositories with genuine, sustained usage (versus minimal engagement), we repeat the same DiD modeling process on two subsets of data based on two alternative measurements of usage intensity:
 
 \begin{itemize}[leftmargin=15pt]
@@ -527,13 +527,13 @@ To test whether our findings are driven by repositories with genuine, sustained 
 Results from the two subsets (Figure~\ref{fig:robustness-checks}, Row 1) show that our quality-related findings are robust and amplified in subsamples with higher sustained usage: The accumulation of static analysis warnings and code complexity is stronger---not weaker---among repositories with continued configuration refinement and where Cursor users dominated activity. 
 This strengthens causal interpretation: Effects are attributable to Cursor adoption rather than spurious correlation with other changes, and our main ITT estimates likely understate effects among repositories with intensive, sustained usage.
 Interestingly, while the velocity gain is still on average transient among repositories with high contributor adoption, we still observe a velocity increase in observations in which developers are still actively modifying Cursor files.
-This indicates that abandonments of Cursor post-adoption likely nullify at least part of the velocity gains (more discussions in Section~\ref{sec:discussion}).
+This indicates that abandonments of Cursor post-adoption likely nullify at least part of the velocity gains (more discussions in Section~\ref{sec:cursor-discussion}).
 
 Another alternative explanation for the transient velocity gain is that our DiD setting still does not sufficiently control for the macro-trend that many open-source repositories become inactive very fast (e.g., within two months).
 To test against this alternative explanation, we build two subset observations, the first one keeping only repository-months in which there is at least one commit in that month, and the second one keeping repository-months with at least 10 commits.
 The results (Figure~\ref{fig:robustness-checks}, Row 2) show that our main findings persist even in very active repositories, albeit being weaker than our main ITT estimates, which is expected because it would be more difficult to achieve the same percentage change in repositories with higher baseline sizes and activity levels.
 
-Finally, we assess the impact of dataset contamination from alternative AI coding tools in our study setting (Section~\ref{sec:limitations}).
+Finally, we assess the impact of dataset contamination from alternative AI coding tools in our study setting (Section~\ref{sec:cursor-limitations}).
 For this purpose, we take an overly conservative approach and identify all repositories where alternative AI coding tools may have been used based on repository files (e.g., those with \Code{.vscode} folder may have used GitHub Copilot).
 We find 382 repositories from the treatment group with possible use of other AI tools in our observation period: 345 with GitHub Copilot, 63 with Claude Code, 37 with Windsurf, 13 with Cline (13), and 2 with OpenHands (note that they heavily overlap).
 We build a \emph{Cursor and Other} subset for these repositories and an \emph{Only Cursor} subset for the remaining repositories, along with their own matched controls.
@@ -542,13 +542,13 @@ The results (Figure~\ref{fig:robustness-checks}, Row 3) show that while contamin
 To summarize, the above robustness checks reassure our main causal findings against concerns from potential non-compliance (i.e., treatment repositories not actually using Cursor), selection bias (i.e., treatment repositories generally becoming inactive fast), and confounding from other AI tools (i.e., the presence of other AI tools nullifying estimates on the adoption of Cursor).
 
 \section{Discussion}
-\label{sec:discussion}
+\label{sec:cursor-discussion}
 
 \subsection{Theoretical Implications}
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figs/Theory.pdf}
+    \includegraphics[width=\linewidth]{figs-cursor/Theory.pdf}
     \caption{Our theory around how LLM agent assistants may impact software development. Solid lines show causal relationships supported by existing evidence, and dashed lines indicate relationships not fully supported in our analysis.}
     \label{fig:theory}
 \end{figure}
@@ -632,12 +632,12 @@ Second, our quality metrics, while well-established in software engineering rese
 For example, complexity metrics were designed for human-written code; whether they appropriately penalize AI-generated patterns that are mechanically verifiable yet syntactically complex remains an open question. 
 Third, the open-source context of our study may amplify both the abandonment dynamics and quality concerns compared to enterprise settings with mandatory and dedicated quality assurance processes.
 
-Looking forward, our findings point to clear research and practice directions (Section~\ref{sec:discussion}).
+Looking forward, our findings point to clear research and practice directions (Section~\ref{sec:cursor-discussion}).
 Ultimately, this study demonstrates that realizing the promise of AI-assisted software development requires a holistic understanding of how AI assistance reshapes the fundamental trade-offs between development velocity, code quality, and long-term project sustainability. 
 The age of AI coding has arrived---our challenge now is to harness it wisely.
 
 \subsection*{Data Availability}
-\label{sec:data-avail}
+\label{sec:cursor-data-avail}
 
 We provide a replication package %, including all the datasets and scripts to replicate findings presented in the study,
 at: 
@@ -699,7 +699,7 @@ This motivates us to adopt a difference-in-difference design for causal inferenc
 
 \begin{figure}
      \centering
-     \includegraphics[width=0.9\linewidth]{figs/propensity_score_distribution.pdf}
+     \includegraphics[width=0.9\linewidth]{figs-cursor/propensity_score_distribution.pdf}
       \caption{The distribution of propensity scores between all candidate repositories, matched control group repositories, and the \numtreated Cursor-adopting repositories, showing that the matched control group has highly similar conditional treatment probabilities compared to the treatment group.}
      \label{fig:propensity-score}
 \end{figure}
@@ -831,7 +831,7 @@ Code Complexity & 0.3481$^{***}$ (0.0538) & +41.64\% ($\pm$7.62\%) & 0.2314$^{**
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\linewidth]{figs/dynamic_effects.pdf}
+    \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects.pdf}
     \caption{The estimated horizon-average treatment effects ($ATT_h$) from three DiD estimators: \citet{borusyak2024revisiting}, \citet{callaway2021difference}, and two-way fixed effects. The estimates on development velocity outcome are highly consistent and robust across all three estimators, but the estimates on software quality outcomes vary significantly.}
     \label{fig:all-estimators}
 \end{figure*}
@@ -893,10 +893,10 @@ Setting & \# Treatment Repos & \# Control Repos & \# Total Observations & \# Pos
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\linewidth]{figs/dynamic_effects_confidence_all.pdf}
-    \includegraphics[width=\linewidth]{figs/dynamic_effects_activity_all.pdf}
-    \includegraphics[width=\linewidth]{figs/dynamic_effects_other_tools_all.pdf}
-    \includegraphics[width=\linewidth]{figs/dynamic_effects_languages.pdf}
+    \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_confidence_all.pdf}
+    \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_activity_all.pdf}
+    \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_other_tools_all.pdf}
+    \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_languages.pdf}
     \caption{The estimated ``horizon-average'' treatment effects in alternative dataset settings with all five outcome variables.
     \emph{Row 1}: Robustness check on subsets with higher Cursor adoption confidence, showing generally stronger effects in high-confidence adoption observations. 
     \emph{Row 2}: Robustness check on subsets of different activity levels, showing the persistence of our findings even in very active repositories. 
