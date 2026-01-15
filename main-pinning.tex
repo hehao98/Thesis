@@ -3,7 +3,7 @@
 
 \begin{table}
 \renewcommand{\arraystretch}{1.1}
-    \small
+    \footnotesize
     \centering
     \caption{The argued trade-offs (\emph{\color{darkgreen}\faToggleDown} benefits and \emph{\color{darkred}\faToggleUp} drawbacks) between pinning and floating}
     \begin{tabular}{l@{~}p{11cm}ll}
@@ -48,14 +48,12 @@ What's more, modern software supply chains form complex networks in which each n
 For example, a floating version constraint leaves an attack surface for all downstream projects, while pinning puts downstream projects at a higher risk of encountering dependency conflicts~\cite{DBLP:conf/sigsoft/WangWLWWYYZC18, DBLP:conf/icse/PinckneyCGBCG23}.
 We summarize the commonly argued benefits and drawbacks of pinning and floating in Table~\ref{tab:trade-offs}.
 
-Importantly, the concern about \emph{malicious package updates} is fairly recent and reached broad awareness through high-profile incidents, such as \textit{SolarWinds} in 2020 \cite{solar-wind}, \Code{node-ipc} in 2022~\cite{node-ipc} and the \Code{xz} attack targeted at \Code{ssh} in 2024~\cite{xz-utils}---such recent attention may shift trade-off considerations.
+Importantly, the concern about \emph{malicious package updates} is fairly recent and reached broad awareness through high-profile incidents, such as \textit{SolarWinds} in 2020 \cite{solar-wind}, the \Code{node-ipc} incident in 2022~\cite{node-ipc}, and the \Code{xz} attack targeted at \Code{ssh} in 2024~\cite{xz-utils}---such recent attention may shift trade-off considerations.
 Prior to this recent concern, there have been many studies and discussions about the trade-off between semantic versioning and breaking changes~\cite[e.g.,][]{DBLP:journals/jss/RaemaekersDV17, DBLP:journals/tosem/BogartKHT21, DBLP:journals/tse/JafariCAST22}.
 In a survey conducted in 2020, the majority of practitioners in the npm ecosystem were in favor of (semantic-versioning-based) floating~\cite{DBLP:journals/tse/JafariCAST22}.
 It is argued that pinning accumulates technical debt in the form of outdated dependencies~\cite{i-have-misgivings-about-all-these-version-pinning, DBLP:journals/tse/JafariCAST22}, prevents security fixes from propagating downstream~\cite{DBLP:journals/ese/ChinthanetKMIIM21, DBLP:journals/tse/0038SP00C0023}, and increases the likelihood of dependency conflicts (or bloat in npm)~\cite{floating-discussion, should-i-pin-python-deps}.
 However, recent high-profile malicious package update incidents provide a new argument in favor of pinning, as pinning reduces the attack surface for malicious package updates.
-Given this argument, together with prior arguments that pinning increases application stability and reproducibility~\cite{pin-your-npm-yarn-dependencies, stop-version-range, pin-exact-dep-versions}, 
-many practitioners now argue in favor of pinning for security sensitive applications --
-for example, a survey of 17 domain experts and 134 software developers by \citet{DBLP:conf/sp/LadisaPMB23} ranks pinning as a top-3 safeguard against supply chain attacks in terms of utility/cost ratio; the OpenSSF Scorecard project~\cite{openssf-pinning, DBLP:journals/ieeesp/ZahanKHSW23} included ``pinned dependencies'' as one of its 18 security best practices.
+Given this argument, together with prior arguments that pinning increases application stability and reproducibility~\cite{pin-your-npm-yarn-dependencies, stop-version-range, pin-exact-dep-versions}, many practitioners now argue in favor of pinning for security-sensitive applications---for example, a survey of 17 domain experts and 134 software developers by \citet{DBLP:conf/sp/LadisaPMB23} ranks pinning as a top-3 safeguard against supply chain attacks in terms of utility/cost ratio; the OpenSSF Scorecard project~\cite{openssf-pinning, DBLP:journals/ieeesp/ZahanKHSW23} included ``pinned dependencies'' as one of its 18 security best practices.
 This discussion clearly reaches practitioners---as we show in Figure~\ref{fig:version-dist} (and explain in more depth later in Section~\ref{sec:data-collection}), practitioners in npm have gradually shifted toward pinning more dependencies since 2020.
 
 \begin{figure}[t]
@@ -67,11 +65,11 @@ This discussion clearly reaches practitioners---as we show in Figure~\ref{fig:ve
     \end{subfigure}
     \begin{subfigure}[b]{0.46\linewidth}
         \includegraphics[width=\linewidth]{figs-pinning/versioning_strategy_trend_all.pdf}
-        \caption{The distribution of project-level versioning strategies.}
+        \caption{The distribution of versioning strategies.}
         \label{fig:versioning-strategy}
     \end{subfigure}
     \caption{
-    The distribution of version constraint types and project-level versioning strategies in each year in the dataset we use for answering RQ1 (see Section~\ref{sec:data-collection} for details) - we observe that after years of increasing floating adoption, since about 2020 the trend reverses with a shift toward pinning. In Figure~\ref{fig:versioning}, we ignore non-floating/pinning version constraints as they only occupy 0.83\% of version constraints in our dataset.
+    The distribution of version constraint types and project-level versioning strategies in each year in the dataset we use for answering RQ1 (see Section~\ref{sec:data-collection} for details) - we observe that after years of increasing floating adoption, since about 2020, the trend reverses with a shift toward pinning. In Figure~\ref{fig:versioning}, we ignore non-floating/pinning version constraints as they only occupy 0.83\% of version constraints in our dataset.
     }
     \label{fig:version-dist}
 \end{figure}
@@ -99,7 +97,7 @@ We formulate attack models and defense strategies in the dependency network, def
 Our findings indicate that it is possible to reduce the average spread of malicious package updates in the npm dependency network by nearly 30\% if we pin in 100 intentionally selected important packages.
 However, as we will quantify, this intervention could be substantially more effective (up to 75\%) if npm implements a new \textit{transitive pinning} feature to allow packages to pass their entire pinned dependency graphs downstream.
 
-\paragraph{Summary of Our Contributions} Our paper contributes novel quantitative evidence on the security and maintenance impact of version constraints in a packaging ecosystem, especially in light of recent concerns about malicious package updates.
+\paragraph{Summary of Our Contributions} This study contributes novel quantitative evidence on the security and maintenance impact of version constraints in a packaging ecosystem, especially in light of recent concerns about malicious package updates.
 Our findings align with the opinions of npm developers~\cite{DBLP:journals/tse/JafariCAST22} but contradict the views of security practitioners~\cite{DBLP:conf/sp/LadisaPMB23, DBLP:journals/ieeesp/ZahanKHSW23}, suggesting that pinning direct dependencies is futile (and can be even counter-productive) as protection against malicious package updates.
 In addition, we contribute evidence that a new ecosystem-wide intervention, along with tooling changes and ecosystem-wide allocation of collectively pooled resources, can be an effective intervention against malicious package updates.
 Our findings lead to concrete advice for developers and ecosystem policy makers to improve the state of software supply chain security (Section~\ref{sec:pinning-discussion}). 
@@ -131,7 +129,7 @@ escapeinside=()
 \end{minted}
 \caption{
 An example \Code{package.json} file. 
-We modified version constraints in the original file to illustrate different types of version constraints defined in Section~\ref{sec:method-rq1}. Other details irrelevant to this paper are omitted.}
+We modified version constraints in the original file to illustrate different types of version constraints defined in Section~\ref{sec:method-rq1}. Other details irrelevant to this study are omitted.}
 \label{fig:example-pkgjson}
 \end{figure}
 
@@ -164,7 +162,7 @@ packages may fail to obey semantic versioning~\cite{DBLP:journals/jss/Raemaekers
  semantic-versioning-based floating is still widely accepted and used by npm developers~\cite{DBLP:conf/msr/0001PSTB19, DBLP:journals/tse/DecanM21, DBLP:conf/msr/PinckneyCGB23, DBLP:journals/tse/JafariCAST22}.
 In fact, without discussion of supply chain attacks, the survey by~\citet{DBLP:journals/tse/JafariCAST22} shows that npm developers generally consider pinned dependencies as a ``smell,'' indicating a compromise that will accumulate technical debt and bring negative consequences in the long term.
 
-Finally, it is worth noting that the above discussion applies not only to floating direct dependencies but also to floating transitive dependencies even if the developer pins all their direct dependencies.
+It is worth noting that the above discussion applies not only to floating direct dependencies but also to floating transitive dependencies, even if the developer pins all their direct dependencies.
 Developers usually have no control over how their dependencies float or pin transitive dependencies.
 As a workaround, npm (as many other ecosystems) provides functionality to \textit{freeze} and store a project's entire dependency graph with a lock file (\Code{package-lock.json}~\cite{npmpkglock}). % storing the entire resolved dependency graph. 
 A lock file ensures the reproducibility of npm builds, but
@@ -380,7 +378,7 @@ Thus, we conclude that the success ratio is acceptable and the scale of our data
 Our simulation setup enables a holistic approach to measure the costs of taking action (or the risks of not), but does not fully take into account the complexity of project actions that may happen over a year.
 For example, a project that opts for pinning can invest no effort in updating its pinned dependencies, rapidly update upon every new release of a dependency, or take an intermediate approach (e.g., update every 30 days).
 In other words, for at least some of our outcome metrics (e.g., security vulnerabilities), developers using a pinning strategy can choose how much effort to invest in manual actions to further trade-off costs and risks (Figure~\ref{fig:tradeoff-pinning}).
-In this paper, all outcome metrics are estimated from the conservative case of no manual developer actions; we leave the exploration of other cases to future work.
+In this study, all outcome metrics are estimated from the conservative case of no manual developer actions; we leave the exploration of other cases to future work.
 
 In terms of the metric design, we implicitly assume that malicious package updates and breaking changes follow a uniform random distribution, counting potential rather than actual events.
 For malicious package updates, real attackers are generally opportunistic, and existing research does not show any noticeable statistical patterns in attack target selection~\cite{DBLP:conf/dimva/OhmPS020, DBLP:conf/sp/LadisaPMB23}.
@@ -533,15 +531,14 @@ Intuitively, $risk(A) \in [0, 1]$ is an estimation of the expected average perce
         However, local pinning of F would have no effect, since the attack still propagates through the floating edges originating from C and D. In contrast, transitive pinning of F would protect G and H (and F's other dependents) from the attack.}
         \label{fig:example-transitive-pinning}
     \end{subfigure}
-    \vspace{-1mm}
-    \caption{Examples to illustrate attack impact computation and how local/transitive pinning works.}
-    \vspace{-1mm}
+    \caption{Examples to illustrate attack impact computation and local/transitive pinning.}
     \label{fig:example-rq3}
 \end{figure}
 
 
 \paragraph{Pinning Mechanism}
-With npm's existing mechanisms, the maintainers of the $n$  defending packages can only pin their direct dependencies (\textit{local pinning}), but not their transitive ones. Maintainers can freeze their dependency graph with a \Code{package-lock.json} file, which, with npm's current design, only has an effect on their own package and not on anyone importing their package.
+With npm's existing mechanisms, the maintainers of the $n$  defending packages can only pin their direct dependencies (\textit{local pinning}), but not their transitive ones. 
+While maintainers can freeze their dependency graph with a \Code{package-lock.json} file, it only affects their own package, not anyone importing their package, with npm's current design.
 
 To give maintainers more power (at a higher maintenance cost), we imagine an alternative strategy of \textit{transitive pinning}, where maintainers can pin direct and indirect dependencies. This could be implemented with a 
 % relatively local changes
@@ -575,8 +572,7 @@ Due to these simplifying assumptions, readers should take our results as a first
 \begin{figure}[t]
     \centering
     \includegraphics[width=0.98\linewidth]{figs-pinning/intervention_top_1000.pdf}
-    \vspace{-3mm}
-    \caption{The reduction of malicious package update risk ($risk(A)$) by securing top $n$ packages with five different defense selection strategies using local pinning and transitive pinning, respectively.}
+    \caption{The reduction of malicious package update risk ($risk(A)$) by securing top $n$ packages with five defense selection strategies using local pinning and transitive pinning, respectively.}
     \label{fig:intervention}
 \end{figure}
 
@@ -604,10 +600,8 @@ but transitive pinning is usually two to three times more effective than local p
         \caption{Pinning (\textbf{6} floating edges)}
         \label{fig:pinning-example}
     \end{subfigure}
-    \vspace{-1mm}
     \caption{A minimal example illustrating how pinning direct dependencies can cause dependency conflicts and lead to a bloated dependency graph with more transitive floating dependencies. Note that this is only an artificial example for simplicity; real-world cases happen mostly in much larger dependency graphs.
     }
-    \vspace{-1mm}
     \label{fig:rq2-example}
 \end{figure}
 
@@ -643,8 +637,8 @@ In such contexts, pinning can create substantial maintenance costs, for limited 
 Therefore, we argue that pinning should not be considered when scoring the security practices of packages.
 
 \textbf{Instead of pinning, application developers should freeze their entire dependency graph with a shared lock file.}
-In the npm ecosystem, it means using and \emph{commiting} the \Code{package-lock.json} file (Section~\ref{sec:background}) to the version control repository (44.21\% of GitHub repositories in our dataset did this).
-This practice enables the effective pinning of all direct and transitive dependencies and more importantly, prevents updates from being installed automatically in a new machine or in the CI/CD environment.
+In the npm ecosystem, it means to not only use but also \emph{commit} the \Code{package-lock.json} file (Section~\ref{sec:background}) to the version control repository (44.21\% of GitHub repositories in our dataset did this).
+This practice enables the effective pinning of all direct and transitive dependencies and, more importantly, prevents updates from being installed automatically in a new machine or in the CI/CD environment.
 However, \emph{lock files are intended only for applications (not packages)}, and they are not designed to allow easy selective updates or audits of dependency updates---hence every developer would need to individually judge when to update which (possibly indirect) dependencies rather than delegating some of that judgment to package maintainers and ecosystem moderators.
 
 \textbf{To secure an ecosystem from supply chain attacks, package developers may consider community-wide coordination from a collective pool of resources.}
@@ -681,7 +675,7 @@ Again, we expect all these concerns to manifest differently in different ecosyst
 
 \section{Conclusion}
 
-In this paper, we have presented a counterfactual analysis and simulation study on the impact of version constraints in the npm ecosystem.
+In this study, we have presented a counterfactual analysis and simulation study on the impact of version constraints in the npm ecosystem.
 We have explored the security and maintenance impact of local pinning direct dependencies and the effectiveness of pinning on ``important'' packages against possible malicious package updates.
 Our study provides counter-evidence for the use of local pinning as a security best practice, but supports the effectiveness of coordinated pinning in critical open-source packages.
 Our study leads to a series of implications for the design of dependency management tools and ecosystem-level coordination to enhance software supply chain security.

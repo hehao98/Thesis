@@ -1,0 +1,96 @@
+\section{The Problem}
+
+\subsection{The Fundamental Problem of Causal Inference}
+
+For centuries, researchers have been attempting to answer questions in the following form: In a population, does an intervention (or treatment) $X$ lead to a change in outcome $Y$? 
+Mathematically speaking, for any entity $i$ in the population, let $Y_i^1$ denote the outcome of $i$ with intervention and $Y_{i}^0$ the outcome without, what is the average treatment effect $ATE = E[Y_{i}^1] - E[Y_{i}^0]$? 
+
+The key problem blocking the computation of $ATE$ is that $Y_{i}^1$ and $Y_{i}^0$ cannot \emph{both} be measured without using a time machine.
+To alleviate this, all causal inference methods seek to estimate $ATE$ unbiasedly from experimental or observational data under different assumptions.
+For example, Fisher's pioneering work~\cite{fisher1971design} demonstrates that comparing a treatment group and a control group can unbiasedly estimate $ATE$ under the randomized assignment assumption.
+This leads to the gold standard of randomized controlled trials, which are widely used in medicine today~\cite{bothwell2016assessing}.
+However, the assumption almost always fails in observational data, prompting economists and social scientists to seek alternative approaches.
+
+\subsection{Why Correlation Does Not Imply Causation}
+
+- Common Pitfalls in Correlational SE Research 
+
+\subsection{The Potential Outcomes Framework}  
+ 
+\section{The Econometrican's Toolbox}
+
+\subsection{Randomized Controlled Trials}
+
+\subsection{Matching}
+
+\subsection{Panel Regression}
+
+\subsection{Instrumental Variables}
+
+\subsection{Difference-in-Differences} 
+
+One of the workhorse methods for causal inference in observational data is \emph{difference-in-differences} (DiD)~\cite{card1993minimum, cunningham2021causal}.
+Its high-level idea is to estimate $ATE$ by comparing outcome $Y$ in a treatment group before and after intervention with changes in a control group \emph{over the same period}. 
+Crucially, it makes a \emph{parallel trends assumption}---that treatment and control groups would have followed similar trajectories in the absence of intervention. 
+One common setting of DiD estimation is that $N$ entities (containing both treatment and control) are observed over the same $T$ periods (i.e., \emph{panel data}~\cite{baltagi2008econometric}), but the intervention can happen at different times (i.e., \emph{staggered adoption}~\cite{athey2022design}).
+In this setting, we can represent $ATE$ as the $\beta$ parameter in the following linear model:
+\begin{equation}
+\label{eq:base-did}
+    Y_{it} = \alpha + \beta D_{it} +\mu_i + \lambda_t + X'_{it}\Gamma + \epsilon_{it}
+\end{equation}
+Here $Y_{it}$ is the outcome variable for entity $i$ at time $t$; $D_{it}$ is a binary variable representing whether entity $i$ receives the treatment at $t$; $\mu_i$ and $\lambda_t$ are per-entity and per-time fixed effects; $X'_{it}$ are additional time-varying control variables; and $\epsilon_{it}$ is the error term.
+
+Apart from $ATE$, researchers are also often interested in the longitudinal evolution of treatment effects (i.e., estimating different $ATE$s $1$ to $k$ time periods after intervention).
+This is typically estimated using an extension of Equation~\ref{eq:base-did}, in the following form~\cite{clarke2021implementing}:
+\begin{equation}
+\label{eq:panel-event}
+     Y_{it} = \alpha + \sum_{j=2}^{J}\beta_j(\text{Lead}~j)_{it} + \sum_{k=1}^{K} \gamma_k (\text{Lag}~k)_{it}+\mu_i + \lambda_t + X'_{it}\Gamma + \epsilon_{it}
+\end{equation}
+Here $\text{Lead}~j$ and $\text{Lag}~k$ are dummies to support the estimation of treatment effects $-J$ to $K$ time periods before and after the intervention.
+The treatment effects of $\text{Lead}~j$ can be used as placebo tests, as a reliable estimation should not have significant treatment effects before the intervention. 
+$\text{Lead}~1$ is intentionally omitted from the model to serve as the counterfactual baseline.
+
+For many years, the econometric literature has been relying on the two-way fixed effect (TWFE) estimator for estimating the model parameters in Equation~\ref{eq:base-did} and Equation~\ref{eq:panel-event}.
+Importantly, under both the parallel trend assumption and the treatment effect homogeneity assumption, a TWFE estimator equals a weighted average of all possible two-group/two-period DiD estimators in the data~\cite{goodman2021difference}.
+However, the treatment effect homogeneity assumption is a strong assumption that may not hold in many settings (e.g., the intervention is only effective in the short term).
+Recent studies show that the violation of this assumption may lead to ``forbidden comparisons'' in the TWFE estimator, biasing the estimated parameters and jeopardizing the validity of causal claims based on TWFE models~\cite{de2020two, athey2022design}.
+As a result, new estimators are proposed to produce unbiased estimations of $ATE$s in the absence of the treatment effect homogeneity assumption~\cite{borusyak2024revisiting} and, more aggressively, with weaker parallel trend assumptions~\cite{callaway2021difference}.
+In general, it is often advised to test multiple estimators and conduct sensitivity analysis to establish credible causal evidence for the problem of interest~\cite{baker2022much, roth2023s}. 
+
+\subsection{Generalized Method of Moments}
+
+While DiD can effectively estimate $ATE$ for a set of outcomes, they do not directly capture the temporal dynamics between the outcomes themselves. 
+In our setting, it is well-known that velocity and quality interact with each other~\cite{DBLP:conf/sigsoft/ChengMCJGKZ022, besker2018technical}. 
+To test such dynamic relationships and potential bidirectional causality, \emph{generalized method of moments} (GMM) is often used~\cite{hansen1982large}, which provides a framework for obtaining consistent causal estimates when variables are potentially endogenous (i.e., correlated with unobserved error terms). The key insight is to use \emph{instrumental variables}—variables correlated with the endogenous regressors but uncorrelated with the error term—to identify causal effects. 
+In panel data, lagged values of variables often serve as natural instruments under the assumption that past values influence current values but are uncorrelated with current shocks~\cite{arellano1991some}.
+
+For our analysis of the dynamic relationship between development velocity and code quality, we employ Arellano-Bond dynamic panel GMM~\cite{arellano1991some}, which is particularly suited for settings with: (1) dynamic dependence, where current outcomes depend on past outcomes; (2) potential bidirectional causality between variables; and (3) short time series with many entities. A panel GMM model can be specified as follows to test the causality direction $X_t \to Y_t$ while taking possible intervention $D$ into consideration:
+\begin{equation}
+\label{eq:dynamic-gmm}
+Y_{it} = \alpha + \rho Y_{i,t-1} + \beta D_{it} + \gamma X_{it} + \mu_i + \lambda_t + Z'_{it}\Theta + \epsilon{it}
+\end{equation}
+where $Y_{i,t-1}$ captures persistence in the outcome, $X_{it}$ represents potentially endogenous regressors, $Z'_{it}$ stands for additional time-varying controls, and the remaining follows the specification in Equation~\ref{eq:base-did}. 
+During estimation, historical values of $X_{it}$ (e.g., $X_{i,t-2}$) are used as instrumental variables.
+A widely used efficient estimation method~\cite{windmeijer2005finite} of Equation~\ref{eq:dynamic-gmm} eliminates entity fixed effects $\mu_i$, which may correlate with the lagged dependent variable, with a first-order difference transformation.
+During estimation, first-order difference transformation is often applied to eliminate entity-specific bias, and historical values of $X_{it}$ (e.g., $X_{i,t-1}, X_{i,t-2}, ...$) are used as instrumental variables.
+Panel GMM models will complement our DiD analysis by decomposing the mechanisms through which Cursor adoption affects long-term development outcomes.
+
+\section{Applicability to Empirical Software Engineering Research}
+
+\section{Threats to Validity in Causal Inference Designs}
+
+1.  Causal Inference in Observational Studies    
+- The Fundamental Problem of Causal Inference    
+-  Potential Outcomes Framework    
+- Common Pitfalls in Correlational SE Research    
+2. Causal Inference Methodologies    
+- Counterfactual Analysis and Simulation    
+- Difference-in-Differences Estimation    
+- Propensity Score Matching    
+- Panel Generalized Method of Moments    
+- Threats to Causal Validity    
+3. Empirical Software Engineering Research     
+- Controlled Experiments  
+- Large-Scale Observational Studies    
+- The Need for Causal Methods on Observational Data  
+4. Summary

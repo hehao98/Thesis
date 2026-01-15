@@ -154,7 +154,7 @@ Pull Requests & 719.6 & 0 & 1.0 & 18.0 & 161.8 & 72,015\\
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.95\linewidth]{figs-cursor/cursor_adoption_time.pdf}
+    \includegraphics[width=0.7\linewidth]{figs-cursor/cursor_adoption_time.pdf}
     \caption{The Cursor adoption time of the \numtreated repositories in our study,  which all have $\ge$10 stars and Cursor configuration files at the time of data collection (April 2025).}
     \label{fig:time-cursor-adoption}
 \end{figure}
@@ -230,7 +230,7 @@ We control for the following time-varying covariates in our models for all treat
 
 \subsubsection{Background}
 
-DiD is an established econometric technique for causal inference in observational data~\cite{card1993minimum, cunningham2021causal}, with growing adoption in software engineering~\cite{nakasai2018donation, fang2022damn, casanueva2025impact}. 
+DiD is an established econometric technique for causal inference in observational data~\cite{card1993minimum, cunningham2021causal}, with growing adoption in software engineering~\cite{nakasai2018donation, DBLP:conf/icse/FangLHV22, casanueva2025impact}. 
 The key idea is to compare outcome changes in a treatment group to outcome changes in a control group (i.e., those not-yet-treated or never-treated) over the same observation periods. 
 The name ``difference-in-differences'' originates from the fact that temporal changes are first differenced before differencing the outcome changes between the two groups, effectively isolating the effect of an intervention from other factors that affect all repositories similarly over the same period.
 
@@ -548,7 +548,7 @@ To summarize, the above robustness checks reassure our main causal findings agai
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figs-cursor/Theory.pdf}
+    \includegraphics[width=0.75\linewidth]{figs-cursor/Theory.pdf}
     \caption{Our theory around how LLM agent assistants may impact software development. Solid lines show causal relationships supported by existing evidence, and dashed lines indicate relationships not fully supported in our analysis.}
     \label{fig:theory}
 \end{figure}
@@ -699,7 +699,7 @@ This motivates us to adopt a difference-in-difference design for causal inferenc
 
 \begin{figure}
      \centering
-     \includegraphics[width=0.9\linewidth]{figs-cursor/propensity_score_distribution.pdf}
+     \includegraphics[width=0.75\linewidth]{figs-cursor/propensity_score_distribution.pdf}
       \caption{The distribution of propensity scores between all candidate repositories, matched control group repositories, and the \numtreated Cursor-adopting repositories, showing that the matched control group has highly similar conditional treatment probabilities compared to the treatment group.}
      \label{fig:propensity-score}
 \end{figure}
@@ -810,21 +810,22 @@ In our setting, where many adoption cohorts contain fewer than 100 repositories 
 
 \begin{table*}
 \centering
-\small
-\caption{The estimated average treatment effects on treated (i.e., $ATT$) post Cursor adoption from different DiD estimators. Similar to Table~\ref{tab:average-te}, all outcome variables are log-transformed, and percentage changes are provided for reference.}
-\begin{tabular}{lrrrrrr}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{The estimated average treatment effects on treated (i.e., $ATT$) post Cursor adoption from two alternative DiD estimators. Similar to Table~\ref{tab:average-te}, all outcome variables are log-transformed, and percentage changes are provided for reference.}
+\begin{tabular}{lrrrr}
 \toprule
-& \multicolumn{2}{c}{Borusyak et al.~\cite{borusyak2024revisiting}} & \multicolumn{2}{c}{Two-Way Fixed Effects} & \multicolumn{2}{c}{Callaway and Sant'Anna~\cite{callaway2021difference}} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
-Outcome & Estimate (Std. Err.) & \% Change & Estimate (Std. Err.) & \% Change & Estimate (Std. Err.) & \% Change \\
+& \multicolumn{2}{c}{Two-Way Fixed Effects} & \multicolumn{2}{c}{Callaway and Sant'Anna~\cite{callaway2021difference}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+Outcome & Estimate (Std. Err.) & \% Change & Estimate (Std. Err.) & \% Change \\
 \midrule
-Commits & 0.0260$^{\textcolor{white}{***}}$ (0.0429) & +2.63\% ($\pm$4.40\%) & 0.1641$^{***}$ (0.0386) & +17.83\% ($\pm$4.55\%) & $-$0.0073$^{\textcolor{white}{**}}$ (0.0695) & $-$0.73\% ($\pm$6.90\%) \\
-Lines Added & 0.2514$^{*\textcolor{white}{**}}$ (0.1063) & +28.58\% ($\pm$13.7\%) & 0.6029$^{***}$ (0.0876) & +82.74\% ($\pm$16.0\%) & 0.4292$^{**}$ (0.1536) & +53.60\% ($\pm$23.6\%) \\
-Static Analysis Warnings & 0.2644$^{***}$ (0.0511) & +30.26\% ($\pm$6.66\%) & 0.1696$^{***}$ (0.0415) & +18.48\% ($\pm$4.92\%) & $-$0.1108$^{\textcolor{white}{**}}$ (0.1254) & $-$10.49\% ($\pm$11.2\%) \\
-Duplicated Lines Density & 0.0679$^{\textcolor{white}{***}}$ (0.0448) & +7.03\% ($\pm$4.79\%) & 0.0160$^{\textcolor{white}{***}}$ (0.0390) & +1.61\% ($\pm$3.96\%) & $-$0.0034$^{\textcolor{white}{**}}$ (0.0785) & $-$0.34\% ($\pm$7.82\%) \\
-Code Complexity & 0.3481$^{***}$ (0.0538) & +41.64\% ($\pm$7.62\%) & 0.2314$^{***}$ (0.0446) & +26.04\% ($\pm$5.62\%) & $-$0.0387$^{\textcolor{white}{**}}$ (0.1136) & $-$3.80\% ($\pm$10.9\%) \\
+Commits & 0.1641$^{***}$ (0.0386) & +17.83\% ($\pm$4.55\%) & $-$0.0073$^{\textcolor{white}{**}}$ (0.0695) & $-$0.73\% ($\pm$6.90\%) \\
+Lines Added & 0.6029$^{***}$ (0.0876) & +82.74\% ($\pm$16.0\%) & 0.4292$^{**}$ (0.1536) & +53.60\% ($\pm$23.6\%) \\
+Static Analysis Warnings & 0.1696$^{***}$ (0.0415) & +18.48\% ($\pm$4.92\%) & $-$0.1108$^{\textcolor{white}{**}}$ (0.1254) & $-$10.49\% ($\pm$11.2\%) \\
+Duplicated Lines Density & 0.0160$^{\textcolor{white}{***}}$ (0.0390) & +1.61\% ($\pm$3.96\%) & $-$0.0034$^{\textcolor{white}{**}}$ (0.0785) & $-$0.34\% ($\pm$7.82\%) \\
+Code Complexity & 0.2314$^{***}$ (0.0446) & +26.04\% ($\pm$5.62\%) & $-$0.0387$^{\textcolor{white}{**}}$ (0.1136) & $-$3.80\% ($\pm$10.9\%) \\
 \bottomrule
-\multicolumn{7}{r}{\textit{Note:} $^{*}p<0.05$; $^{**}p<0.01$; $^{***}p<0.001$} \\
+\multicolumn{5}{r}{\textit{Note:} $^{*}p<0.05$; $^{**}p<0.01$; $^{***}p<0.001$} \\
 \end{tabular}
 \label{tab:average-te-comparison}
 \end{table*}
@@ -866,7 +867,7 @@ We acknowledge that the lack of large cohorts and clear theoretical guidance on 
 
 \begin{table*}[t]
 \centering
-\small
+\scriptsize
 \caption{Summary statistics for all alternative dataset settings explored in this study. The results from Rust repositories are dropped in Figure~\ref{fig:robustness-checks-all} because of insufficient observations, causing insignificant results and extremely large confidence intervals.}
 \begin{tabular}{lrrrr}
 \toprule
@@ -971,8 +972,8 @@ These findings strengthen our recommendation in Section~\ref{sec:practical-impli
 \centering
 \caption{A taxonomy of static analysis warnings generated by SonarQube in our dataset.}
 \label{tab:warning-taxonomy}
-\small
-\begin{tabular}{lp{7cm}p{7.2cm}@{}}
+\scriptsize
+\begin{tabular}{@{}lp{6.25cm}p{6.25cm}@{}}
 \toprule
 \textbf{Category} & \textbf{Description} & \textbf{Example Rules} \\
 \midrule

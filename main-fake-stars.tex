@@ -59,7 +59,7 @@ Finally, GitHub does not preserve deleted repositories and users, posing difficu
 To overcome these challenges, we take advantage of prior work on mining software repositories~\cite{gharchive} and social media fraud detection~\cite{DBLP:conf/www/BeutelXGPF13, DBLP:conf/www/CresciPPST17} to implement \SystemName, a scalable tool that detects (suspected) \emph{fake stars} over the entire \textsf{GHArchive}~\cite{gharchive} dataset, a Google BigQuery replica of all GitHub events (totaling 63.9 million users, 331 million repositories, 326 million stars, and 6.7 billion other events as of January 2025).
 \SystemName (details in Section~\ref{sec:tool-design}) identifies two signatures of anomalous starring behaviors, \emph{the low activity signature} and \emph{the lockstep signature}, and includes a post-processing step to reduce noise and increase overall accuracy.\footnote{
 Note that technically speaking, \SystemName only detects \emph{suspected} fake stars and \emph{suspected} fake star campaigns, among which there may still be false positives (see Section~\ref{sec:limitations} for a discussion).
-However, to make this paper more readable, we will simply refer to them as \emph{fake stars} and \emph{fake star campaigns} in the remainder of this paper.
+However, to make this chapter more readable, we will simply refer to them as \emph{fake stars} and \emph{fake star campaigns} in the remainder of this chapter.
 }
 
 We apply \SystemName to all GitHub event data from July 2019 to  December 2024, identifying \emph{6.0 million fake stars and 18,617 repositories with fake star campaigns}.
@@ -78,7 +78,7 @@ In the latter case, we show that fake stars, while increasing the displayed star
 From a security perspective, our results call for future research into malicious activities happening on GitHub (e.g., fake stars, fake accounts, spam, phishing).
 From a practitioner's perspective, our results further demonstrate the limitation of star counts as a popularity signal, provide counter-evidence to the effectiveness of fake stars for growth hacking, and call for the design of better popularity signals for GitHub repositories.
 
-In summary, this paper makes the following contributions:
+In summary, this study makes the following contributions:
 \begin{itemize}[leftmargin=15pt]
     \item We design and implement \SystemName, a scalable tool to scan for anomalous starring behavior across all of GitHub.
     This leads to a novel large-scale dataset regarding fake GitHub stars.
@@ -142,7 +142,7 @@ From the gray literature, we know that the GitHub star black market operates in 
 (2)~GitHub users may form exchange platforms (e.g., GitStar~\cite{gitstar} or instant messaging groups), where they incentivize mutual starring of their GitHub repositories~\cite{DBLP:conf/acsac/DuYZDWH0020};
 (3)~A GitHub repository may directly incentivize the audience of its advertising campaign with gifts if they star the repository (e.g., as it happened in OceanBase~\cite{oceanbase}).
 All these ways of operation violate the GitHub Acceptable Use Policy~\cite{github-policy}, which prohibits any inauthentic interactions, rank abuse, and reward-incentivized activities. 
-In all three cases discussed above, we consider these purchased, exchanged, or incentivized GitHub stars as \emph{fake} because they are artificially created and do not genuinely represent any authentic appreciations, uses, or bookmarks of a repository from real GitHub users. %\footnote{It is hard to draw a well-defined boundary between fake and authentic GitHub stars and one can easily come up with corner cases (e.g., what if a GitHub tutorial repository, as part of its tutorial, asks readers to star itself?).In this paper, we do not attempt to define such a boundary, but rather focus on repositories and users with specific anomalous patterns associated with malicious behavior (more details in Section~\ref{sec:tool-design}).}
+In all three cases discussed above, we consider these purchased, exchanged, or incentivized GitHub stars as \emph{fake} because they are artificially created and do not genuinely represent any authentic appreciations, uses, or bookmarks of a repository from real GitHub users.
 
 \textbf{Prior Work on Fake GitHub Stars.}
 As the first and only academic report on this emerging black market (to the best of our knowledge), Du et al.~\cite{DBLP:conf/acsac/DuYZDWH0020} collected 1,023 black market GitHub accounts through honeypots and built machine learning classifiers to identify 63,872 more suspected GitHub accounts from 2015 to 2019.  
@@ -172,14 +172,14 @@ We provide an overview of \SystemName in Figure~\ref{fig:system-overview}, and w
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=\linewidth]{figs-fake-stars/ToolOverview.pdf}
+    \includegraphics[width=0.8\linewidth]{figs-fake-stars/ToolOverview.pdf}
     \caption{A high-level overview of \SystemName.}
     \label{fig:system-overview}
 \end{figure}
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.97\linewidth]{figs-fake-stars/Example.pdf}
+    \includegraphics[width=0.8\linewidth]{figs-fake-stars/Example.pdf}
     \caption{Under the parameter setting shown above, accounts $a, b, c$ and repositories $x, y, z$ are considered to demonstrate a lockstep signature because each repository has stars from at least two of these accounts in a 30-day time window.}
     \label{fig:example}
 \end{figure}
@@ -317,7 +317,7 @@ Also, considering the generally high face validity of our evaluation and measure
 
 The possibility of false positives in \SystemName detections also brings ethical concerns.
 Even if \SystemName is $\sim$99\% precise in detecting repositories that bought fake stars, there would still be $\sim$180 false positive repositories in our resulting dataset, and interpreting them as having done so would potentially harm their reputation.
-To mitigate such risks, we focus on presenting statistical patterns and avoid giving individual repositories as examples in the paper (unless they are obviously malicious).
+To mitigate such risks, we focus on presenting statistical patterns and avoid giving individual repositories as examples in the main text (unless they are obviously malicious).
 We also carefully discussed and noted ethical concerns in the dataset documentation, calling for its responsible use and interpretation  (Section~\ref{sec:conclusion}).
 
 
@@ -348,18 +348,15 @@ Through this operationalization, we can estimate the portion of GitHub activitie
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figs-fake-stars/ts_percentage.pdf}
-    %\vspace{-1mm}
+    \includegraphics[width=0.75\linewidth]{figs-fake-stars/ts_percentage.pdf}
     \caption{The percentage (\%) of GitHub stars, accounts, and repositories involved in fake star campaigns in each month.}
-    %\vspace{-2mm}
     \label{fig:prevalence}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figs-fake-stars/ts_trending.pdf}
-    %\vspace{-1mm}
-    \caption{The number (\#) of GitHub repositories with fake star campaigns and appeared in GitHub Trending each month.}
+    \includegraphics[width=0.75\linewidth]{figs-fake-stars/ts_trending.pdf}
+    \caption{The number (\#) of GitHub repositories with fake star campaigns that appeared in GitHub Trending each month.}
     \label{fig:trending}
 \end{figure}
 
@@ -426,21 +423,18 @@ In this RQ, we examine the activity patterns of repositories and accounts with f
 
 \begin{figure}
 \centering
-
-\begin{subfigure}{0.49\linewidth}
+\begin{subfigure}{0.38\linewidth}
     \centering
     \includegraphics[width=\linewidth]{figs-fake-stars/survival_repo.pdf}
     \caption{Repositories}
     \label{fig:survival-repos}
 \end{subfigure}
-\begin{subfigure}{0.49\linewidth}
+\begin{subfigure}{0.38\linewidth}
     \includegraphics[width=\linewidth]{figs-fake-stars/survival_user.pdf}
     \caption{Accounts}
     \label{fig:survival-actors}
 \end{subfigure}
-\vspace{-1mm}
 \caption{The Complementary Cumulative Distribution Function (CCDF) of activity durations for (a) repositories with fake star campaigns and sample repositories, (b) accounts with the lockstep signature and sample stargazers.}
-\vspace{-1mm}
 \label{fig:survival}
 \end{figure}
 
@@ -458,7 +452,7 @@ Most repositories with fake star campaigns are short-lived, but accounts can sta
 
 \begin{figure}
 \centering
-\begin{subfigure}{0.49\linewidth}
+\begin{subfigure}{0.38\linewidth}
     \centering
     \includegraphics[width=\linewidth]{figs-fake-stars/repo-events.pdf}
     \caption{
@@ -467,7 +461,7 @@ Most repositories with fake star campaigns are short-lived, but accounts can sta
     }
     \label{fig:repo-events}
 \end{subfigure}
-\begin{subfigure}{0.49\linewidth}
+\begin{subfigure}{0.38\linewidth}
     \includegraphics[width=\linewidth]{figs-fake-stars/actor-events.pdf}
     \caption{
     Accounts
@@ -475,9 +469,7 @@ Most repositories with fake star campaigns are short-lived, but accounts can sta
     }
     \label{fig:actor-events}
 \end{subfigure}
-\vspace{-1mm}
 \caption{Comparing the distribution of GitHub events between: (1) repositories and accounts with fake star campaigns, and (2) random samples of repository and stargazers.}
-\vspace{-1mm}
 \label{fig:events}
 \end{figure}
 
@@ -498,7 +490,6 @@ Finally, a small portion of accounts (Cluster 2, 7.49\%) tend to engage in both 
     \small
     %\setlength{\tabcolsep}{3.5pt}
     \caption{The properties of each clustering center identified by $k$-Means on accounts in fake star campaigns.}
-    \vspace{-1mm}
     \begin{tabular}{lrrrrrr}
     \toprule
         & \% Star & \% Push & \% Fork & \% Create & \% Other \\
@@ -591,7 +582,7 @@ We answer these subquestions in RQ3.
     \centering
     \caption{The most common words in the names of deleted repositories with fake star campaigns.}
     \label{tab:common-words}
-    \begin{tabular}{lp{6cm}}
+    \begin{tabular}{lp{10cm}}
     \toprule
         Category & Words and Occurrences \\
     \midrule
@@ -750,8 +741,8 @@ Therefore, while our results provide initial evidence on the effect of fake star
 \end{table}
 
 \textbf{Results.}
-In this paper, we report results from the $AR(2)$ fixed effect and random effect model in Table~\ref{tab:regression}.
-It is worth noting that we obtain consistent findings across all $AR(k)$ models; the remaining results and additional robustness checks are available in the paper Appendix (Section~\ref{sec:conclusion}).
+In the main text, we report results from the $AR(2)$ fixed effect and random effect model in Table~\ref{tab:regression}.
+It is worth noting that we obtain consistent findings across all $AR(k)$ models; the remaining results and additional robustness checks are available in the Appendix (Section~\ref{sec:conclusion}).
 We find strong support for  \textbf{H$_1$}:
 According to the fixed-effects model,  a 1\% increase of real stars in month $t-1$ is correlated with an expected 0.36\% increase of real stars in month $t$ 
 % (0.36\%=$1.01^{0.364}$, 
@@ -858,7 +849,7 @@ Also, software supply chain attacks are becoming increasingly diverse and sophis
 
 \section{Conclusion}
 
-In this paper, we have presented a systematic, global, and longitudinal measurement study of fake stars in GitHub.
+In this study, we have presented a systematic, global, and longitudinal measurement study of fake stars in GitHub.
 Our study sheds light on this prevalent and escalating threat happening in a platform central to modern open-source software development. 
 Despite its wide prevalence and rising popularity, our findings have also revealed its shady nature: 
 Fake stars are, at worst, used to spread malware in short-lived repositories, and at best, used as a short-term promotional tool, which does not bring long-term returns.
@@ -903,12 +894,12 @@ Still, we reached out to the GitHub Security team to inform them of our research
 \label{sec:data-avail}
 \label{sec:conclusion}
 
-We provide the appendix of this paper, the source code of \SystemName, and the data and scripts used in our measurement study at:
+We provide the appendix of this study, the source code of \SystemName, and the data and scripts used in our measurement study at:
 \begin{quote}
 \centering
 \url{https://doi.org/10.5281/zenodo.17009693}
 \end{quote}
-The appendix is also available in the arXiv version of this paper~\cite{DBLP:journals/corr/abs-2412-13459}.
+The appendix is also available in the arXiv version of this study~\cite{DBLP:journals/corr/abs-2412-13459}.
 
 \subsection*{Acknowledgements}
 
@@ -917,4 +908,196 @@ Kapravelos's work was supported in part by the National Science Foundation (awar
 Bogdan's work was supported in part by the National Science Foundation (award 2317168) and in part by research awards from Google and the Digital Infrastructure Fund.
 We would also like to thank Socket Inc (\url{https://socket.dev}) and its CEO, Feross Aboukhadijeh, for providing collaboration opportunities, general support, and computational resources for this project.
 Additionally, we would like to thank Google Cloud for Researchers program for offering credits to fund the use of Google BigQuery for this research.
+
+\section{Appendix}
+
+\subsection{GitHub Star Provider Examples}
+
+Table~\ref{tab:fake-star-providers} shows a non-exhaustive list collected in July 2024 through Google Search.
+Their prices range from \$0.10 to \$2.00 per star, and they often claim to deliver their stars in days or even hours.
+Apart from the examples shown here, a gray literature report indicates that GitHub stars and accounts are also being sold on dark web~\cite{stargazer-goblin}.
+
+\begin{table}[t]
+    \small
+    \centering
+    \caption{A non-exhaustive list of GitHub star merchants}
+    \begin{tabular}{llll}
+    \toprule
+    Provider & Price / Star & Min Amount & (Claimed) Delivery Time \\ 
+    \midrule
+    Baddhi   & \$0.10 & 100 & $\le$1 week\\
+    BuyGitHub  & \$0.12 & 50 & hours \\
+    FollowDeh  & \$0.12 & 20 & instant \\ 
+    subme.lt & \$0.67 & 100 & hours \\
+    Box ID & \$0.21$\sim$\$ 0.41 & 100 & hours \\ 
+    R for Rank& \$0.38 & 100 & NA\\ 
+    Twidium & \$1.62 & 50 & 7$\sim$30 days\\
+    \bottomrule
+    \end{tabular}
+    \label{tab:fake-star-providers}
+\end{table}
+
+\subsection{Definition of Repository Categories}
+
+We provide a detailed definition of each category as follows:
+
+\begin{itemize}[leftmargin=15pt]
+    \item \textsf{Spam/Phishing}: 
+    The repository is one of the following cases: (a) it is an obvious clickbait (e.g., claiming game cheats, pirated software, cryptocurrency bots) to trick download of suspicious files, (b) it is spreading spam advertising content, possibly used for search engine optimizations, or (c) it does not contain anything meaningful and thus looks highly suspicious. We conjecture, based on an example we found in Figure~\ref{fig:example-malware-later}, that the third case could be an attacker preparing for a spam/phishing attack.
+    \item \textsf{AI/LLM}:
+    The repository is generally related to AI or large language models (LLMs). Many of the repositories in this category are academic paper repositories or repositories for LLM-related startup products. If the repository appears like a demo, toy, tutorial, or a list of AI-related references (e.g., awesome LLM tools), we put it into the \textsf{Tutorial/Demo} category.
+    \item \textsf{Blockchain}: The repository is generally related to blockchain, containing terms related to cryptocurrencies, decentralized finance, or Web 3.0 technologies. Plus, it appears to be a piece of legitimate software. Otherwise, if it appears like a tutorial or list of references, we put it into the \textsf{Tutorial/Demo} category; if it does not appear to contain any meaningful documentation or source code, we put it into the \textsf{Spam/Phishing} category.
+    \item \textsf{Web Frameworks}: The repository generally serves the purpose of web development (e.g., platforms for blogging or e-commerce, UI design frameworks, microservice frameworks). Again, if it appears like a demo or template (e.g., a template for \Code{vue.js} development), we put it into the \textsf{Tutorial/Demo} category.
+    \item \textsf{Tutorial/Demo}: The repository generally provides reference/educational information for someone else. It may be a list of ``awesome'' other reference repositories, coding tutorials, starter templates for other frameworks, demonstrations, etc.
+    \item \textsf{Tool/Application}: The repository is a (seemingly legitimate) piece of tool or application (e.g., command-line tools or Android apps), that is not blockchain-related, AI/LLM-related, or database-related.
+    \item \textsf{Basic Utility}: The repository is a software library providing basic utility functions (e.g., caching, exception handling).
+    \item \textsf{Database}: The repository is generally related to databases. It may be a database solution in itself (e.g., a certain type of database run by a startup) or supporting libraries/tools for databases.
+    \item \textsf{Other}: All other repositories that cannot be fit into any of the above categories.
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figs-fake-stars/example-malware-cheats.png}
+    \caption{An example phishing repository claiming to be game cheats, with 149 fake stars detected by \SystemName. While the repository is still accessible at the time of writing, almost all of its fake stars have been removed.}
+    \label{fig:example-malware-cheats}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figs-fake-stars/example-malware-crypto.png}
+    \caption{An example phishing repository claiming to be a cryptocurrency bot, with 115 fake stars detected by \SystemName. At the time of writing, the repository still has more than 50 fake stars remaining and visible in its GitHub repository.}
+    \label{fig:example-malware-crypto}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figs-fake-stars/example-malware-update-later3.png}
+    \includegraphics[width=\linewidth]{figs-fake-stars/example-malware-update-later2.png}
+    \caption{In repository \Code{Uttampatel1/temp1} (197 fake stars as detected by \SystemName, 175 fake stars remaining at the time of writing), its README and repository files initially indicated a machine learning repository. The phishing malware link was only added in a later commit, six months after creation. }
+    \label{fig:example-malware-later}
+\end{figure}
+
+\subsection{Inter-Rater Reliability Analysis}
+
+In the absence of an available second human coder for the open-coding process we conducted in RQ3, we use GPT-o3-mini, one of the state-of-the-art reasoning LLMs, to act as the second coder.
+For each repository, we supply a prompt providing: (a) a description of the open-coding task, (b) the definition of each open-coding category, and (c) the repository README.
+The Cohen's $\kappa$ between the human coding results and AI coding results is 0.71, indicating strong agreement~\cite{landis1977measurement}.
+Looking over the disagreement cases, we find that GPT-o3-mini, even with built-in reasoning, may fail to recognize better-obfuscated phishing repositories as long as they contain seemingly legitimate READMEs; the remaining disagreements come from confusion between seemingly overlapping labels (e.g., a repository that is an AI/LLM toolkit may be labeled as \textsf{Tool/Application} despite explicit instruction in the prompt not to do so).
+Still, LLM's judgments provide a good reference for verification of our open coding results.
+We use the LLM's coding results to correct human coding errors before we aggregate and report the open coding results in RQ3.
+
+\subsection{Spam/Phishing Repository Examples}
+
+We provide two examples of obviously phishing repositories in Figure~\ref{fig:example-malware-cheats} and Figure~\ref{fig:example-malware-crypto}.
+Note that the two repositories have different levels of fake star retention, indicating that GitHub is actively taking action to counter fake stars.
+However, we are also observing evidence indicating that malicious actors are evolving their behaviors to evade platform moderation.
+For example, the repository in Figure~\ref{fig:example-malware-later} is initially disguised as a Python machine learning repository; the phishing malware link was only added in a later commit six months after creation.  
+It also has a very high level of fake star retention (175 out of 197 fake stars remain even after a year).
+
+\subsection{Additional Regression Results} 
+
+\begin{table}
+    \small
+    \centering
+    \setlength{\tabcolsep}{5pt}
+    \caption{$R^2$ values, Bayesian Information Criterion (BIC), and Akaike Information Criterion (AIC) for regression models with 1-6 autoregression orders and random/fixed effects.}
+    \begin{tabular}{lrrrrrr}
+    \toprule
+         & \multicolumn{3}{c}{Random Effect} & \multicolumn{3}{c}{Fixed Effect} \\
+         &  $R^2$ & AIC & BIC & $R^2$ &  AIC & BIC \\
+    \midrule
+       AR(1) & 0.562 & 34686.50 & 34746.90 & 0.245 & 32947.30 & 32985.00\\
+       AR(2) & 0.665 &31274.40 & 31348.90 & 0.268 & 29619.20 & 29671.40\\
+       AR(3) & 0.667 & 31170.90 & 31260.30 & 0.270 & 29576.80 & 29643.80\\
+       AR(4) & 0.654 & 25794.90 & 25896.90 & 0.285 & 24692.90 & 24773.10\\
+       AR(5) & 0.646 & 22744.60 & 23793.70 & 0.297 & 22744.60 & 22838.40\\
+       AR(6) & 0.676 & 22284.80 & 22413.60 & 0.293 & 21370.00 & 21477.40\\
+    \bottomrule
+    \end{tabular}
+    \label{tab:ic}
+\end{table}
+
+For all the $AR(k)$ panel autoregression models with random or fixed effects, we summarize their $R^2$ values, Bayesian Information Criterion (BIC), and Akaike Information Criterion (AIC) in Table~\ref{tab:ic}.
+They are common model selection criteria for regression models, in which $R^2$ measures goodness-of-fit and AIC/BIC penalizes model overfitting.
+While in general, models with higher $R^2$ and lower AIC/BIC~\cite{kuha2004aic} are preferred, all twelve models lead to consistent findings regarding our hypotheses, so we only report the $AR(2)$ random- and fixed-effects model in the paper (Table~\ref{tab:regression}) for the sake of simplicity.
+The Hausman test~\cite{amini2012fixed} indicates that the unique errors are correlated with the regressors, so results from the fixed-effects model are preferable.
+We present the remaining regression results from other $AR(k)$ ($k = 1, 3, 4, 5, 6$) models in appendix Table~\ref{tab:all-regressions}.
+We can see that the coefficients of $real_{i, t-k}$ and $all\_real_{i, t-k-1}$ are consistently positive and significant, which supports our \textbf{H$_{1}$}, with only a few exceptions when $k$ is large (Section~\ref{sec:rq4}).
+Similarly, $fake_{i, t-1}$ is uniformly significantly positive and $all\_fake_{i, t-k-1}$ is uniformly significantly negative across all ten models, so our key findings around \textbf{H$_{2}$} in Section~\ref{sec:rq4} can be supported using either of the models in our model family.
+%Therefore, we conclude that our family of $AR(k)$ random/fixed effect models leads to consistent findings regarding our hypotheses, and we only present the $AR(2)$ models in Section~\ref{sec:rq4} for the sake of simplicity.
+
+\begin{table*}
+\scriptsize
+\begin{center}
+\caption{Results from $AR(k)$ ($k = 1, 3, 4, 5, 6$) random effect (RE) and fixed effect (FE) panel autoregression models.}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lcccccccccc}
+\toprule 
+ & \multicolumn{10}{c}{\textit{Dependent Variable: $real_{it}$}} \\
+ \addlinespace
+ & \multicolumn{2}{c}{$AR(1)$} &\multicolumn{2}{c}{$AR(3)$} &\multicolumn{2}{c}{$AR(4)$} &\multicolumn{2}{c}{$AR(5)$} & \multicolumn{2}{c}{$AR(6)$}\\
+ & RE & FE & RE & FE & RE & FE & RE & FE & RE & FE \\
+\midrule
+$real_{i, t-1}$      & $0.463^{***}$  & $0.392^{***}$ & $0.479^{***}$  & $0.356^{***}$  & $0.421^{***}$  & $0.343^{***}$  & $0.405^{***}$  & $0.345^{***}$  & $0.421^{***}$  & $0.348^{***}$  \\
+                         & $(0.014)$      & $(0.019)$     & $(0.015)$      & $(0.018)$      & $(0.017)$      & $(0.019)$      & $(0.018)$      & $(0.019)$      & $(0.018)$      & $(0.020)$      \\
+\addlinespace
+$real_{i, t-2}$        &                &               & $0.153^{***}$  & $0.132^{***}$  & $0.181^{***}$  & $0.148^{***}$  & $0.180^{***}$  & $0.153^{***}$  & $0.191^{***}$  & $0.155^{***}$  \\
+                         &                &               & $(0.014)$      & $(0.015)$      & $(0.015)$      & $(0.016)$      & $(0.016)$      & $(0.016)$      & $(0.016)$      & $(0.017)$      \\
+\addlinespace
+$real_{i, t-3}$         &                &               & $0.085^{***}$  & $0.047^{***}$  & $0.108^{***}$  & $0.089^{***}$  & $0.108^{***}$  & $0.098^{***}$  & $0.114^{***}$  & $0.094^{***}$  \\
+                         &                &               & $(0.013)$      & $(0.014)$      & $(0.014)$      & $(0.015)$      & $(0.015)$      & $(0.016)$      & $(0.015)$      & $(0.016)$      \\
+\addlinespace
+$real_{i, t-4}$        &                &               &                &                & $0.059^{***}$  & $0.051^{***}$  & $0.064^{***}$  & $0.052^{***}$  & $0.068^{***}$  & $0.054^{***}$  \\
+                         &                &               &                &                & $(0.014)$      & $(0.018)$      & $(0.016)$      & $(0.018)$      & $(0.018)$      & $(0.019)$      \\
+\addlinespace
+$real_{i, t-5}$          &                &               &                &                &                &                & $0.015$        & $-0.018$       & $-0.006$       & $-0.030^{*}$   \\
+                         &                &               &                &                &                &                & $(0.015)$      & $(0.016)$      & $(0.016)$      & $(0.017)$      \\
+\addlinespace
+$real_{i, t-6}$       &                &               &                &                &                &                &                &                & $0.042^{**}$   & $0.024$        \\
+                         &                &               &                &                &                &                &                &                & $(0.019)$      & $(0.019)$      \\
+\addlinespace
+$all\_real_{i, t-k-1}$  & $0.116^{***}$  & $0.136^{***}$   & $0.047^{***}$  & $0.089^{***}$ &  $0.017^{*}$    & $0.032^{**}$   & $0.016^{*}$    & $0.052^{***}$  &  $-0.005$       & $0.025^{*}$\\
+                        & $(0.011)$      & $(0.024)$ &$(0.008)$      & $(0.008)$      & $(0.019)$      & $(0.009)$      & $(0.019)$   & $(0.02)$ & $(0.009)$      & $(0.016)$\\
+\addlinespace
+$fake_{i, t-1}$         & $0.101^{***}$  & $0.093^{***}$ & $0.063^{***}$  & $0.077^{***}$  & $0.081^{***}$  & $0.084^{***}$  & $0.092^{***}$  & $0.079^{***}$  & $0.087^{***}$  & $0.077^{***}$  \\
+                         & $(0.010)$      & $(0.011)$     & $(0.011)$      & $(0.013)$      & $(0.012)$      & $(0.013)$      & $(0.012)$      & $(0.013)$      & $(0.013)$      & $(0.013)$      \\
+\addlinespace
+$fake_{i, t-2}$        &                &               & $0.011$        & $0.019^{*}$    & $0.002$        & $0.008$        & $0.014$        & $0.015$        & $0.015$        & $0.017$        \\
+                         &                &               & $(0.010)$      & $(0.011)$      & $(0.013)$      & $(0.014)$      & $(0.013)$      & $(0.014)$      & $(0.014)$      & $(0.015)$      \\
+\addlinespace
+$fake_{i, t-3}$        &                &               & $0.027^{**}$   & $0.034^{**}$   & $-0.007$       & $-0.013$       & $-0.014$       & $-0.018$       & $-0.018$       & $-0.014$       \\
+                         &                &               & $(0.011)$      & $(0.014)$      & $(0.014)$      & $(0.016)$      & $(0.014)$      & $(0.016)$      & $(0.015)$      & $(0.017)$      \\
+\addlinespace
+$fake_{i, t-4}$         &                &               &                &                & $-0.014$       & $-0.001$       & $-0.010$       & $-0.005$       & $-0.009$       & $-0.002$       \\
+                         &                &               &                &                & $(0.013)$      & $(0.019)$      & $(0.017)$      & $(0.019)$      & $(0.018)$      & $(0.020)$      \\
+\addlinespace
+$fake_{i, t-5}$         &                &               &                &                &                &                & $-0.036^{**}$  & $0.008$        & $0.008$        & $0.024$        \\
+                         &                &               &                &                &                &                & $(0.016)$      & $(0.019)$      & $(0.021)$      & $(0.022)$      \\
+\addlinespace
+$fake_{i, t-6}$        &                &               &                &                &                &                &                &                & $-0.099^{***}$ & $-0.095^{***}$ \\
+                         &                &               &                &                &                &                &                &                & $(0.023)$      & $(0.025)$      \\
+\addlinespace
+$all\_fake_{i, t-k-1}$  & $0.011^{*}$    & $-0.020^{**}$  & $-0.037^{***}$ & $-0.065^{***}$ & $-0.034^{***}$ & $-0.062^{***}$ & $-0.039^{***}$ & $-0.109^{***}$  & $-0.015^{*}$   & $-0.073^{***}$ \\
+                         & $(0.007)$      & $(0.014)$ & $(0.006)$      & $(0.015)$      & $(0.006)$      & $(0.015)$  & $(0.007)$      & $(0.017)$  & $(0.006)$      & $(0.014)$        \\
+\addlinespace
+$age_{i,t}$                      & $-0.005^{***}$ &               & $-0.003^{***}$ &                & $-0.001$       &                & $-0.000$       &                & $-0.001$       &                \\
+                         & $(0.001)$      &               & $(0.001)$      &                & $(0.001)$      &                & $(0.001)$      &                & $(0.001)$      &                \\
+\addlinespace
+$release_{i,t}$         & $0.182^{***}$  &               & $0.090^{***}$  &                & $0.067^{***}$  &                & $0.073^{***}$  &                & $0.047^{**}$   &                \\
+                         & $(0.030)$      &               & $(0.021)$      &                & $(0.023)$      &                & $(0.024)$      &                & $(0.022)$      &                \\
+\addlinespace
+$activity_{i,t}$        & $0.166^{***}$  &               & $0.086^{***}$  &                & $0.085^{***}$  &                & $0.084^{***}$  &                & $0.071^{***}$  &                \\
+                         & $(0.012)$      &               & $(0.010)$      &                & $(0.010)$      &                & $(0.010)$      &                & $(0.010)$      &                \\
+\midrule
+Observations               & $14,019$       & $14,019$      & $12,738$       & $12,738$       & $10,798$       & $10,798$       & $10,054$       & $10,054$       & $9,469$        & $9,469$        \\
+R$^2$                    & $0.562$        & $0.245$       & $0.667$        & $0.270$        & $0.654$        & $0.285$        & $0.646$        & $0.297$        & $0.675$        & $0.293$        \\
+Adjusted R$^2$              & $0.562$        & $0.169$       & $0.667$        & $0.205$        & $0.654$        & $0.231$        & $0.646$        & $0.252$        & $0.674$        & $0.252$        \\
+
+\bottomrule
+\textit{Note:}  & \multicolumn{10}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular}
+
+\label{tab:all-regressions}
+\end{center}
+\end{table*}
 

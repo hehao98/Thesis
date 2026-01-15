@@ -1,10 +1,10 @@
 \documentclass[12pt, openany]{cmuthesis}
 
-\usepackage{mathptmx} 
+\usepackage{newtxtext, newpxmath}
+\usepackage[T1]{fontenc} 
 \usepackage{graphicx}
 \usepackage{enumitem}
 \usepackage{comment}
-\usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{listings}
 \usepackage{booktabs}
@@ -180,40 +180,21 @@ Consequently, this thesis would provide a new standard, a methodological bluepri
 
 \chapter{Introduction}
 
-Motivation: The Prevalence of Myths and Unverified Beliefs in Software Engineering  
-The Problem: Correlation vs. Causation in SE Research
-Thesis Statement and Research Questions 
-Overview of Approach: Three Case Studies  
-Contributions  
-Thesis Organization  
+\include{chap-intro}
 
-\chapter{Background and Related Work}
+\chapter{A Primer on Causal Inference}
 
-1.  Causal Inference in Observational Studies    
-- The Fundamental Problem of Causal Inference    
--  Potential Outcomes Framework    
-- Common Pitfalls in Correlational SE Research    
-2. Causal Inference Methodologies    
-- Counterfactual Analysis and Simulation    
-- Difference-in-Differences Estimation    
-- Propensity Score Matching    
-- Panel Generalized Method of Moments    
-- Threats to Causal Validity    
-3. Empirical Software Engineering Research     
-- Controlled Experiments  
-- Large-Scale Observational Studies    
-- The Need for Causal Methods on Observational Data  
-4. Summary
+\include{chap-background}
 
-\chapter{Empirical Study I:  Dependency Pinning and Software Supply Chain Security}
+\chapter{Empirical Study I: The Impact of Dependency Pinning on Supply Chain Security}
 
 \include{main-pinning}
 
-\chapter{Empirical Study II: Fake GitHub Stars and Repository Promotion}
+\chapter{Empirical Study II: The Impact of Fake GitHub Stars on Repository Promotion}
 
 \include{main-fake-stars}
 
-\chapter{Empirical Study III: LLM Agent Assistants and the Velocity \& Quality Tradeoff}
+\chapter{Empirical Study III: The Impact of Cursor AI on Open-Source Projects}
 
 \include{main-cursor}
 
@@ -222,11 +203,11 @@ Thesis Organization
 1. Strengthening Causal Evidence in the Fake Star Study (GMM Analysis)    
 2. Sensitivity Analysis: DiD vs. Alternative Designs in the Cursor Study (Importance of causal inference techniques in )
 
-\chapter{Conclusion}
+%\chapter{Conclusion}
 
-1. Summary of Contributions    
-2. Revisiting the Thesis Statement    
-3. Final Thoughts
+%1. Summary of Contributions    
+%2. Revisiting the Thesis Statement    
+%3. Final Thoughts
 
 %\appendix
 %\include{appendix}
