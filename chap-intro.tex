@@ -1,6 +1,122 @@
-Motivation: The Prevalence of Myths and Unverified Beliefs in Software Engineering  
-The Problem: Correlation vs. Causation in SE Research
-Thesis Statement and Research Questions 
-Overview of Approach: Three Case Studies  
-Contributions  
-Thesis Organization  
+\section{Motivation}
+
+Software engineering is among the most consequential engineering disciplines of the modern era. 
+Software systems underpin critical infrastructure across healthcare, finance, transportation, and communication, with failures potentially affecting millions of users, costing billions of dollars, and projecting real-world consequences~\cite{eghbal2016roads, solar-wind, xz-attack}. 
+The decisions software engineers make, and the practices they adopt daily (e.g., dependency management strategies, tool adoption choices), accumulate into system-wide outcomes that shape organizational productivity, security posture, and long-term maintainability. 
+Given these stakes, one might expect software engineering practice to be grounded in rigorous, evidence-based principles analogous to those in medicine~\cite{sackett1996evidence} or civil engineering~\cite{petroski1985engineer}. 
+Unfortunately, this expectation remains largely unfulfilled.
+
+In fact, software engineering practice today is characterized more by folklore, intuition, and contested conventional wisdom than by empirically validated guidance~\cite{DBLP:conf/icse/Devanbu0B16}. 
+While practitioners face consequential decisions on a routine basis, they very often find limited reliable evidence to inform their choices. 
+%For example, should dependency versions be pinned to prevent software supply chain attacks?
+%Would certain promotional services help boost a product's popularity?
+%Should AI coding assistants be adopted to improve overall team productivity?
+To support their decisions, they draw on their own experiences or navigate a landscape of blog posts, podcasts, and conference talks to learn opinions of the ``said'' experts. 
+This decision-making process is largely ad hoc, lacks empirical foundations, and may or may not lead to a consensus in the field.
+As a result, the field abounds with what I may call \textbf{software engineering myths}, which are \emph{widely held beliefs about best practices derived from intuition, experience, and conventional wisdom, that have never been rigorously tested or, when tested, have produced inconclusive or contradictory results}.
+
+This state of affairs persists despite decades of empirical research in software engineering. 
+The field has generated thousands of studies examining key software engineering topics, including developer productivity, code quality, security practices, and the effectiveness of developer tools. 
+Yet, this substantial body of work has failed to transform software engineering into an evidence-based discipline.
+The problem lies not in the quantity of research but in its methodological limitations, particularly the pervasive reliance on (a) descriptive and correlational evidence from software repository data, and (b) qualitative evidence synthesizing practitioner opinions.
+
+For example, consider the following problem: Should software projects allow flexibility in the versions of their dependencies, and to what extent?
+A descriptive mining software repository study~\cite{DBLP:conf/msr/0001PSTB19} may conclude that the Java/Maven ecosystem is extensively pinning dependency versions while the JavaScript/npm ecosystem is extensively using semantic versioning, without providing any concrete guidance or discussions of the trade-offs around them.
+A qualitative study surveying JavaScript developers~\cite{DBLP:journals/tse/JafariCAST22} may conclude that semantic versioning should be preferred over pinned dependencies as the latter is a ``dependency smell'' likely to cause maintainability issues in the future.
+Another qualitative study interviewing security experts~\cite{DBLP:conf/sp/LadisaPMB23} may conclude that dependency pinning should be preferred over semantic versioning, as the former is critical for preventing software supply chain attacks.
+In this case, the quantitative repository mining study fails to provide evidence-based guidance, while the two qualitative studies present contradictory opinions from practitioner cohorts with different experiences and perspectives; neither would be sufficient to formulate best practices for this dependency versioning problem.
+
+Similarly, consider the longstanding debate over whether the choice of programming language causally affects defect-proneness. 
+A large-scale correlational study~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17} analyzed millions of commits across thousands of GitHub projects; the study concluded that programming language has a significant but modest effect on defect-proneness, with functional and statically-typed languages associated with fewer defects.
+However, a rigorous reproduction study~\cite{DBLP:journals/toplas/BergerHMVV19} revisiting the same dataset with improved methodology—correcting errors in language classification, accounting for polyglot repositories, and applying more appropriate statistical models—found that the original effect sizes shrank dramatically and many findings failed to replicate. 
+The original authors issued a rebuttal~\cite{DBLP:journals/corr/abs-1911-07393} defending their methodology, which prompted a counter-rebuttal~\cite{DBLP:journals/corr/abs-1911-11894} from the reproduction team. 
+Putting the controversy around the specific research design aside, the counter-rebuttal~\cite{DBLP:journals/corr/abs-1911-11894} reveals a deeper methodological impasse behind why the field cannot reach consensus on a seemingly straightforward empirical question:
+\begin{quote}
+\emph{I fundamentally do not believe that the question the FSE authors set out to answer, namely, whether some languages are more defect-prone than others, can be meaningfully answered by scraping GitHub...An analysis of GitHub is necessarily measuring correlation and not establishing causation, as it does not constitute an experiment.}
+\end{quote}
+
+The problem extends beyond individual studies to create a broader crisis of confidence in empirical software engineering research. 
+When studies merely repeat and synthesize practitioner opinion, practitioners justifiably will not pay attention to the research findings.
+Even worse, when studies reach contradictory conclusions and fail to rule out confounding factors or alternative explanations, practitioners will justifiably become skeptical of the research findings altogether. 
+The result is a field that produces voluminous research but limited actionable knowledge.
+
+Modern causal inference methods offer a principled solution to the above problem. 
+Developed primarily in econometrics and epidemiology over the past several decades, these methods provide rigorous frameworks for distinguishing genuine causal effects from spurious correlations on observational data---precisely the kind of data investigated in repository mining studies.
+When properly applied, these methods can isolate the causal effect of an intervention or practice while accounting for potential, even unobservable, confounding factors that plague correlational analyses.
+Crucially, causal inference methods provide not only point estimates, but also principled approaches for assessing the validity of the findings and avoiding Type I errors (false positives). 
+This methodological rigor addresses the core problem illustrated by the programming language example: 
+When studies produce contested results, no amount of reanalysis or rebuttal can resolve the controversy if the methodology itself does not provide a rigorous framework for assessing causal validity grounded in explicitly stated assumptions that can be examined and debated.
+
+In this thesis, I argue that \emph{the application of robust causal inference methods to software engineering myths exposes systematic gaps between practitioner beliefs and empirical reality.} 
+Importantly, the appropriate use of robust causal inference methods ensures that the researchers can be confident in ruling out spurious correlations and alternative explanations that may jeopardize the validity of their main research findings.
+This would be critically important for research around well-known software engineering myths: 
+From a Bayesian perspective, if a study yields results contrary to practitioners' intuitions, it would require much greater rigor and scrutiny to be likely valid than a study that merely confirms the conventional wisdom.\footnote{This reflects the Bayesian epistemological principle often summarized as ``extraordinary claims require extraordinary evidence.'' When a claim has a low prior probability (i.e., it contradicts established beliefs or practitioner intuition), stronger evidence is needed to shift the posterior belief toward acceptance. Formally, if $P(H)$ is low, then $P(E|H)/P(E|\neg H)$---the likelihood ratio---must be correspondingly high for $P(H|E)$ to reach credible levels. For a rigorous treatment of Bayesian reasoning in scientific inference, see Howson and Urbach~\cite{howson2006scientific}.}
+Yet, I argue that the value of empirical software research lies exactly in its ability to rigorously test, and sometimes reject, well-known software engineering myths to inform future best practices, as with the three empirical studies in this thesis (Chapter~\ref{chp:pinning}, \ref{chp:fake-stars}, \ref{chp:cursor}).
+Given the systematic divergence identified in these studies, robust causal inference methods are not merely preferable but necessary for myth-busting---surprising findings require extraordinarily strong evidence to shift posterior beliefs, and rigorous causal identification strategies is required to provide such evidence.
+
+\section{Thesis Statement}
+
+\begin{framed}
+The current software engineering practices are full of \emph{myths}---widely held beliefs about best practices derived from intuition, experience, and conventional wisdom.
+The thesis argues that \emph{the application of robust causal inference methods to software engineering myths exposes systematic gaps between practitioner beliefs and empirical reality}.
+
+This thesis demonstrates the above argument through three empirical studies regarding (a) the impact of dependency pinning on supply chain security, (b) the impact of fake GitHub stars on repository promotion, and (c) the impact of Cursor AI on open-source projects.
+As future work, the thesis aims to revisit past empirical software engineering research and demonstrate how applying robust causal inference methods helps reduce Type I errors (false positives) compared to methods based solely on descriptive or correlational evidence.
+\end{framed}
+
+\section{Organization and Contributions}
+
+In this section, I summarize the organization and main contributions of this thesis.
+
+\paragraph{A Primer on Causal Inference (Chapter~\ref{chp:background})}
+The thesis starts with a self-contained introduction to causal inference methods for software engineering researchers. 
+This chapter begins by articulating the fundamental problem of causal inference---the impossibility of observing both potential outcomes for a single unit---and explains why correlational evidence from repository mining studies cannot support causal claims without additional (often very strong) assumptions. 
+I then survey the econometrician's toolbox, covering randomized controlled trials, matching, fixed effect and panel regressions, instrumental variables, difference-in-differences, and generalized method of moments. 
+For each method, I discuss the identifying assumptions required for valid causal inference, the conditions under which these assumptions are likely to hold, and articulate why this method may be widely applicable in software engineering contexts. 
+The chapter concludes with a discussion of threats to validity specific to causal inference designs and guidelines for assessing the credibility of causal claims in empirical software engineering research.
+
+
+\paragraph{Three Cases of Empirical Studies}
+Then, the thesis dives deep into three empirical studies I published in the past that dispelled well-known software engineering myths through the appropriate application of robust causal inference methods~\cite{DBLP:journals/corr/abs-2502-06662, DBLP:journals/corr/abs-2412-13459, DBLP:journals/corr/abs-2511-04427}.
+
+\begin{itemize}[leftmargin=15pt]
+    \item \textbf{The Impact of Dependency Pinning on Supply Chain Security (Chapter~\ref{chp:pinning})}: Recent high-profile incidents in open-source software have greatly increased practitioner attention on software supply chain attacks. 
+    To guard against potential malicious package updates, security practitioners advocate \emph{pinning} dependency to specific versions rather than \emph{floating} in version ranges.
+    However, it remains controversial whether pinning provides a meaningful security benefit that outweighs the cost of maintaining outdated, possibly vulnerable dependencies.
+    In this chapter, I quantify, through counterfactual analysis and simulations, the security and maintenance impact of version constraints in the npm ecosystem. 
+    By simulating dependency resolutions over historical time points, I find that pinning direct dependencies not only (as expected) increases the cost of maintaining vulnerable and outdated dependencies, but also (surprisingly) even increases the risk of exposure to malicious package updates in larger dependency graphs due to the specifics of npm's dependency resolution mechanism. 
+    Finally, I explore collective pinning strategies to secure the ecosystem against supply chain attacks and suggest specific changes to npm to enable these interventions.
+    These findings provide guidance to practitioners and tool designers on how to manage their supply chains more securely.
+    \item  \textbf{The Impact of Fake GitHub Stars on Repository Promotion (Chapter~\ref{chp:fake-stars})}: GitHub, the de facto platform for open-source software development, provides a set of social-media-like features to signal high-quality repositories.
+    Among them, the star count is the most widely used popularity signal, but it is also at risk of being artificially inflated (i.e., \emph{faked}), decreasing its value as a decision-making signal and posing a security risk to all GitHub users.
+    In this chapter, I present a systematic, global, and longitudinal measurement study of fake stars in GitHub.
+    To this end, I built \SystemName, a scalable tool able to detect anomalous starring behaviors across all GitHub metadata between 2019 and 2024.
+    Analyzing the data collected using \SystemName, I find that: (1) fake-star-related activities have rapidly surged in 2024; (2) the accounts and repositories in fake star campaigns have highly trivial activity patterns; (3) the majority of fake stars are used to promote short-lived phishing malware repositories; the remaining ones are mostly used to promote AI/LLM, blockchain, tool/application, and tutorial/demo repositories; (4) while repositories may have acquired fake stars for growth hacking, fake stars only have a promotion effect in the short term (i.e., less than two months) and become a liability in the long term.
+    This study has implications for platform moderators, open-source practitioners, and supply chain security researchers.
+    \item \textbf{The Impact of Cursor AI on Open-Source Projects (Chapter~\ref{chp:cursor})}:   Large language models (LLMs) have demonstrated the promise to revolutionize the field of software engineering.
+    Among other things, LLM agents are rapidly gaining momentum in software development, with practitioners reporting a multifold increase in productivity after adoption.
+    Yet, empirical evidence is lacking around these claims.
+    In this chapter, I estimate the \emph{causal} effect of adopting a widely popular LLM agent assistant, namely Cursor, on \emph{development velocity} and \emph{software quality}.
+    The estimation is enabled by a state-of-the-art difference-in-differences design comparing Cursor-adopting GitHub projects with a matched control group of similar GitHub projects that do not use Cursor. 
+    I find that Cursor adoption leads to a significant, large, but transient increase in project-level development velocity, along with a substantial and persistent increase in static analysis warnings and code complexity.
+    Further panel generalized method of moments estimation reveals that the increase in static analysis warnings and code complexity acts as a major factor causing long-term velocity slowdown.
+    This study carries implications for software engineering practitioners, LLM agent assistant designers, and researchers. 
+\end{itemize}
+
+\paragraph{Proposed Work (Chapter~\ref{chp:proposed-work})}
+The proposed work extends the thesis in two directions. 
+First, I propose to strengthen the causal evidence in the fake GitHub stars study (Chapter~4) by applying panel generalized method of moments (GMM) analysis. While the current study establishes that fake stars provide only short-term promotional benefits, GMM analysis will enable a more rigorous examination of the dynamic relationship between fake star acquisition and subsequent organic growth, controlling for potential reverse causality and time-varying confounders. 
+Second, I propose a systematic sensitivity analysis comparing difference-in-differences with alternative causal inference designs in the Cursor study (Chapter~5). 
+By re-analyzing the same data using descriptive and correlational statistical analyses, I will demonstrate how robust causal inference methods yield different---and more trustworthy---findings than descriptive or correlational evidence alone. 
+Finally, I propose revisiting the well-known debate on programming languages and defect proneness~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17, DBLP:journals/toplas/BergerHMVV19} and exploring how the results may differ when a causal inference design is used.
+This comparative analysis will serve as a methodological case study, illustrating how the choice of causal inference method affects conclusions and providing a blueprint for future empirical software engineering research seeking to establish credible causal evidence.
+
+\paragraph{Summary of Contributions} This thesis makes the following contributions:
+
+\begin{itemize}[leftmargin=15pt]
+   \item \textbf{Conceptual Contribution:} I introduce the notion of \emph{software engineering myths}---widely held beliefs about best practices that lack rigorous empirical validation---and argue that the prevalence of such myths stems from the field's over-reliance on descriptive, correlational, and qualitative evidence. I propose that robust causal inference methods offer a principled path toward evidence-based software engineering practice, analogous to the transformation that evidence-based medicine brought to clinical practice. This conceptual framing provides a lens for critically evaluating existing empirical software engineering research and identifying opportunities for more rigorous investigations.
+    
+    \item \textbf{Methodological Contributions:} I demonstrate the practical application of advanced causal inference methods to software engineering problems, including: (a) counterfactual simulation for analyzing the effect of a practice where controlled experiments are infeasible but simulation is feasible; (b) fixed effect and panel regressions for controlling omitted variable bias from time- and subject-invariant characteristics, (c) difference-in-differences estimation with staggered adoption for evaluating the impact of developer tool adoption on software quality; (d) propensity score matching for constructing comparable treatment and control groups from observational repository data; and (e) panel generalized method of moments for disentangling bidirectional causal relationships. For each method, I provide rigorous design rationales and implementation details that can inform future research.
+    
+    \item \textbf{Empirical Contributions:} I provide novel empirical evidence challenging three widely held software engineering myths: (a) that dependency pinning improves project security (Chapter~3), when in fact it paradoxically increases attack exposure in transitive dependency graphs; (b) that artificially inflated GitHub star counts provide sustainable promotional benefits (Chapter~4), when in fact they become long-term liabilities that harm repository credibility; and (c) that agentic AI coding assistants unambiguously improve developer productivity (Chapter~5), when in fact the initial velocity gains are offset by persistent technical debt accumulation. Each study contributes actionable insights for software engineering practitioners.
+\end{itemize}

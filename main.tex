@@ -20,6 +20,7 @@
 \usepackage{balance}
 \usepackage{threeparttable}
 \usepackage{makecell}
+\usepackage{framed}
 \usepackage[backend=biber, style=numeric]{biblatex}\let\citet\textcite\let\citep\parencite
 \usepackage[letterpaper,twoside,vscale=.8,hscale=.75,nomarginpar,hmarginratio=1:1]{geometry}
 \usepackage[
@@ -111,6 +112,7 @@
 \definecolor{amber}{rgb}{1.0, 0.75, 0.0}
 %%%%%%%%%% End: Custom Commands and Colors %%%%%%%%%%
 
+\addbibresource{references.bib}
 \addbibresource{references-pinning.bib}
 \addbibresource{references-fake-stars.bib}
 \addbibresource{references-cursor.bib} 
@@ -121,7 +123,7 @@
 \pagestyle{empty}
 
 \title{{\it Thesis Proposal}\\
-{\bf Settling Software Engineering Controversies through Robust Causal Inference Methods
+{\bf Dispelling Software Engineering Myths through Robust Causal Inference Methods
 }}
 \author{Hao He}
 \date{January 2026}
@@ -152,18 +154,18 @@ Narayan Ramasubbu
 \pagestyle{plain} % for toc, was empty
 
 \begin{abstract}
-Software engineering practice is plagued with controversies and unverified beliefs about best practices. 
-Unfortunately, empirical software engineering research often fails to resolve these controversies if it relies solely on descriptive or correlational evidence without distinguishing causation from confounding factors. 
-In this thesis, I propose that \emph{software engineering controversies can be resolved with rigorous causal inference methods}, which are particularly useful in providing confidence and avoiding false positives in empirical software engineering findings.
+Software engineering practice is filled with myths---beliefs derived from intuition, experience, and conventional wisdom---that lack an empirical foundation.
+Unfortunately, empirical software engineering research often fails to rigorously test these beliefs when it relies solely on descriptive, correlational, and qualitative evidence from software repository data and developer opinions.
+In this thesis, I propose that \emph{the application of robust causal inference methods to software engineering myths exposes systematic gaps between practitioner beliefs and empirical reality}.
 
-Through three empirical studies, I demonstrate how the appropriate use of robust causal inference methods provides solid, yet surprising, answers to important software engineering problems. 
-First, using counterfactual analysis and simulations on npm dependency data, I challenge the conventional wisdom that pinning dependency versions improves overall project security, revealing that it paradoxically increases attack exposure as long as upstream packages are not pinning their own dependencies. 
-Second, through a longitudinal analysis of GitHub starring patterns, I uncover a massive inflation of fake GitHub stars and show that these artificial signals provide only short-term promotional benefits before becoming long-term liabilities. 
-Finally, through a difference-in-differences framework, I quantify the causal impact of a widely popular AI Coding tool, Cursor, on software development velocity and code quality, finding that the initial velocity gains are offset by sustained technical debt accumulation, which eventually erodes velocity.
-Collectively, these studies demonstrate that the application of robust causal inference methods moves empirical software engineering research toward trustworthy evidence and concrete practitioner guidance for navigating complex software engineering decisions.
+Across three empirical studies, I demonstrate that widely accepted software engineering practices, when subjected to rigorous causal analysis, yield outcomes contrary to practitioners' expectations. 
+First, using counterfactual analysis and simulations on npm dependency data, I challenge the myth that pinning dependency versions improves overall project security, revealing that it paradoxically increases attack exposure as long as upstream packages are not pinning their own dependencies. 
+Second, through a longitudinal analysis of GitHub starring patterns, I challenge the myth that fake GitHub stars provide sustainable promotional benefits, showing instead that these artificial signals become long-term liabilities. 
+Finally, using a difference-in-differences framework, I challenge the myth that AI coding tools unambiguously improve developer productivity, finding that the initial velocity gains from Cursor are offset by sustained technical debt accumulation that eventually erodes velocity.
+Collectively, these studies expose a systematic divergence between practitioner beliefs and empirical reality---a divergence revealed only through causal inference.
 
-Building on these contributions, I propose to further explore whether the use of robust causal inference methods leads to \emph{different} findings compared to the use of only descriptive or correlational evidence.
-Consequently, this thesis would provide a new standard, a methodological blueprint, and concrete guidance for the design and implementation of future empirical software engineering research.
+Building on these contributions, I propose to further explore whether robust causal inference methods yield \emph{different} findings than descriptive or correlational evidence alone, thereby demonstrating that robust causal inference methods indeed reduce the probability of Type I errors (false positives) in empirical software engineering studies.
+Consequently, this thesis would provide a methodological blueprint for the design and implementation of future empirical software engineering research.
 \end{abstract}
 
 %\begin{acknowledgments}
@@ -183,25 +185,29 @@ Consequently, this thesis would provide a new standard, a methodological bluepri
 \include{chap-intro}
 
 \chapter{A Primer on Causal Inference}
+\label{chp:background}
 
 \include{chap-background}
 
 \chapter{Empirical Study I: The Impact of Dependency Pinning on Supply Chain Security}
+\label{chp:pinning}
 
-\include{main-pinning}
+%\include{main-pinning}
 
 \chapter{Empirical Study II: The Impact of Fake GitHub Stars on Repository Promotion}
+\label{chp:fake-stars}
 
-\include{main-fake-stars}
+%\include{main-fake-stars}
 
 \chapter{Empirical Study III: The Impact of Cursor AI on Open-Source Projects}
+\label{chp:cursor}
 
-\include{main-cursor}
+%\include{main-cursor}
 
 \chapter{Proposed Work}
+\label{chp:proposed-work}
 
-1. Strengthening Causal Evidence in the Fake Star Study (GMM Analysis)    
-2. Sensitivity Analysis: DiD vs. Alternative Designs in the Cursor Study (Importance of causal inference techniques in )
+\include{chap-proposed-work}
 
 %\chapter{Conclusion}
 
@@ -216,6 +222,6 @@ Consequently, this thesis would provide a new standard, a methodological bluepri
 
 \chapter{\bibname}
 
-\printbibliography
+\printbibliography[heading=none]
 
 \end{document}
