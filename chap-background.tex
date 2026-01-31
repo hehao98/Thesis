@@ -3,7 +3,7 @@
 The quest for rigorous causal reasoning traces back to the pioneering work of John Snow during the 1854 London cholera outbreak.
 At a time when the prevailing ``miasma theory'' attributed disease to bad air, Snow meticulously mapped cholera deaths and traced them to a contaminated water pump on Broad Street.
 By comparing mortality rates between households served by different water companies---one drawing from a polluted section of the Thames, the other from a cleaner source---he demonstrated a causal link between contaminated water and cholera, effectively conducting one of the first natural experiments in history~\cite{snow1855mode}.
-Snow's approach foreshadowed the counterfactual thinking central to modern causal inference: what would have happened to these households had they received clean water instead?
+Snow's approach foreshadowed the counterfactual thinking central to modern causal inference: What would have happened to these households had they received clean water instead?
 Building upon such empirical foundations, the 20th century witnessed the formalization of causal reasoning.
 Jerzy Neyman introduced the potential outcomes notation in 1923 for agricultural experiments~\cite{neyman1923application}, while Ronald Fisher developed the theory of randomized controlled trials~\cite{fisher1971design}.
 Decades later, Donald Rubin extended the potential outcomes framework to observational studies~\cite{rubin1974estimating}, establishing what is now known as the Rubin Causal Model---the mathematical backbone of modern causal inference.
@@ -11,30 +11,30 @@ Decades later, Donald Rubin extended the potential outcomes framework to observa
 Armed with these rigorous frameworks, causal inference has transformed decision-making across virtually every domain of human inquiry.
 In medicine, randomized controlled trials became the gold standard for drug approval, ushering in the era of evidence-based medicine that has saved countless lives~\cite{sackett1996evidence}.
 In economics, causal methods revolutionized policy evaluation: Card and Krueger's difference-in-differences study on minimum wage~\cite{card1993minimum} overturned decades of conventional wisdom, while Angrist and Imbens formalized instrumental variable methods for extracting causal effects from observational data~\cite{angrist1996identification}.
-The field's crowning recognition came in 2021, when the Nobel Prize in Economics was awarded jointly to David Card, Joshua Angrist, and Guido Imbens ``for their methodological contributions to the analysis of causal relationships''---a testament to how profoundly these methods have reshaped empirical research~\cite{nobel2021economics}.
+The field's crowning recognition came in 2021, when the Nobel Prize in Economics was awarded jointly to David Card, Joshua Angrist, and Guido Imbens \emph{``for their methodological contributions to the analysis of causal relationships''}---a testament to how profoundly these methods have reshaped empirical research~\cite{nobel2021economics}.
 Beyond academia, tech giants now run millions of A/B tests annually to causally evaluate product changes~\cite{kohavi2020trustworthy}, while public health agencies relied on causal inference frameworks to rapidly evaluate COVID-19 vaccine efficacy during the pandemic~\cite{polack2020safety}.
-From personalized medicine to algorithmic fairness, the ability to distinguish causation from correlation has become indispensable to modern science and industry alike.
+With research ranging from policy-making to medicine to application user experience, the ability to distinguish causation from correlation has become indispensable to modern science and industry alike.
 
 Conceptually, causation can be defined through counterfactuals: $X$ causes $Y$ if $Y$ would have been different had $X$ not occurred.
 Yet, we can never observe both realities for the same unit---a patient either receives a drug or does not; a developer either adopts a tool or does not; a project uses one programming language or another.
 This ``fundamental problem of causal inference,'' that individual causal effects are inherently unobservable, means that causal claims can never be directly verified.
 Different intellectual traditions have developed distinct approaches to navigate this challenge.
 Specifically, three conceptual frameworks have shaped modern causal inference, each offering a distinct lens for reasoning about cause and effect:
-\begin{itemize}
-    \item \textbf{The Potential Outcomes Framework.} Pioneered by Neyman in 1923 and formalized by Rubin~\cite{rubin1974estimating}, this framework defines causation through counterfactual comparisons. 
-    For each unit $i$, there exist two potential outcomes: $Y_i^1$ (outcome if treated) and $Y_i^0$ (outcome if not treated). 
-    The individual causal effect is $Y_i^1 - Y_i^0$, but since only one outcome is ever observed, the framework focuses on estimating population-level quantities like the Average Treatment Effect $ATE = E[Y^1 - Y^0]$.
+\begin{itemize}[leftmargin=15pt]
+    \item \textbf{The Potential Outcomes Framework:} Pioneered by Neyman in 1923 and formalized by Rubin~\cite{rubin1974estimating}, this framework defines causation through counterfactual comparisons. 
+    For each unit $i$, there exist two potential outcomes: $Y_i(1)$ (outcome if treated) and $Y_i(0)$ (outcome if not treated). 
+    The individual causal effect is $Y_i(1) - Y_i(0)$, but since only one outcome is ever observed, the framework focuses on estimating population-level quantities like the Average Treatment Effect $ATE = E[Y(1) - Y(0)]$.
     The central question becomes: Under what conditions can we use observed data to estimate these counterfactual quantities?
-    The framework formalizes assumptions like \emph{ignorability} (treatment assignment is independent of potential outcomes given covariates) and \emph{overlap} (all units have positive probability of receiving either treatment) that justify causal estimation.
+    The framework formalizes assumptions such as \emph{ignorability} (treatment assignment is independent of potential outcomes given covariates) and \emph{overlap} (all units have a positive probability of receiving either treatment), which justify causal estimation.
     \emph{Methods}: randomized controlled trials, propensity score matching, inverse probability weighting, doubly robust estimation.
     
-    \item \textbf{The Structural Causal Model Framework.} Developed by Pearl~\cite{pearl2009causality}, this framework represents causal relationships as directed acyclic graphs (DAGs), where nodes are variables and edges represent direct causal effects.
+    \item \textbf{The Structural Causal Model Framework:} Developed by Pearl~\cite{pearl2009causality}, this framework represents causal relationships as directed acyclic graphs (DAGs), where nodes are variables and edges represent direct causal effects.
     Causation is formalized through the ``do-operator'': $P(Y | do(X=x))$ represents the distribution of $Y$ when $X$ is externally set to $x$, distinct from the observational conditional $P(Y | X=x)$ which may reflect confounding.
     The framework provides graphical criteria---the back-door criterion, front-door criterion, and do-calculus---for determining when causal effects are \emph{identifiable} from observational data and which variables must be adjusted for.
     Its strength lies in making causal assumptions visually explicit: A DAG encodes what the researcher believes about the data-generating process, and critics can directly challenge specific edges or missing paths.
     \emph{Methods}: covariate adjustment via back-door criterion, front-door adjustment, instrumental variables (graphically justified), mediation analysis.
     
-    \item \textbf{The Design-Based (Credibility Revolution) Approach.} Championed by applied economists like Angrist and Imbens~\cite{angrist1996identification}, this approach is less a formal framework and more a philosophy of empirical practice.
+    \item \textbf{The Design-Based (Credibility Revolution) Approach:} Championed by applied economists like Angrist and Imbens~\cite{angrist1996identification}, this approach is less a formal framework and more a philosophy of empirical practice.
     Rather than starting from abstract potential outcomes or graphical models, it asks: What feature of the real world generates plausibly exogenous variation in treatment?
     The emphasis is on finding \emph{natural experiments}---situations where nature, policy, or institutional rules create variation that approximates random assignment---and on transparently arguing why alternative explanations are implausible.
     A study's credibility rests not on mathematical formalism but on whether the identification strategy would convince a skeptical reader that confounding has been adequately addressed.
