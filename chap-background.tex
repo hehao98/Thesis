@@ -41,18 +41,17 @@ Specifically, three conceptual frameworks have shaped modern causal inference, e
     A study's credibility rests not on mathematical formalism but on whether the identification strategy would convince a skeptical reader that confounding has been adequately addressed.
     Methods championed by this tradition include \emph{difference-in-differences}, which exploits differential timing of policy changes to compare treatment and control trajectories; \emph{regression discontinuity designs}, which leverage sharp eligibility thresholds that create quasi-random assignment near the cutoff; \emph{instrumental variables} motivated by institutional knowledge of exogenous shocks; \emph{synthetic control methods}, which construct counterfactual units as weighted combinations of untreated donors; and \emph{event studies}, which trace out dynamic treatment effects before and after intervention to assess parallel trends and effect persistence.
 \end{itemize}
-While these frameworks differ in formalism and emphasis, they share a common commitment: Making causal assumptions explicit and assessable so they can be examined and debated, rather than left implicit and buried in the underlying statistical models.
-Thus, these frameworks lead to a family of \emph{identification methods}: Research designs that, under their stated assumptions, provide a complete path from observed data to causal effects.
-Alongside these identification methods, researchers also employ \emph{control methods}---techniques like fixed effects and covariate adjustment that address specific sources of confounding without claiming complete identification.\footnote{Propensity score matching occupies an intermediate position: In principle, it identifies causal effects if all confounders are observed (the ``selection on observables'' assumption), but because this assumption is untestable and often implausible, many practitioners treat matching as strengthening---rather than guaranteeing---causal credibility.}
-Importantly, \emph{the power of the causal inference framework lies not in guaranteeing truth, but in making assumptions explicit}: When a difference-in-differences study claims a causal effect, it simultaneously declares that its validity depends on parallel trends holding in the counterfactual world.
+While these frameworks differ in formalism and emphasis, they share a common commitment: \emph{Making causal assumptions explicit and assessable so they can be examined and debated, rather than left implicit and buried in the underlying statistical models.}
 Critics can then interrogate whether that assumption is plausible given the specific research context, rather than debating vague notions of ``correlation versus causation'' or beliefs of whether the findings ``seem valid.''
+Based on different assumptions, these frameworks derive a family of \emph{identification methods}: Research designs that, under their stated assumptions, provide a complete path from observed data to causal effects.
+Alongside these identification methods, researchers also frequently employ \emph{control methods}---techniques like fixed effects and covariate adjustment that address specific sources of confounding without claiming complete identification.\footnote{Propensity score matching occupies an intermediate position: In principle, it identifies causal effects if all confounders are observed (the ``selection on observables'' assumption), but because this assumption is untestable and often implausible, many practitioners treat matching as strengthening---rather than guaranteeing---causal credibility.}
 
-To illustrate the promises and challenges of causal reasoning, consider a deceptively simple question in software engineering: Does the choice of programming language causally affect defect-proneness?
+To illustrate the promises and challenges of causal reasoning in software engineering, consider a deceptively simple question: Does the choice of programming language causally affect defect-proneness?
 A large-scale study~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17} analyzed millions of commits across thousands of GitHub projects and reported that functional and statically-typed languages are associated with fewer defects.
 A subsequent reproduction study~\cite{DBLP:journals/toplas/BergerHMVV19}, however, found that effect sizes shrank dramatically after correcting methodological issues, sparking a series of rebuttals~\cite{DBLP:journals/corr/abs-1911-07393, DBLP:journals/corr/abs-1911-11894}.
 The core difficulty lies in the nature of the data: Projects written in different languages differ systematically in ways that correlate with defect rates---team expertise, project maturity, application domain, and coding conventions all vary with language choice.
 Observing that Haskell projects have fewer bugs than PHP projects tells us little about what would happen if the same team rewrote the same application in a different language.
-This reflects a fundamental challenge in causal inference which researchers call \emph{confounding}: Observed associations may reflect selection effects rather than causal mechanisms.
+This reflects a fundamental challenge in causal inference, \emph{confounding}: Observed associations may reflect selection effects rather than causal mechanisms.
 Causal inference methods do not magically resolve this problem or provide definitive answers where none exist.
 What they offer instead is a disciplined framework for assessing causal validity under explicitly stated assumptions.
 Rather than claiming an effect is ``proven,'' causal designs articulate the conditions under which an estimate would be unbiased---parallel trends, conditional independence, exclusion restrictions---and provide tools to probe whether those conditions plausibly hold.
@@ -65,7 +64,7 @@ Between these extremes lies a hierarchy of quasi-experimental methods: Regressio
 Fixed effects models occupy a middle position---they credibly control for time-invariant confounders but remain vulnerable to time-varying confounding and offer no built-in falsification test.
 
 On the other hand, higher credibility does not always mean better evidence.
-Randomized experiments, while eliminating confounding, may be impractical, unethical, or---crucially---may alter the setting so fundamentally that findings fail to generalize.
+Randomized experiments, while eliminating all sources of confounding, may be impractical, unethical, or---crucially---may alter the setting so fundamentally that findings fail to generalize.
 For example, a controlled lab experiment measuring how developers use a new tool may achieve perfect internal validity but tell us little about adoption in the messy reality of production environments with deadlines, legacy code, and team dynamics.
 Conversely, observational studies of real-world behavior preserve ecological validity but much more challenging to rule out confounders and alternative explanations.
 This creates an inherent trade-off: Designs that maximize internal validity often sacrifice external validity, and vice versa.
@@ -75,14 +74,14 @@ A treatment effect estimated via difference-in-differences in one setting, repli
 The credibility of a causal theory ultimately rests not on any one method but on the accumulated weight of evidence across complementary approaches.
 
 The remainder of this chapter develops the technical foundations for causal inference in software engineering research.
-Section~\ref{sec:pitfalls} examines common pitfalls in correlational research, explaining why correlation does not imply causation and why multivariate regression alone cannot establish causal claims.
+Section~\ref{sec:pitfalls} examines common pitfalls in descriptive and correlational research, explaining why correlation does not imply causation and why multivariate regression alone cannot establish causal claims.
 Section~\ref{sec:formalism} formalizes the key concepts, presenting the potential outcomes framework and graphical causal models that underpin modern causal inference.
 Section~\ref{sec:identification} surveys identification strategies---randomized controlled trials, difference-in-differences, regression discontinuity, and instrumental variables---that provide complete causal identification under stated assumptions.
 Section~\ref{sec:control} discusses control strategies---matching, fixed effects, and generalized method of moments---that address specific sources of confounding without providing complete identification.
 Section~\ref{sec:applicability} considers the applicability of these methods to software engineering research, addressing domain-specific challenges in data, measurement, and generalizability.
 Finally, Section~\ref{sec:threats} discusses threats to validity in causal designs and the role of sensitivity analysis in strengthening credibility.
 
-\section{Common Pitfalls in Correlational Research}
+\section{Common Pitfalls in Descriptive \& Correlational Research}
 \label{sec:pitfalls}
 
 Before presenting the causal inference toolkit, it is instructive to examine why naive approaches fail.
