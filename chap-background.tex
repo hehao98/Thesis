@@ -1,17 +1,13 @@
 \section{The Problem}
 
-\subsection{The Fundamental Problem of Causal Inference}
-
 For centuries, researchers have been attempting to answer questions in the following form: In a population, does an intervention (or treatment) $X$ lead to a change in outcome $Y$? 
+
+\subsection{The Potential Outcomes Framework}  
+
 Mathematically speaking, for any entity $i$ in the population, let $Y_i^1$ denote the outcome of $i$ with intervention and $Y_{i}^0$ the outcome without, what is the average treatment effect $ATE = E[Y_{i}^1] - E[Y_{i}^0]$? 
 
 The key problem blocking the computation of $ATE$ is that $Y_{i}^1$ and $Y_{i}^0$ cannot \emph{both} be measured without using a time machine.
 To alleviate this, all causal inference methods seek to estimate $ATE$ unbiasedly from experimental or observational data under different assumptions.
-For example, Fisher's pioneering work~\cite{fisher1971design} demonstrates that comparing a treatment group and a control group can unbiasedly estimate $ATE$ under the randomized assignment assumption.
-This leads to the gold standard of randomized controlled trials, which are widely used in medicine today~\cite{bothwell2016assessing}.
-However, the assumption almost always fails in observational data, prompting economists and social scientists to seek alternative approaches.
-
-\subsection{The Potential Outcomes Framework}  
 
 \subsection{Why Correlation Does Not Imply Causation}
 
@@ -20,6 +16,10 @@ However, the assumption almost always fails in observational data, prompting eco
 \section{The Econometrican's Toolbox}
 
 \subsection{Randomized Controlled Trials}
+
+For example, Fisher's pioneering work~\cite{fisher1971design} demonstrates that comparing a treatment group and a control group can unbiasedly estimate $ATE$ under the randomized assignment assumption.
+This leads to the gold standard of randomized controlled trials, which are widely used in medicine today~\cite{bothwell2016assessing}.
+However, the assumption almost always fails in observational data, prompting economists and social scientists to seek alternative approaches.
 
 \subsection{Matching}
 
