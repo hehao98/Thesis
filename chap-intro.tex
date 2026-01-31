@@ -70,11 +70,11 @@ In this section, I summarize the organization and main contributions of this the
 
 \paragraph{A Primer on Causal Inference (Chapter~\ref{chp:background})}
 The thesis starts with a self-contained introduction to causal inference methods for software engineering researchers. 
-This chapter begins by articulating the fundamental problem of causal inference---the impossibility of observing both potential outcomes for a single unit---and explains why correlational evidence from repository mining studies cannot support causal claims without additional (often very strong) assumptions. 
-I then survey the econometrician's toolbox, covering randomized controlled trials, matching, fixed effect and panel regressions, instrumental variables, difference-in-differences, and generalized method of moments. 
-For each method, I discuss the identifying assumptions required for valid causal inference, the conditions under which these assumptions are likely to hold, and articulate why this method may be widely applicable in software engineering contexts. 
-The chapter concludes with a discussion of threats to validity specific to causal inference designs and guidelines for assessing the credibility of causal claims in empirical software engineering research.
-
+The chapter begins by articulating the fundamental problem of causal inference---the impossibility of observing both potential outcomes for a single unit---and introduces three conceptual frameworks that have shaped modern causal reasoning: the potential outcomes framework, structural causal models, and the design-based approach.
+I then examine common pitfalls in correlational research, explaining why correlation does not imply causation and why multivariate regression alone cannot establish causal claims.
+After formalizing key concepts through the potential outcomes notation and graphical causal models, I survey identification strategies---randomized controlled trials, difference-in-differences, regression discontinuity, and instrumental variables---that provide complete causal identification under stated assumptions.
+I also discuss control strategies---matching, fixed effects, and generalized method of moments---that address specific sources of confounding without providing complete identification.
+The chapter concludes with a discussion of applicability to software engineering research and threats to validity specific to causal inference designs.
 
 \paragraph{Three Cases of Empirical Studies}
 Then, the thesis dives deep into three empirical studies I published in the past that dispelled well-known software engineering myths through the appropriate application of robust causal inference methods~\cite{DBLP:journals/corr/abs-2502-06662, DBLP:journals/corr/abs-2412-13459, DBLP:journals/corr/abs-2511-04427}.
