@@ -1,0 +1,40 @@
+---
+description: Rules for managing references.bib in the thesis project
+globs: references.bib
+---
+
+# References Management (references.bib)
+
+## Ordering Convention
+When adding entries to `references.bib`, follow this strict ordering:
+
+1. **Google Scholar / Regular entries first** (entries without `DBLP:` prefix in the key)
+   - Sorted chronologically by publication year (oldest to newest)
+   - Examples: `snow1855mode`, `rubin1974estimating`, `kohavi2020trustworthy`
+
+2. **DBLP entries second** (entries with `DBLP:` prefix in the key)
+   - Sorted chronologically by publication year (oldest to newest)
+   - Examples: `DBLP:conf/sigsoft/RayPFD14`, `DBLP:journals/cacm/RayPDF17`
+
+## Reference Verification Requirement
+**IMPORTANT**: Before adding any new reference to the bibliography, you MUST:
+
+1. **Web search to verify the reference exists** - Search for the paper/book title and authors to confirm:
+   - The publication actually exists
+   - The authors are correct
+   - The publication year is accurate
+   - The venue (journal/conference/publisher) is correct
+
+2. **Use accurate metadata** - Do not hallucinate or guess bibliographic information. If uncertain about any field (volume, pages, DOI, etc.), search for the official publication record.
+
+3. **Prefer authoritative sources** - When available, obtain BibTeX entries from:
+   - DBLP (for computer science publications)
+   - Google Scholar
+   - Publisher websites (ACM DL, IEEE Xplore, Springer, etc.)
+   - DOI.org
+
+## Example Workflow
+When asked to add a reference:
+1. Web search: `"[Paper Title]" [Author Last Name] [Year]`
+2. Verify the publication exists and note correct metadata
+3. Add the entry in the correct position based on ordering rules above

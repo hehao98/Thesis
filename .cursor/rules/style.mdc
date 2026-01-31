@@ -1,0 +1,32 @@
+---
+description: Writing style conventions for thesis documents
+globs: "*.tex"
+---
+
+# Writing Style Conventions
+
+## Capitalization After Colons
+
+When a colon introduces a complete sentence or independent clause, capitalize the first letter after the colon.
+
+**Examples:**
+
+✅ Correct:
+- "The central question becomes: Under what conditions can we use observed data?"
+- "Its strength lies in making assumptions explicit: A DAG encodes what the researcher believes."
+- "The framework asks: What feature of the real world generates exogenous variation?"
+
+❌ Incorrect:
+- "The central question becomes: under what conditions can we use observed data?"
+- "Its strength lies in making assumptions explicit: a DAG encodes what the researcher believes."
+
+## When NOT to Capitalize
+
+Do not capitalize after a colon when it introduces:
+- A list of items (unless they are complete sentences)
+- A phrase or fragment that is not a complete sentence
+- Technical notation or mathematical expressions
+
+**Examples where lowercase is correct:**
+- "The methods include: matching, DiD, and IV."
+- "Define the effect as: $Y^1 - Y^0$."

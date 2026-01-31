@@ -1,96 +1,363 @@
-\section{The Problem}
+\section{The Causal Inference Problem}
 
-For centuries, researchers have been attempting to answer questions in the following form: In a population, does an intervention (or treatment) $X$ lead to a change in outcome $Y$? 
+The quest for rigorous causal reasoning traces back to the pioneering work of John Snow during the 1854 London cholera outbreak.
+At a time when the prevailing ``miasma theory'' attributed disease to bad air, Snow meticulously mapped cholera deaths and traced them to a contaminated water pump on Broad Street.
+By comparing mortality rates between households served by different water companies---one drawing from a polluted section of the Thames, the other from a cleaner source---he demonstrated a causal link between contaminated water and cholera, effectively conducting one of the first natural experiments in history~\cite{snow1855mode}.
+Snow's approach foreshadowed the counterfactual thinking central to modern causal inference: what would have happened to these households had they received clean water instead?
+Building upon such empirical foundations, the 20th century witnessed the formalization of causal reasoning.
+Jerzy Neyman introduced the potential outcomes notation in 1923 for agricultural experiments~\cite{neyman1923application}, while Ronald Fisher developed the theory of randomized controlled trials~\cite{fisher1971design}.
+Decades later, Donald Rubin extended the potential outcomes framework to observational studies~\cite{rubin1974estimating}, establishing what is now known as the Rubin Causal Model---the mathematical backbone of modern causal inference.
 
-\subsection{The Potential Outcomes Framework}  
+Armed with these rigorous frameworks, causal inference has transformed decision-making across virtually every domain of human inquiry.
+In medicine, randomized controlled trials became the gold standard for drug approval, ushering in the era of evidence-based medicine that has saved countless lives~\cite{sackett1996evidence}.
+In economics, causal methods revolutionized policy evaluation: Card and Krueger's difference-in-differences study on minimum wage~\cite{card1993minimum} overturned decades of conventional wisdom, while Angrist and Imbens formalized instrumental variable methods for extracting causal effects from observational data~\cite{angrist1996identification}.
+The field's crowning recognition came in 2021, when the Nobel Prize in Economics was awarded jointly to David Card, Joshua Angrist, and Guido Imbens ``for their methodological contributions to the analysis of causal relationships''---a testament to how profoundly these methods have reshaped empirical research~\cite{nobel2021economics}.
+Beyond academia, tech giants now run millions of A/B tests annually to causally evaluate product changes~\cite{kohavi2020trustworthy}, while public health agencies relied on causal inference frameworks to rapidly evaluate COVID-19 vaccine efficacy during the pandemic~\cite{polack2020safety}.
+From personalized medicine to algorithmic fairness, the ability to distinguish causation from correlation has become indispensable to modern science and industry alike.
 
-Mathematically speaking, for any entity $i$ in the population, let $Y_i^1$ denote the outcome of $i$ with intervention and $Y_{i}^0$ the outcome without, what is the average treatment effect $ATE = E[Y_{i}^1] - E[Y_{i}^0]$? 
+Conceptually, causation can be defined through counterfactuals: $X$ causes $Y$ if $Y$ would have been different had $X$ not occurred.
+Yet, we can never observe both realities for the same unit---a patient either receives a drug or does not; a developer either adopts a tool or does not; a project uses one programming language or another.
+This ``fundamental problem of causal inference,'' that individual causal effects are inherently unobservable, means that causal claims can never be directly verified.
+Different intellectual traditions have developed distinct approaches to navigate this challenge.
+Specifically, three conceptual frameworks have shaped modern causal inference, each offering a distinct lens for reasoning about cause and effect:
+\begin{itemize}
+    \item \textbf{The Potential Outcomes Framework.} Pioneered by Neyman in 1923 and formalized by Rubin~\cite{rubin1974estimating}, this framework defines causation through counterfactual comparisons. 
+    For each unit $i$, there exist two potential outcomes: $Y_i^1$ (outcome if treated) and $Y_i^0$ (outcome if not treated). 
+    The individual causal effect is $Y_i^1 - Y_i^0$, but since only one outcome is ever observed, the framework focuses on estimating population-level quantities like the Average Treatment Effect $ATE = E[Y^1 - Y^0]$.
+    The central question becomes: Under what conditions can we use observed data to estimate these counterfactual quantities?
+    The framework formalizes assumptions like \emph{ignorability} (treatment assignment is independent of potential outcomes given covariates) and \emph{overlap} (all units have positive probability of receiving either treatment) that justify causal estimation.
+    \emph{Methods}: randomized controlled trials, propensity score matching, inverse probability weighting, doubly robust estimation.
+    
+    \item \textbf{The Structural Causal Model Framework.} Developed by Pearl~\cite{pearl2009causality}, this framework represents causal relationships as directed acyclic graphs (DAGs), where nodes are variables and edges represent direct causal effects.
+    Causation is formalized through the ``do-operator'': $P(Y | do(X=x))$ represents the distribution of $Y$ when $X$ is externally set to $x$, distinct from the observational conditional $P(Y | X=x)$ which may reflect confounding.
+    The framework provides graphical criteria---the back-door criterion, front-door criterion, and do-calculus---for determining when causal effects are \emph{identifiable} from observational data and which variables must be adjusted for.
+    Its strength lies in making causal assumptions visually explicit: A DAG encodes what the researcher believes about the data-generating process, and critics can directly challenge specific edges or missing paths.
+    \emph{Methods}: covariate adjustment via back-door criterion, front-door adjustment, instrumental variables (graphically justified), mediation analysis.
+    
+    \item \textbf{The Design-Based (Credibility Revolution) Approach.} Championed by applied economists like Angrist and Imbens~\cite{angrist1996identification}, this approach is less a formal framework and more a philosophy of empirical practice.
+    Rather than starting from abstract potential outcomes or graphical models, it asks: What feature of the real world generates plausibly exogenous variation in treatment?
+    The emphasis is on finding \emph{natural experiments}---situations where nature, policy, or institutional rules create variation that approximates random assignment---and on transparently arguing why alternative explanations are implausible.
+    A study's credibility rests not on mathematical formalism but on whether the identification strategy would convince a skeptical reader that confounding has been adequately addressed.
+    \emph{Methods}: difference-in-differences, regression discontinuity, instrumental variables (design-justified), synthetic control, event studies.
+\end{itemize}
+While these frameworks differ in formalism and emphasis, they share a common commitment: Making causal assumptions explicit and assessable, rather than leaving them implicit in statistical models.
 
-The key problem blocking the computation of $ATE$ is that $Y_{i}^1$ and $Y_{i}^0$ cannot \emph{both} be measured without using a time machine.
-To alleviate this, all causal inference methods seek to estimate $ATE$ unbiasedly from experimental or observational data under different assumptions.
+The causal inference toolkit contains both \emph{identification strategies}---research designs that, under stated assumptions, isolate causal effects---and \emph{control strategies} that address specific sources of confounding without providing complete identification.
+Among identification strategies, randomization ensures comparable groups by design; difference-in-differences leverages parallel trends to construct valid counterfactuals; regression discontinuity exploits sharp assignment thresholds; and instrumental variables isolate exogenous variation in treatment.
+Each rests on distinct assumptions: Randomization eliminates selection bias by design; difference-in-differences assumes treatment and control groups would have followed parallel trajectories absent intervention; instrumental variables require that the instrument affects outcomes only through treatment.
+Control strategies like matching and fixed effects are valuable but more limited: Matching assumes that conditioning on observed covariates removes confounding, while fixed effects assume that unobserved confounders are time-invariant---neither provides a complete path to causal identification when time-varying confounders or selection into treatment timing are present.
+The power of this framework lies not in guaranteeing truth, but in making assumptions explicit: When a difference-in-differences study claims a causal effect, it simultaneously declares that its validity depends on parallel trends holding in the counterfactual world.
+Critics can then interrogate whether that assumption is plausible given the context, rather than debating vague notions of ``correlation versus causation.''
+
+To illustrate the promises and challenges of causal reasoning, consider a deceptively simple question in software engineering: Does the choice of programming language causally affect defect-proneness?
+A large-scale study~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17} analyzed millions of commits across thousands of GitHub projects and reported that functional and statically-typed languages are associated with fewer defects.
+A subsequent reproduction study~\cite{DBLP:journals/toplas/BergerHMVV19}, however, found that effect sizes shrank dramatically after correcting methodological issues, sparking a series of rebuttals~\cite{DBLP:journals/corr/abs-1911-07393, DBLP:journals/corr/abs-1911-11894}.
+The core difficulty lies in the nature of the data: Projects written in different languages differ systematically in ways that correlate with defect rates---team expertise, project maturity, application domain, and coding conventions all vary with language choice.
+Observing that Haskell projects have fewer bugs than PHP projects tells us little about what would happen if the same team rewrote the same application in a different language.
+This is the fundamental problem of confounding: Observed associations may reflect selection effects rather than causal mechanisms.
+Causal inference methods do not magically resolve this problem or provide definitive answers where none exist.
+What they offer instead is a disciplined framework for assessing causal validity under explicitly stated assumptions.
+Rather than claiming an effect is ``proven,'' causal designs articulate the conditions under which an estimate would be unbiased---parallel trends, conditional independence, exclusion restrictions---and provide tools to probe whether those conditions plausibly hold.
+This transparency transforms debates from disputes over contested conclusions into examinations of clearly specified assumptions, enabling the research community to systematically evaluate where evidence is credible and where it remains fragile.
+
+Importantly, not all empirical problems admit equally strong causal designs, and different methods offer varying degrees of credibility.
+At one end of the spectrum, randomized controlled trials eliminate confounding by design, providing the strongest foundation for causal claims.
+At the other end, naive correlational analyses make no attempt to address confounding and offer little causal credibility.
+Between these extremes lies a hierarchy of quasi-experimental methods: regression discontinuity designs exploit sharp thresholds that create local randomization; instrumental variables isolate exogenous variation when valid instruments exist; difference-in-differences leverages parallel trends assumptions that can be partially tested.
+Fixed effects models occupy a middle position---they credibly control for time-invariant confounders but remain vulnerable to time-varying confounding and offer no built-in falsification test.
+For the programming language question, fixed effects (studying developers across languages or projects over time) may represent the best available approach, but honest analysis would acknowledge that it falls short of a definitive causal design.
+The value of the causal inference framework lies not in demanding that all studies achieve experimental credibility, but in providing a vocabulary for articulating \emph{where} on this spectrum a given study's evidence resides and \emph{what} threats to validity remain unaddressed.
+
+
+\section{Common Pitfalls in Correlational Research}
+
+Before presenting the causal inference toolkit, it is instructive to examine why naive approaches fail.
+Understanding these pitfalls clarifies what causal methods must overcome and why simple statistical adjustments are often insufficient.
 
 \subsection{Why Correlation Does Not Imply Causation}
 
-\subsection{Why Multivariate Linear Regressions (Usually) Do Not Suffice}
+The dictum ``correlation does not imply causation'' is familiar to every researcher, yet violations remain pervasive in practice.
+Three distinct mechanisms can generate spurious correlations:
 
-\section{The Econometrican's Toolbox}
+\paragraph{Confounding.} A third variable $Z$ that causally affects both $X$ and $Y$ can induce a correlation between them even when no direct causal relationship exists.
+For example, ice cream sales and drowning deaths are positively correlated---not because ice cream causes drowning, but because summer weather (the confounder) increases both.
+In software engineering, developer experience may confound the relationship between tool adoption and productivity: experienced developers are both more likely to adopt new tools and more productive, creating a spurious association.
+
+\paragraph{Reverse Causality.} The observed association may reflect $Y$ causing $X$ rather than $X$ causing $Y$.
+If we observe that projects using continuous integration have fewer bugs, is it because CI prevents bugs, or because low-bug projects are more likely to adopt CI (perhaps because they have better engineering practices overall)?
+
+\paragraph{Selection Bias.} The sample under study may not represent the population of interest, or the process generating the data may induce spurious associations.
+Conditioning on a collider---a variable caused by both $X$ and $Y$---can create artificial correlations.
+For instance, among published studies, we may observe a negative correlation between methodological rigor and surprising results, not because rigor prevents surprising findings, but because only surprising-yet-rigorous or unsurprising-but-easy studies get published.
+
+\subsection{Why Multivariate Regression Does Not Suffice}
+
+A common response to confounding concerns is to ``control for'' potential confounders using multivariate regression.
+While sometimes helpful, this approach has fundamental limitations:
+
+\paragraph{Omitted Variable Bias.} Regression can only adjust for \emph{observed} confounders.
+If important confounders are unmeasured---as is typically the case with repository mining data---the resulting estimates remain biased.
+No amount of control variables can substitute for a credible identification strategy.
+
+\paragraph{Bad Controls.} Not all variables should be controlled for.
+Conditioning on a mediator (a variable on the causal path from $X$ to $Y$) blocks part of the causal effect and biases the estimate.
+Conditioning on a collider induces spurious associations.
+Without a causal model specifying the data-generating process, researchers cannot determine which controls are appropriate.
+
+\paragraph{Functional Form Assumptions.} Standard regression assumes linear relationships and additive effects.
+If the true relationship is nonlinear or involves interactions, misspecified models can produce misleading estimates even when all relevant variables are included.
+
+\paragraph{The Table 2 Fallacy.} A regression table showing that a coefficient ``remains significant after controlling for $Z$'' does not establish causality.
+If $Z$ is a mediator, the controlled estimate is biased downward.
+If $Z$ is a collider, conditioning on it introduces bias.
+If $Z$ is a confounder but imperfectly measured, residual confounding persists.
+The interpretation of ``controlling for'' depends entirely on the causal structure, which regression alone cannot reveal.
+
+
+\section{Formalizing Causal Inference}
+
+Having motivated the need for rigorous causal reasoning, we now present the formal foundations.
+This section develops the notation and assumptions required for the identification strategies presented later.
+
+\subsection{The Potential Outcomes Framework}
+
+For centuries, researchers have attempted to answer questions of the form: In a population, does an intervention (or treatment) $X$ lead to a change in outcome $Y$?
+The potential outcomes framework provides a mathematical language for this question.
+
+\paragraph{Notation.} For each unit $i$ in the population, define:
+\begin{itemize}
+    \item $Y_i^1$: the potential outcome if unit $i$ receives treatment
+    \item $Y_i^0$: the potential outcome if unit $i$ does not receive treatment
+    \item $D_i \in \{0, 1\}$: the treatment indicator (1 if treated, 0 otherwise)
+    \item $Y_i = D_i \cdot Y_i^1 + (1 - D_i) \cdot Y_i^0$: the observed outcome
+\end{itemize}
+
+\paragraph{Causal Estimands.} The individual treatment effect $\tau_i = Y_i^1 - Y_i^0$ is fundamentally unobservable---we can never see both potential outcomes for the same unit.
+Instead, we focus on population-level quantities:
+\begin{align}
+    \text{Average Treatment Effect (ATE)} &= E[Y^1 - Y^0] \\
+    \text{Average Treatment Effect on the Treated (ATT)} &= E[Y^1 - Y^0 | D = 1]
+\end{align}
+
+\paragraph{Identifying Assumptions.} To estimate causal effects from observed data, we require assumptions that link observables to counterfactuals:
+\begin{itemize}
+    \item \textbf{SUTVA (Stable Unit Treatment Value Assumption)}: The potential outcomes for unit $i$ depend only on $i$'s treatment status, not on others' treatments.
+    This rules out interference and spillover effects.
+    
+    \item \textbf{Ignorability (Unconfoundedness)}: Conditional on observed covariates $X$, treatment assignment is independent of potential outcomes: $(Y^1, Y^0) \perp D | X$.
+    This assumes no unmeasured confounding.
+    
+    \item \textbf{Overlap (Positivity)}: Every unit has positive probability of receiving either treatment: $0 < P(D=1|X) < 1$ for all $X$.
+    This ensures we can compare treated and untreated units with similar characteristics.
+\end{itemize}
+
+Under these assumptions, the ATE is identified as:
+\begin{equation}
+    ATE = E_X[E[Y|D=1, X] - E[Y|D=0, X]]
+\end{equation}
+
+\subsection{Graphical Causal Models}
+
+An alternative formalization uses directed acyclic graphs (DAGs) to represent causal relationships~\cite{pearl2009causality}.
+
+\paragraph{Notation.} A DAG $G = (V, E)$ consists of variables (nodes) and directed edges representing direct causal effects.
+An edge $X \to Y$ indicates that $X$ directly causes $Y$.
+
+\paragraph{The do-Operator.} Pearl distinguishes between observational conditioning $P(Y|X=x)$ and interventional conditioning $P(Y|do(X=x))$.
+The latter represents the distribution of $Y$ when $X$ is externally set to $x$, erasing all arrows into $X$.
+
+\paragraph{Identification via Back-Door Criterion.} The causal effect of $X$ on $Y$ is identified by adjusting for a set $Z$ if:
+\begin{enumerate}
+    \item $Z$ blocks all back-door paths from $X$ to $Y$ (paths with an arrow into $X$)
+    \item $Z$ contains no descendants of $X$
+\end{enumerate}
+When satisfied: $P(Y|do(X=x)) = \sum_z P(Y|X=x, Z=z)P(Z=z)$.
+
+The graphical framework complements potential outcomes by making causal assumptions visually explicit and providing algorithmic tools for determining identifiability.
+
+
+\section{Identification Strategies}
+
+This section presents research designs that, under their stated assumptions, provide credible causal identification.
+Each method is characterized by its identifying assumption and the alternative explanations it rules out.
 
 \subsection{Randomized Controlled Trials}
 
-For example, Fisher's pioneering work~\cite{fisher1971design} demonstrates that comparing a treatment group and a control group can unbiasedly estimate $ATE$ under the randomized assignment assumption.
-This leads to the gold standard of randomized controlled trials, which are widely used in medicine today~\cite{bothwell2016assessing}.
-However, the assumption almost always fails in observational data, prompting economists and social scientists to seek alternative approaches.
+Fisher's pioneering work~\cite{fisher1971design} demonstrates that random assignment to treatment and control groups ensures unbiased estimation of causal effects.
+Randomization guarantees that treatment is independent of potential outcomes---both observed and unobserved confounders are balanced in expectation.
 
-\subsection{Matching}
+The ATE is simply estimated as the difference in mean outcomes:
+\begin{equation}
+    \widehat{ATE} = \bar{Y}_{\text{treated}} - \bar{Y}_{\text{control}}
+\end{equation}
 
-\subsection{Panel Regression}
+RCTs remain the gold standard for causal inference in medicine~\cite{bothwell2016assessing} and are increasingly used in technology through A/B testing~\cite{kohavi2020trustworthy}.
+However, randomization is often infeasible in software engineering contexts: we cannot randomly assign programming languages to projects or force developers to adopt tools.
+This motivates quasi-experimental methods that approximate experimental conditions.
+
+\subsection{Difference-in-Differences}
+
+One of the workhorse methods for causal inference in observational data is \emph{difference-in-differences} (DiD)~\cite{card1993minimum, cunningham2021causal}.
+Its high-level idea is to estimate the treatment effect by comparing changes in outcomes for a treatment group before and after intervention with changes in a control group \emph{over the same period}.
+
+\paragraph{Identifying Assumption: Parallel Trends.} In the absence of treatment, the treatment and control groups would have followed parallel outcome trajectories.
+This assumption is partially testable by examining pre-treatment trends.
+
+\paragraph{Panel Data Setting.} When $N$ entities are observed over $T$ periods with staggered treatment adoption~\cite{athey2022design}, the ATE corresponds to $\beta$ in:
+\begin{equation}
+\label{eq:base-did}
+    Y_{it} = \alpha + \beta D_{it} + \mu_i + \lambda_t + X'_{it}\Gamma + \epsilon_{it}
+\end{equation}
+where $\mu_i$ are entity fixed effects, $\lambda_t$ are time fixed effects, and $D_{it}$ indicates treatment status.
+
+\paragraph{Event Study Design.} To examine dynamic treatment effects, we estimate:
+\begin{equation}
+\label{eq:panel-event}
+     Y_{it} = \alpha + \sum_{j=2}^{J}\beta_j(\text{Lead}~j)_{it} + \sum_{k=1}^{K} \gamma_k (\text{Lag}~k)_{it} + \mu_i + \lambda_t + X'_{it}\Gamma + \epsilon_{it}
+\end{equation}
+Pre-treatment coefficients ($\beta_j$) serve as placebo tests; significant pre-trends suggest violations of parallel trends.
+
+\paragraph{Recent Advances.} Traditional two-way fixed effects (TWFE) estimation can produce biased estimates under treatment effect heterogeneity~\cite{goodman2021difference, de2020two}.
+Modern estimators address this through stacking~\cite{baker2022much}, imputation~\cite{borusyak2024revisiting}, or group-time aggregation~\cite{callaway2021difference}.
+Sensitivity analysis across multiple estimators strengthens credibility~\cite{roth2023s}.
+
+\subsection{Regression Discontinuity}
+
+Regression discontinuity designs (RDD) exploit sharp thresholds in treatment assignment.
+When treatment is determined by whether a running variable $R$ exceeds a cutoff $c$, units just above and below the threshold are quasi-randomly assigned.
+
+\paragraph{Identifying Assumption: Continuity.} Potential outcomes are continuous at the threshold.
+This implies that units cannot precisely manipulate their position relative to the cutoff.
+
+\paragraph{Estimation.} The treatment effect is identified as the discontinuity in outcomes at the cutoff:
+\begin{equation}
+    \tau = \lim_{r \downarrow c} E[Y|R=r] - \lim_{r \uparrow c} E[Y|R=r]
+\end{equation}
+
+RDD provides strong local identification but estimates effects only at the threshold, limiting external validity.
 
 \subsection{Instrumental Variables}
 
-\subsection{Difference-in-Differences} 
+Instrumental variables (IV) address endogeneity by isolating exogenous variation in treatment.
 
-One of the workhorse methods for causal inference in observational data is \emph{difference-in-differences} (DiD)~\cite{card1993minimum, cunningham2021causal}.
-Its high-level idea is to estimate $ATE$ by comparing outcome $Y$ in a treatment group before and after intervention with changes in a control group \emph{over the same period}. 
-Crucially, it makes a \emph{parallel trends assumption}---that treatment and control groups would have followed similar trajectories in the absence of intervention. 
-One common setting of DiD estimation is that $N$ entities (containing both treatment and control) are observed over the same $T$ periods (i.e., \emph{panel data}~\cite{baltagi2008econometric}), but the intervention can happen at different times (i.e., \emph{staggered adoption}~\cite{athey2022design}).
-In this setting, we can represent $ATE$ as the $\beta$ parameter in the following linear model:
+\paragraph{Identifying Assumptions.} A valid instrument $Z$ must satisfy:
+\begin{enumerate}
+    \item \textbf{Relevance}: $Z$ affects treatment ($Cov(Z, D) \neq 0$)
+    \item \textbf{Exclusion Restriction}: $Z$ affects outcomes only through treatment
+    \item \textbf{Independence}: $Z$ is independent of unmeasured confounders
+\end{enumerate}
+
+\paragraph{Estimation.} Under these assumptions, the causal effect is:
 \begin{equation}
-\label{eq:base-did}
-    Y_{it} = \alpha + \beta D_{it} +\mu_i + \lambda_t + X'_{it}\Gamma + \epsilon_{it}
+    \beta_{IV} = \frac{Cov(Y, Z)}{Cov(D, Z)}
 \end{equation}
-Here $Y_{it}$ is the outcome variable for entity $i$ at time $t$; $D_{it}$ is a binary variable representing whether entity $i$ receives the treatment at $t$; $\mu_i$ and $\lambda_t$ are per-entity and per-time fixed effects; $X'_{it}$ are additional time-varying control variables; and $\epsilon_{it}$ is the error term.
 
-Apart from $ATE$, researchers are also often interested in the longitudinal evolution of treatment effects (i.e., estimating different $ATE$s $1$ to $k$ time periods after intervention).
-This is typically estimated using an extension of Equation~\ref{eq:base-did}, in the following form~\cite{clarke2021implementing}:
+With heterogeneous treatment effects, IV identifies the Local Average Treatment Effect (LATE)---the effect for units whose treatment status is changed by the instrument (compliers)~\cite{angrist1996identification}.
+
+
+\section{Control Strategies}
+
+Unlike identification strategies, control strategies address specific sources of confounding without providing complete causal identification.
+They are valuable tools but should be combined with substantive arguments about remaining threats.
+
+\subsection{Matching and Propensity Scores}
+
+Matching constructs comparison groups by pairing treated units with similar untreated units based on observed covariates.
+
+\paragraph{Propensity Score.} The propensity score $e(X) = P(D=1|X)$ summarizes covariate information~\cite{rosenbaum1983central}.
+Under ignorability, matching on propensity scores balances observed confounders.
+
+\paragraph{Limitation.} Matching only adjusts for \emph{observed} covariates.
+If important confounders are unmeasured---as is typical with repository data---estimates remain biased.
+Sensitivity analysis can assess robustness to unobserved confounding.
+
+\subsection{Fixed Effects and Panel Models}
+
+Fixed effects models exploit within-unit variation over time to control for time-invariant unobserved heterogeneity.
+
+\paragraph{Model.} The fixed effects specification:
 \begin{equation}
-\label{eq:panel-event}
-     Y_{it} = \alpha + \sum_{j=2}^{J}\beta_j(\text{Lead}~j)_{it} + \sum_{k=1}^{K} \gamma_k (\text{Lag}~k)_{it}+\mu_i + \lambda_t + X'_{it}\Gamma + \epsilon_{it}
+    Y_{it} = \alpha + \beta D_{it} + \mu_i + \epsilon_{it}
 \end{equation}
-Here $\text{Lead}~j$ and $\text{Lag}~k$ are dummies to support the estimation of treatment effects $-J$ to $K$ time periods before and after the intervention.
-The treatment effects of $\text{Lead}~j$ can be used as placebo tests, as a reliable estimation should not have significant treatment effects before the intervention. 
-$\text{Lead}~1$ is intentionally omitted from the model to serve as the counterfactual baseline.
+uses entity-level dummies $\mu_i$ to absorb all time-invariant characteristics.
 
-For many years, the econometric literature has been relying on the two-way fixed effect (TWFE) estimator for estimating the model parameters in Equation~\ref{eq:base-did} and Equation~\ref{eq:panel-event}.
-Importantly, under both the parallel trend assumption and the treatment effect homogeneity assumption, a TWFE estimator equals a weighted average of all possible two-group/two-period DiD estimators in the data~\cite{goodman2021difference}.
-However, the treatment effect homogeneity assumption is a strong assumption that may not hold in many settings (e.g., the intervention is only effective in the short term).
-Recent studies show that the violation of this assumption may lead to ``forbidden comparisons'' in the TWFE estimator, biasing the estimated parameters and jeopardizing the validity of causal claims based on TWFE models~\cite{de2020two, athey2022design}.
-As a result, new estimators are proposed to produce unbiased estimations of $ATE$s in the absence of the treatment effect homogeneity assumption~\cite{borusyak2024revisiting} and, more aggressively, with weaker parallel trend assumptions~\cite{callaway2021difference}.
-In general, it is often advised to test multiple estimators and conduct sensitivity analysis to establish credible causal evidence for the problem of interest~\cite{baker2022much, roth2023s}. 
+\paragraph{Limitation.} Fixed effects control only for \emph{time-invariant} confounders.
+If treatment adoption correlates with time-varying unobservables, estimates remain biased.
+Unlike DiD, fixed effects provides no parallel trends test or built-in falsification check.
 
 \subsection{Generalized Method of Moments}
 
-While DiD can effectively estimate $ATE$ for a set of outcomes, they do not directly capture the temporal dynamics between the outcomes themselves. 
-In our setting, it is well-known that velocity and quality interact with each other~\cite{DBLP:conf/sigsoft/ChengMCJGKZ022, besker2018technical}. 
-To test such dynamic relationships and potential bidirectional causality, \emph{generalized method of moments} (GMM) is often used~\cite{hansen1982large}, which provides a framework for obtaining consistent causal estimates when variables are potentially endogenous (i.e., correlated with unobserved error terms). The key insight is to use \emph{instrumental variables}—variables correlated with the endogenous regressors but uncorrelated with the error term—to identify causal effects. 
-In panel data, lagged values of variables often serve as natural instruments under the assumption that past values influence current values but are uncorrelated with current shocks~\cite{arellano1991some}.
+While DiD estimates treatment effects on outcomes, it does not directly capture dynamic relationships between variables.
+The generalized method of moments (GMM) framework addresses settings with:
+\begin{itemize}
+    \item Dynamic dependence (current outcomes depend on past outcomes)
+    \item Potential bidirectional causality between variables
+    \item Short panels with many entities
+\end{itemize}
 
-For our analysis of the dynamic relationship between development velocity and code quality, we employ Arellano-Bond dynamic panel GMM~\cite{arellano1991some}, which is particularly suited for settings with: (1) dynamic dependence, where current outcomes depend on past outcomes; (2) potential bidirectional causality between variables; and (3) short time series with many entities. A panel GMM model can be specified as follows to test the causality direction $X_t \to Y_t$ while taking possible intervention $D$ into consideration:
+\paragraph{Arellano-Bond Estimation.} For testing whether $X_t \to Y_t$ in the presence of intervention $D$~\cite{arellano1991some}:
 \begin{equation}
 \label{eq:dynamic-gmm}
-Y_{it} = \alpha + \rho Y_{i,t-1} + \beta D_{it} + \gamma X_{it} + \mu_i + \lambda_t + Z'_{it}\Theta + \epsilon{it}
+    Y_{it} = \alpha + \rho Y_{i,t-1} + \beta D_{it} + \gamma X_{it} + \mu_i + \lambda_t + Z'_{it}\Theta + \epsilon_{it}
 \end{equation}
-where $Y_{i,t-1}$ captures persistence in the outcome, $X_{it}$ represents potentially endogenous regressors, $Z'_{it}$ stands for additional time-varying controls, and the remaining follows the specification in Equation~\ref{eq:base-did}. 
-During estimation, historical values of $X_{it}$ (e.g., $X_{i,t-2}$) are used as instrumental variables.
-A widely used efficient estimation method~\cite{windmeijer2005finite} of Equation~\ref{eq:dynamic-gmm} eliminates entity fixed effects $\mu_i$, which may correlate with the lagged dependent variable, with a first-order difference transformation.
-During estimation, first-order difference transformation is often applied to eliminate entity-specific bias, and historical values of $X_{it}$ (e.g., $X_{i,t-1}, X_{i,t-2}, ...$) are used as instrumental variables.
-Panel GMM models will complement our DiD analysis by decomposing the mechanisms through which Cursor adoption affects long-term development outcomes.
+First-differencing eliminates fixed effects; lagged values serve as instruments under sequential exogeneity~\cite{windmeijer2005finite}.
 
-\section{Applicability to Empirical Software Engineering Research}
+\paragraph{Application.} In this thesis, GMM complements DiD by decomposing mechanisms through which tool adoption affects long-term outcomes (Chapter~\ref{chp:cursor}).
 
-\section{Threats to Validity in Causal Inference Designs}
 
-1.  Causal Inference in Observational Studies    
-- The Fundamental Problem of Causal Inference    
--  Potential Outcomes Framework    
-- Common Pitfalls in Correlational SE Research    
-2. Causal Inference Methodologies    
-- Counterfactual Analysis and Simulation    
-- Difference-in-Differences Estimation    
-- Propensity Score Matching    
-- Panel Generalized Method of Moments    
-- Threats to Causal Validity    
-3. Empirical Software Engineering Research     
-- Controlled Experiments  
-- Large-Scale Observational Studies    
-- The Need for Causal Methods on Observational Data  
-4. Summary
+\section{Applicability to Software Engineering Research}
+
+The methods presented above were developed primarily in economics and epidemiology.
+Their application to software engineering requires attention to domain-specific considerations:
+
+\paragraph{Data Availability.} Software repositories provide rich observational data---commits, issues, code metrics---but lack the experimental variation that enables clean identification.
+Natural experiments (policy changes, platform updates) are rare and often confounded.
+
+\paragraph{Unit of Analysis.} Causal effects may operate at different levels (developer, project, organization) with potential interference across units.
+SUTVA violations are common when developers collaborate or projects share dependencies.
+
+\paragraph{Measurement.} Outcome variables (productivity, quality) are often proxied by imperfect metrics.
+Treatment timing may be measured with error.
+These measurement issues can attenuate estimates or introduce bias.
+
+\paragraph{External Validity.} Estimates from one context (e.g., open-source GitHub projects) may not generalize to others (e.g., proprietary enterprise development).
+Effect heterogeneity across contexts is the norm rather than the exception.
+
+Despite these challenges, quasi-experimental methods offer substantial improvements over naive correlational analyses.
+The key is transparency: clearly stating assumptions, probing their plausibility, and acknowledging limitations.
+
+
+\section{Threats to Validity in Causal Designs}
+
+Every causal design faces threats that could undermine its validity.
+Rigorous research anticipates these threats and addresses them through design, analysis, or honest acknowledgment.
+
+\subsection{Internal Validity}
+
+Internal validity concerns whether the estimated effect reflects the true causal relationship in the study sample:
+\begin{itemize}
+    \item \textbf{Confounding}: Unmeasured variables affecting both treatment and outcome
+    \item \textbf{Selection Bias}: Non-random attrition or sample selection
+    \item \textbf{Measurement Error}: Mismeasured treatment or outcomes
+    \item \textbf{Spillovers}: Treatment effects propagating across units
+\end{itemize}
+
+\subsection{External Validity}
+
+External validity concerns whether findings generalize beyond the study context:
+\begin{itemize}
+    \item \textbf{Population Generalizability}: Do effects hold in other populations?
+    \item \textbf{Temporal Generalizability}: Do effects persist over time?
+    \item \textbf{Context Dependence}: Do effects vary across settings?
+\end{itemize}
+
+\subsection{Sensitivity Analysis}
+
+Given that identifying assumptions are untestable, sensitivity analysis explores how conclusions change under assumption violations:
+\begin{itemize}
+    \item \textbf{Rosenbaum Bounds}: How much unmeasured confounding would be needed to explain away the result?
+    \item \textbf{Parallel Trends Robustness}: How sensitive are DiD estimates to pre-trend extrapolation?
+    \item \textbf{Multiple Estimators}: Do different estimators with different assumptions yield consistent conclusions?
+\end{itemize}
+
+The credibility of causal claims rests not on claiming assumptions are satisfied, but on transparently examining their plausibility and demonstrating robustness to reasonable violations.
