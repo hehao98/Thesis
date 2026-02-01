@@ -484,7 +484,7 @@ The actual estimation is performed by specific statistical methods---difference-
 Each method makes specific assumptions (parallel trends, continuity at the threshold, exclusion restrictions) that can be understood and justified within either framework.
 
 The practical workflow typically proceeds as follows.
-First, the researcher uses the frameworks to clarify the research question: What is the treatment?
+First, the researcher uses the potential outcomes framework to clarify the research question: What is the treatment?
 What is the outcome?
 What causal estimand (ATE, ATT, LATE) is of interest?
 Second, the researcher draws a causal graph encoding domain knowledge about the data-generating process, identifying potential confounders, mediators, and colliders.
@@ -493,9 +493,11 @@ Third, the researcher selects an identification strategy---a research design tha
 The choice depends on what natural experiments or exogenous variation the setting provides.
 Finally, the researcher implements the chosen method using appropriate statistical techniques, conducts robustness checks, and interprets results in light of the assumptions made.
 
-The frameworks thus serve as the \emph{theoretical foundation} upon which specific methods rest.
-A difference-in-differences analysis implicitly assumes that the parallel trends assumption blocks all back-door paths; an instrumental variable strategy assumes the instrument satisfies exclusion restrictions that can be depicted graphically.
-Understanding the frameworks enables researchers to see what each method achieves and where it might fail---knowledge essential for choosing appropriate designs and interpreting results honestly.
+Though developed independently, the two frameworks are mathematically compatible and often used together in this workflow.
+The potential outcomes condition of ignorability---$(Y(1), Y(0)) \perp D \mid X$---corresponds precisely to d-separation in an appropriately constructed graph.
+In practice, potential outcomes excel at the first step (defining estimands and clarifying what we want to learn), while graphical models excel at the second step (encoding assumptions visually and determining what to adjust for).
+The frameworks thus serve as the \emph{theoretical foundation} upon which specific methods rest: A difference-in-differences analysis implicitly assumes that the parallel trends assumption blocks all back-door paths; an instrumental variable strategy assumes the instrument satisfies exclusion restrictions that can be depicted graphically.
+Understanding both frameworks enables researchers to see what each method achieves and where it might fail---knowledge essential for choosing appropriate designs and interpreting results honestly.
 
 \section{Identification Strategies}
 \label{sec:identification}
