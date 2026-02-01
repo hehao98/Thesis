@@ -980,107 +980,86 @@ DiD estimates the overall effect of adoption; GMM decomposes this effect into im
 \section{Threats to Validity in Causal Designs}
 \label{sec:threats}
 
-Every causal design faces threats that could undermine its conclusions.
-Understanding these threats is essential for both designing studies and evaluating others' research.
-This section introduces the key categories of validity threats and the tools researchers use to assess robustness.
+Every causal design, no matter how carefully constructed, faces threats that could undermine its conclusions.
+The literature on research methodology distinguishes three fundamental types of validity: internal validity, which concerns whether the estimated effect reflects the true causal relationship within the study sample; external validity, which concerns whether findings generalize beyond the specific study context; and construct validity, which concerns whether the measured variables actually capture the theoretical constructs of interest.
+Understanding these threats is essential both for designing rigorous studies and for critically evaluating the research of others.
 
 \subsection{Internal Validity}
 
-Internal validity concerns whether the estimated effect reflects the true causal relationship within the study sample.
-A study has high internal validity if we can confidently attribute the observed outcome difference to the treatment rather than to other factors.
-The primary threats to internal validity include:
+A study possesses high internal validity when we can confidently attribute observed outcome differences to the treatment rather than to confounding factors.
+The fundamental challenge is that we never observe the counterfactual---what would have happened to treated units had they not been treated---and must instead infer it from comparison groups under assumptions that may or may not hold.
 
-\paragraph{Confounding.}
-Confounding occurs when an unmeasured variable affects both treatment assignment and outcomes, creating a spurious association.
-If repositories with more experienced maintainers both adopt new tools and produce higher-quality code, the observed tool-quality association may reflect maintainer skill rather than the tool's effect.
-Randomization eliminates confounding by construction; observational designs must either measure and adjust for confounders or rely on design-based strategies (DiD, RDD, IV) that address confounding through other means.
+The most pervasive threat to internal validity is \emph{confounding}, which occurs when an unmeasured variable affects both treatment assignment and outcomes, creating a spurious association that masquerades as a causal effect.
+Consider a study examining whether adopting a new development tool improves code quality.
+If repositories with more experienced maintainers are both more likely to adopt innovative tools and more likely to produce high-quality code regardless of the tool, the observed association between tool adoption and quality may reflect maintainer expertise rather than the tool's genuine effect.
+Randomized experiments eliminate confounding by construction, since random assignment ensures that treatment and control groups are, in expectation, identical on all characteristics---both observed and unobserved.
+Observational designs lack this guarantee and must either measure and adjust for potential confounders or rely on design-based strategies such as difference-in-differences, regression discontinuity, or instrumental variables that address confounding through alternative identifying assumptions.
 
-\paragraph{Selection Bias.}
-Selection bias arises when the process determining who enters the study or who receives treatment is related to potential outcomes.
-If only repositories facing quality problems adopt a static analysis tool (hoping it will help), comparing adopters to non-adopters confounds the tool's effect with the pre-existing quality differential.
-Selection can also occur through differential attrition: if struggling projects drop out of the study, the remaining sample is no longer representative.
+Closely related to confounding is \emph{selection bias}, which arises when the process determining who enters the study or who receives treatment is systematically related to potential outcomes.
+If only repositories already experiencing quality problems adopt a static analysis tool (hoping it will help), naive comparisons of adopters to non-adopters will conflate the tool's effect with the pre-existing quality differential.
+Selection can also manifest as differential attrition: if struggling projects are more likely to cease activity and drop out of a longitudinal study, the surviving sample becomes increasingly unrepresentative, and estimates based on this sample may be severely biased.
 
-\paragraph{Measurement Error.}
-Imprecise or biased measurement of treatments or outcomes can attenuate or distort estimates.
-If we measure ``tool adoption'' using an imperfect proxy (e.g., presence of a configuration file that may not indicate actual use), treatment status is mismeasured, biasing estimates toward zero.
-If outcomes are measured with systematic error correlated with treatment, bias can go in either direction.
+Even with perfect identification of causal effects, \emph{measurement error} in treatments or outcomes can attenuate or distort estimates.
+When treatment status is measured imprecisely---for example, inferring ``tool adoption'' from the presence of a configuration file that may not indicate actual sustained use---the resulting measurement error typically biases estimates toward zero, making true effects appear smaller than they are.
+When outcomes are measured with systematic error correlated with treatment status, bias can operate in either direction and is considerably harder to diagnose.
 
-\paragraph{Spillovers and Interference.}
-The Stable Unit Treatment Value Assumption (SUTVA) requires that one unit's treatment does not affect another's outcomes.
-In software engineering, this assumption is often violated: Developers share knowledge, projects share dependencies, and practices spread through organizations.
-If adopting a tool in one repository improves code quality in related repositories (through shared learning or code reuse), simple treatment-control comparisons underestimate the tool's total effect.
+Finally, the Stable Unit Treatment Value Assumption (SUTVA) requires that one unit's treatment status does not affect another unit's outcomes---an assumption frequently violated in software engineering contexts.
+Developers share knowledge across teams, projects share dependencies through package ecosystems, and practices diffuse through professional networks and organizations.
+If adopting a tool in one repository indirectly improves code quality in related repositories through shared learning or code reuse, simple treatment-control comparisons will underestimate the tool's total effect by ignoring these spillovers.
+Alternatively, if control units are ``contaminated'' by exposure to treatment effects (perhaps through documentation or community discussions), the estimated treatment effect will be biased toward zero.
 
 \subsection{External Validity}
 
-External validity concerns whether findings generalize beyond the specific study context to other populations, settings, or times.
-A study can have perfect internal validity---correctly identifying the causal effect in its sample---yet provide little guidance for other contexts.
+A study can achieve perfect internal validity---correctly identifying the causal effect within its specific sample---yet provide limited guidance for other populations, settings, or time periods.
+External validity concerns this generalizability, and its threats are often underappreciated in fields that prioritize identification over representativeness.
 
-\paragraph{Population Generalizability.}
-Effects estimated on one population may not apply to others.
-Studies of open-source GitHub repositories may not generalize to proprietary enterprise development.
-Effects observed among early adopters (often more skilled or motivated) may not hold for later adopters.
-Volunteer participants in experiments may differ systematically from the broader developer population.
+The most fundamental external validity concern is \emph{population generalizability}: effects estimated on one population may not apply to others with different characteristics.
+Studies conducted on open-source GitHub repositories may not generalize to proprietary enterprise development, where organizational constraints, incentive structures, and development practices differ substantially.
+Effects observed among early adopters of a technology---who tend to be more technically sophisticated and intrinsically motivated---may not hold for the broader population of later adopters.
+Volunteer participants in controlled experiments may differ systematically from developers who would never consent to participate, limiting the applicability of experimental findings.
 
-\paragraph{Temporal Generalizability.}
-Effects observed at one time may not persist as technology and practices evolve.
-The productivity impact of early AI coding assistants may change dramatically as the tools improve.
-Best practices from the 2010s may not apply in the 2030s.
+\emph{Temporal generalizability} presents particular challenges in rapidly evolving technological domains.
+The productivity impact of early AI coding assistants, measured with 2023-era tools on 2023-era codebases, may bear little resemblance to the effects of more advanced tools deployed in the late 2020s.
+Best practices validated through empirical research in one technological era may become obsolete---or even counterproductive---as the underlying technologies evolve.
+This suggests that empirical software engineering findings should be understood as historically situated rather than as timeless truths.
 
-\paragraph{Context Dependence.}
-Effects may depend on organizational culture, developer expertise, project type, programming language, or other contextual factors in ways that limit transferability.
-A tool that helps novices may hinder experts; a practice that works for small teams may fail at scale.
-
-\paragraph{Treatment Heterogeneity.}
-The average treatment effect reported in studies may mask substantial variation across subgroups.
-Understanding who benefits and who does not is often more actionable than knowing the average effect.
-
-\subsection{Sensitivity Analysis}
-
-Since identifying assumptions are fundamentally untestable, sensitivity analysis explores how conclusions would change if assumptions were violated.
-Rather than claiming assumptions are satisfied, rigorous research examines their plausibility and demonstrates robustness.
-
-\paragraph{Rosenbaum Bounds.}
-For matching and propensity score studies, Rosenbaum bounds quantify how strong an unmeasured confounder would need to be to explain away the observed effect.
-If the result is robust to confounders implausibly stronger than any known variable, confidence increases.
-If a moderate confounder could reverse conclusions, appropriate caution is warranted.
-
-\paragraph{Parallel Trends Robustness.}
-For difference-in-differences, researchers examine sensitivity to pre-trend specifications.
-Do conclusions change if we use different pre-treatment windows?
-What if we allow for differential pre-trends and extrapolate them?
-Event study plots visualizing pre-treatment coefficients help assess whether the parallel trends assumption is plausible.
-
-\paragraph{Multiple Estimators.}
-When different estimators with different assumptions yield consistent conclusions, confidence grows.
-If TWFE, Callaway-Sant'Anna, and imputation estimators all show similar effects, the result is unlikely to be an artifact of any single method's assumptions.
-Divergent results signal that conclusions depend on methodological choices and warrant investigation.
-
-\paragraph{Placebo Tests.}
-Placebo tests examine whether effects appear where they should not.
-If treatment effects appear before treatment occurs, this suggests confounding rather than causation.
-If treatment affects outcomes it should not influence (e.g., pre-determined characteristics), something is wrong with the design.
-Passing placebo tests does not prove validity, but failing them is informative.
+Beyond population and temporal concerns, causal effects often exhibit substantial \emph{context dependence}, varying with organizational culture, developer expertise, project characteristics, programming language, or other factors in ways that limit straightforward transferability.
+A tool that accelerates novice developers may impose coordination overhead that slows experts; a practice that enhances productivity in small, co-located teams may create bottlenecks at enterprise scale.
+Recognizing this heterogeneity, researchers increasingly report not just average treatment effects but also how effects vary across observable subgroups, since understanding who benefits and who does not is often more actionable than knowing only the population average.
 
 \subsection{Construct Validity}
 
-Beyond internal and external validity, construct validity concerns whether the measured variables actually capture the theoretical constructs of interest.
-In software engineering, this is particularly challenging:
+Beyond the question of whether we have correctly identified a causal effect (internal validity) and whether it generalizes (external validity), construct validity asks whether the variables we measure actually capture the theoretical constructs we care about.
+This challenge is particularly acute in software engineering, where many concepts of interest---productivity, code quality, technical debt, developer experience---are multidimensional abstractions that resist direct measurement.
 
-\paragraph{Operationalizing Treatments.}
-``Adopting continuous integration'' may mean different things: Setting up a CI system? Actually running tests on every commit? Responding to failures promptly?
-How we operationalize treatment affects what effect we estimate.
+The operationalization of treatments shapes what effects we estimate.
+``Adopting continuous integration'' might be operationalized as setting up a CI system, actually running automated tests on every commit, or promptly responding to test failures---each capturing different aspects of the underlying practice.
+Similarly, ``code quality'' might be measured through defect density, code review feedback, static analysis warnings, or maintainability indices, each reflecting different quality dimensions and potentially yielding different conclusions about treatment effects.
 
-\paragraph{Operationalizing Outcomes.}
-``Code quality'' might be measured as defect density, code review comments, static analysis warnings, or maintainability indices.
-These proxies may not perfectly capture the underlying construct, and different operationalizations can yield different conclusions.
+Even well-defined metrics may suffer from measurement imprecision.
+Commit counts, used as a productivity proxy, conflate substantive work with commit granularity conventions that vary across developers and projects.
+Issue counts conflate bugs with feature requests, user-reported problems with automated detections, and genuine defects with documentation gaps.
+Lines of code added confounds productive output with code bloat.
+These measurement limitations do not invalidate empirical research, but they counsel humility about the precision of our conclusions and underscore the value of triangulating across multiple operationalizations.
 
-\paragraph{Measurement Validity.}
-Even well-defined metrics may be measured imperfectly.
-Commit counts as a productivity measure conflate productive work with commit granularity conventions.
-Issue counts conflate bugs with feature requests and user reports with automated detections.
+\subsection{Sensitivity Analysis and Robustness}
 
-The credibility of causal claims rests not on claiming that assumptions are satisfied, but on transparently examining their plausibility and demonstrating robustness to reasonable violations.
+Because the identifying assumptions underlying causal inference are fundamentally untestable---we cannot directly verify that parallel trends would have held or that an instrument satisfies the exclusion restriction---rigorous research practice demands sensitivity analysis that explores how conclusions would change if assumptions were violated.
 
+For matching and propensity score studies, Rosenbaum bounds quantify how strong an unmeasured confounder would need to be to explain away the observed effect~\cite{rosenbaum2002observational}.
+If results remain robust to confounders implausibly stronger than any known variable, confidence in the findings increases; if a moderately strong confounder could reverse conclusions, appropriate caution is warranted.
+For difference-in-differences, researchers examine sensitivity to pre-trend specifications: event study plots visualizing pre-treatment coefficients help assess whether the parallel trends assumption is plausible, and researchers increasingly test whether conclusions survive alternative trend extrapolations.
+
+A powerful approach to robustness is employing multiple estimators with different identifying assumptions.
+When two-way fixed effects, Callaway-Sant'Anna, and imputation estimators all yield consistent treatment effect estimates, the finding is unlikely to be an artifact of any single method's assumptions.
+Conversely, divergent results across estimators signal that conclusions may depend on methodological choices and warrant careful investigation.
+
+Placebo tests provide another diagnostic tool, examining whether effects appear where they should not.
+If treatment effects appear \emph{before} treatment occurs, this suggests confounding rather than causation.
+If treatment affects outcomes it theoretically should not influence---such as pre-determined characteristics fixed before treatment assignment---something is amiss with the research design.
+Passing placebo tests does not prove validity, but failing them is highly informative about potential threats.
+
+Ultimately, the credibility of causal claims rests not on asserting that assumptions are satisfied---a claim that can never be definitively verified---but on transparently examining their plausibility, demonstrating robustness to reasonable violations, and acknowledging the limitations that remain.
 
 \section{A Pragmatic Approach to Causal Inference in Empirical Software Engineering}
 \label{sec:pragmatic}
@@ -1134,61 +1113,63 @@ Execution quality matters as much as design choice.
 
 \subsection{Principles for Pragmatic Practice}
 
-Given these trade-offs, how should software engineering researchers approach causal inference?
-Several principles can guide pragmatic practice.
+Given these trade-offs, how should software engineering researchers approach causal inference in practice?
+The answer lies not in a rigid hierarchy of methods but in thoughtful matching of research designs to research questions, contexts, and available resources.
 
-\paragraph{Match the Design to the Question and Context.}
-Not every question requires the strongest causal design.
-For exploratory research, descriptive studies are appropriate.
-For consequential decisions (should we mandate this tool?), stronger evidence is warranted.
-Consider what designs are feasible given the setting: Is randomization possible? Is there a natural experiment? What data are available?
-Choose the strongest design that is credible in the specific research context rather than forcing an inappropriate method with theoretically stronger causal validity.
+The first principle is to \emph{match the design to the question and context}.
+Not every research question requires---or can support---the strongest possible causal design.
+For exploratory research aimed at generating hypotheses and identifying promising directions, descriptive and correlational studies remain entirely appropriate.
+For consequential decisions with significant resource implications---should an organization mandate a particular tool? should a platform change its policies?---stronger causal evidence is warranted to justify the costs and risks of action.
+The practical question is what designs are feasible given the specific setting: Is randomization possible, or would it be unethical or impractical? Does the context provide a natural experiment through policy discontinuities or staggered adoption? What data are available, and with what quality?
+Researchers should choose the strongest design that remains credible in their specific context, rather than forcing an inappropriate method that offers theoretically stronger causal identification but rests on implausible assumptions.
 
-\paragraph{Be Transparent About Assumptions and Limitations.}
-Every causal claim rests on assumptions.
-State them explicitly.
-Discuss their plausibility in your specific context.
-Acknowledge what could go wrong.
-Transparency about limitations does not weaken a paper; it strengthens it by demonstrating that the authors understand the evidence they are providing.
+The second principle is \emph{transparency about assumptions and limitations}.
+Every causal claim, whether from an RCT or an observational study, rests on assumptions that cannot be definitively verified.
+Rigorous research practice demands that these assumptions be stated explicitly, their plausibility discussed in the specific research context, and potential violations acknowledged forthrightly.
+Transparency about limitations does not weaken a research contribution; rather, it strengthens it by demonstrating that the authors understand the nature of the evidence they are providing and the conditions under which their conclusions hold.
 
-\paragraph{Conduct Sensitivity Analysis.}
-Since identifying assumptions is untestable, explore how conclusions change if assumptions are violated.
-Use Rosenbaum bounds, examine parallel trends robustness, apply multiple estimators, and conduct placebo tests.
-If conclusions are robust across these checks, confidence grows; if they are fragile, appropriate caution is warranted.
+Third, because identifying assumptions are fundamentally untestable, researchers should \emph{conduct systematic sensitivity analysis} exploring how conclusions would change if assumptions were violated.
+For matching studies, Rosenbaum bounds quantify the strength of unmeasured confounding required to overturn findings.
+For difference-in-differences, researchers should examine robustness to alternative pre-trend specifications and conduct event study analyses.
+Applying multiple estimators with different identifying assumptions---and reporting whether they yield consistent conclusions---provides additional evidence about the robustness of findings.
+When conclusions survive these diagnostic checks, confidence in their validity grows; when they prove fragile, appropriate caution and qualification are warranted.
 
-\paragraph{Embrace Triangulation.}
-No single study, however well-designed, provides definitive evidence.
-Knowledge accumulates through replication across contexts, methods, and research teams.
-When RCTs, observational studies, and qualitative research all point in the same direction, confidence grows.
-When they diverge, the discrepancy is informative---perhaps effects are context-dependent, or perhaps some studies have unrecognized biases.
+Fourth, researchers should \emph{embrace triangulation} as a strategy for building cumulative knowledge.
+No single study, however well-designed and carefully executed, provides definitive evidence about causal relationships.
+Scientific knowledge accumulates through replication across different contexts, methods, and research teams.
+When randomized experiments, quasi-experimental observational studies, and qualitative research all point in the same direction, our collective confidence in the underlying causal relationship grows substantially.
+When different approaches yield divergent conclusions, the discrepancy itself is informative: perhaps effects are genuinely context-dependent, varying across populations or settings in ways that merit investigation; or perhaps some studies contain unrecognized biases that others avoid.
+Either way, the apparent contradiction advances understanding more than any single study could.
 
-\paragraph{Report Effect Heterogeneity.}
-Average effects often hide substantial variation.
-A tool that improves productivity by 10\% on average might help novices by 30\% while slowing experts by 10\%.
-Examining how effects vary across subgroups---by experience level, project type, programming language---provides more actionable insights than a single average and helps readers assess external validity to their context.
+Fifth, researchers should \emph{report effect heterogeneity} rather than focusing exclusively on average treatment effects.
+Population averages often conceal substantial variation across subgroups that is more actionable than the overall mean.
+A tool that improves productivity by 10\% on average might help novices by 30\% while actually slowing experienced developers by 10\%---information far more useful to practitioners than the aggregate figure alone.
+Examining how effects vary across observable characteristics---developer experience, project type, programming language, organizational context---provides insights that help readers assess whether findings are likely to generalize to their own situations.
 
-\paragraph{Communicate Uncertainty Honestly.}
-Statistical significance is not the same as practical importance or certainty.
-Report confidence intervals, discuss the magnitude of effects in practical terms, and acknowledge when evidence is suggestive rather than definitive.
-Overclaiming undermines scientific credibility; appropriate humility builds trust.
+Finally, researchers should \emph{communicate uncertainty honestly}.
+Statistical significance is neither equivalent to practical importance nor a guarantee of correctness.
+Reporting confidence intervals conveys the precision of estimates; discussing effect magnitudes in substantively meaningful terms helps readers evaluate practical relevance; acknowledging when evidence is suggestive rather than definitive maintains scientific integrity.
+Overclaiming---presenting tentative findings as established facts---undermines the credibility of individual researchers and the field as a whole.
+Appropriate epistemic humility, by contrast, builds trust and enables research to inform practice even when certainty remains elusive.
 
 \subsection{The Value of Imperfect Evidence}
 
-It is tempting to conclude that without a perfect randomized experiment, we cannot learn anything about causation.
-This is too pessimistic.
-Imperfect evidence, accumulated thoughtfully, can guide decisions better than no evidence or purely intuitive reasoning.
+Given the stringent assumptions underlying causal inference and the many threats to validity that observational studies face, it might be tempting to conclude that without a perfect randomized experiment, we cannot learn anything meaningful about causation.
+This conclusion, while superficially rigorous, is ultimately too pessimistic to serve as a guide for research practice.
+Imperfect evidence, accumulated thoughtfully across multiple studies and methods, can guide decisions far better than no evidence at all or purely intuitive reasoning based on anecdote and conventional wisdom.
 
-Consider the following hypothetical example: Should an organization adopt a new static analysis tool?
-A correlational study finds that repositories using the tool have 20\% fewer bugs.
-This is not causal evidence---maybe better-organized teams adopt the tool and also write better code.
-But a difference-in-differences study finds that bug rates drop by 15\% after adoption, with no pre-trend.
-A matching study on similar repositories finds a 12\% reduction.
-Developer interviews reveal that the tool catches common mistakes.
+Consider a practical decision: Should a software organization adopt a new static analysis tool?
+A correlational study finds that repositories currently using the tool exhibit 20\% fewer bugs than those that do not.
+This association, while suggestive, is not causal evidence---perhaps better-organized teams both adopt sophisticated tooling and write higher-quality code, with no genuine effect of the tool itself.
+But suppose a difference-in-differences study exploiting staggered adoption finds that bug rates drop by 15\% after repositories adopt the tool, with no evidence of differential pre-trends.
+A propensity score matching study comparing adopters to similar non-adopters finds a 12\% reduction.
+Qualitative interviews with developers reveal that the tool catches common coding mistakes that previously slipped through review.
 
-No single study is definitive.
-But together, they suggest the tool probably helps, though the effect might be smaller than naive correlations suggest, and might vary across contexts.
-This is useful guidance---not certainty, but evidence that can inform a reasoned decision.
+No single study in this portfolio is methodologically definitive.
+The DiD study might suffer from time-varying confounders; the matching study cannot account for unobserved selection; the interviews provide mechanism but not magnitude.
+Yet together, these studies suggest that the tool probably provides genuine benefits, though the effect size might be smaller than naive correlations suggest and likely varies across contexts and development practices.
+This is useful guidance for organizational decision-making---not certainty, but evidence that substantially improves upon intuition alone.
 
-The goal of causal inference in software engineering is not to achieve epistemological perfection but to provide better evidence than we would have otherwise.
-By using rigorous designs where possible, being transparent about limitations, and triangulating across studies, researchers can contribute genuine knowledge even in a field where randomized experiments are rare and observational data are imperfect.
-The credibility of causal claims ultimately rests on transparently examining their plausibility, demonstrating robustness to reasonable violations, and honestly communicating what the evidence can and cannot tell about the problem at hand.
+The goal of causal inference in software engineering is not to achieve epistemological perfection---an unattainable standard in any empirical science---but to provide better evidence than we would have otherwise.
+By employing the most rigorous designs feasible in each context, maintaining transparency about assumptions and limitations, conducting systematic sensitivity analyses, and triangulating across complementary studies, researchers can contribute genuine knowledge to a field where randomized experiments remain rare and observational data inevitably imperfect.
+The credibility of causal claims ultimately rests not on claiming that assumptions are satisfied, but on transparently examining their plausibility, demonstrating robustness to reasonable violations, and honestly communicating what the evidence can---and cannot---tell us about the phenomena under investigation.
