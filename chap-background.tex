@@ -200,7 +200,7 @@ A single coefficient averaging across all contexts may be misleading for any par
 \paragraph{The Table 2 Fallacy: Misinterpreting ``Controlled'' Estimates.}
 These problems manifest in a pervasive interpretive error that Westreich and Greenland term the ``Table 2 Fallacy''~\cite{westreich2013table}: The belief that if a coefficient ``remains significant after controlling for $Z$,'' the association must be causal.
 This interpretation fails for multiple reasons:
-\begin{itemize}
+\begin{itemize}[leftmargin=15pt]
     \item If $Z$ is a mediator, the controlled estimate underestimates the true effect.
     \item If $Z$ is a collider, conditioning on it introduces spurious association.
     \item If $Z$ is a confounder but imperfectly measured, residual confounding persists.
@@ -245,64 +245,244 @@ The goal of this thesis is not to dismiss all prior work based on multivariate r
 \section{Formalizing Causal Inference}
 \label{sec:formalism}
 
-Having motivated the need for rigorous causal reasoning, we now present the formal foundations.
-This section develops the notation and assumptions required for the identification strategies presented later.
+Having motivated the need for rigorous causal reasoning through the pitfalls of naive approaches, we now turn to the formal foundations.
+The goal of formalization is not mathematical abstraction for its own sake, but precision: To state exactly what we mean by a ``causal effect,'' to articulate the assumptions required to estimate it, and to derive the logical consequences of those assumptions.
+Without this precision, debates about causation devolve into disputes over intuition; with it, we can identify exactly where disagreements lie and what evidence would resolve them.
+
+Two complementary frameworks dominate modern causal inference.
+The \emph{potential outcomes framework}, developed by Neyman and formalized by Rubin, defines causation through counterfactual comparison: What would have happened under alternative treatments?
+The \emph{graphical causal model framework}, developed by Pearl, represents causal relationships as directed graphs and provides algorithmic tools for determining when causal effects can be estimated from observational data.
+Though they differ in formalism and emphasis, the two frameworks are mathematically compatible and often yield identical conclusions.
+The choice between them is largely one of convenience and communication: Potential outcomes excel at defining estimands and clarifying what randomization achieves; graphical models excel at encoding assumptions visually and deriving adjustment strategies.
 
 \subsection{The Potential Outcomes Framework}
 
-For centuries, researchers have attempted to answer questions of the form: In a population, does an intervention (or treatment) $X$ lead to a change in outcome $Y$?
-The potential outcomes framework provides a mathematical language for this question.
+The potential outcomes framework begins with a deceptively simple question: What does it mean to say that $X$ causes $Y$?
+The answer, formalized through counterfactual reasoning, is that $X$ causes $Y$ for a particular unit if $Y$ would have been different had $X$ been different, holding all else constant.
+This definition transforms causation from a vague philosophical concept into a precise comparison between two states of the world---one in which treatment occurs and one in which it does not.
 
-\paragraph{Notation.} For each unit $i$ in the population, define:
-\begin{itemize}
-    \item $Y_i^1$: the potential outcome if unit $i$ receives treatment
-    \item $Y_i^0$: the potential outcome if unit $i$ does not receive treatment
-    \item $D_i \in \{0, 1\}$: the treatment indicator (1 if treated, 0 otherwise)
-    \item $Y_i = D_i \cdot Y_i^1 + (1 - D_i) \cdot Y_i^0$: the observed outcome
+\paragraph{Notation and Setup.}
+Consider a population of units indexed by $i = 1, \ldots, N$.
+Each unit is characterized by a treatment indicator $D_i \in \{0, 1\}$, where $D_i = 1$ indicates that unit $i$ received treatment and $D_i = 0$ indicates control.
+The key conceptual move is to posit that each unit has \emph{two} potential outcomes:
+\begin{itemize}[leftmargin=15pt]
+    \item $Y_i^1$: The outcome that \emph{would} obtain if unit $i$ receives treatment ($D_i = 1$)
+    \item $Y_i^0$: The outcome that \emph{would} obtain if unit $i$ does not receive treatment ($D_i = 0$)
 \end{itemize}
-
-\paragraph{Causal Estimands.} The individual treatment effect $\tau_i = Y_i^1 - Y_i^0$ is fundamentally unobservable---we can never see both potential outcomes for the same unit.
-Instead, we focus on population-level quantities:
-\begin{align}
-    \text{Average Treatment Effect (ATE)} &= E[Y^1 - Y^0] \\
-    \text{Average Treatment Effect on the Treated (ATT)} &= E[Y^1 - Y^0 | D = 1]
-\end{align}
-
-\paragraph{Identifying Assumptions.} To estimate causal effects from observed data, we require assumptions that link observables to counterfactuals:
-\begin{itemize}
-    \item \textbf{SUTVA (Stable Unit Treatment Value Assumption)}: The potential outcomes for unit $i$ depend only on $i$'s treatment status, not on others' treatments.
-    This rules out interference and spillover effects.
-    
-    \item \textbf{Ignorability (Unconfoundedness)}: Conditional on observed covariates $X$, treatment assignment is independent of potential outcomes: $(Y^1, Y^0) \perp D | X$.
-    This assumes no unmeasured confounding.
-    
-    \item \textbf{Overlap (Positivity)}: Every unit has positive probability of receiving either treatment: $0 < P(D=1|X) < 1$ for all $X$.
-    This ensures we can compare treated and untreated units with similar characteristics.
-\end{itemize}
-
-Under these assumptions, the ATE is identified as:
+These potential outcomes exist conceptually for every unit, regardless of which treatment the unit actually receives.
+The observed outcome is determined by which potential outcome is ``revealed'' by the treatment assignment:
 \begin{equation}
-    ATE = E_X[E[Y|D=1, X] - E[Y|D=0, X]]
+    Y_i = D_i \cdot Y_i^1 + (1 - D_i) \cdot Y_i^0
 \end{equation}
+This switching equation makes explicit that we observe $Y_i^1$ when $D_i = 1$ and $Y_i^0$ when $D_i = 0$, but never both.
+
+\paragraph{The Fundamental Problem of Causal Inference.}
+The individual causal effect for unit $i$ is defined as:
+\begin{equation}
+    \tau_i = Y_i^1 - Y_i^0
+\end{equation}
+This quantity answers the question: How much would $i$'s outcome change if we switched $i$ from control to treatment?
+The difficulty---which Holland famously termed the ``fundamental problem of causal inference''---is that $\tau_i$ is inherently unobservable.
+We can observe at most one of $Y_i^1$ or $Y_i^0$ for any given unit; the other remains forever counterfactual.
+A developer either adopts a tool or does not; a project either uses one language or another.
+We cannot rewind time and observe what would have happened under the alternative.
+
+This impossibility of observing individual causal effects has profound implications.
+It means that causal inference is fundamentally a problem of \emph{missing data}: For every treated unit, we are missing the control outcome; for every control unit, we are missing the treated outcome.
+The entire enterprise of causal inference consists of finding ways to fill in these missing potential outcomes---or, more precisely, to estimate population summaries without needing to observe them individually.
+
+\paragraph{Causal Estimands.}
+Since individual effects are unobservable, we focus on population-level summaries.
+The most common estimand is the \emph{Average Treatment Effect} (ATE):
+\begin{equation}
+    \text{ATE} = E[Y^1 - Y^0] = E[Y^1] - E[Y^0]
+\end{equation}
+The ATE answers: On average across the population, how much does treatment change outcomes?
+This is the quantity of interest when we ask whether a policy should be adopted universally.
+
+An alternative estimand is the \emph{Average Treatment Effect on the Treated} (ATT):
+\begin{equation}
+    \text{ATT} = E[Y^1 - Y^0 \mid D = 1]
+\end{equation}
+The ATT answers: Among those who actually received treatment, what was the average effect?
+This is relevant when evaluating an existing program: Given that certain people chose to participate, did participation help them?
+Note that ATE and ATT coincide only when treatment effects are homogeneous or when treatment assignment is independent of potential outcomes.
+
+Other estimands include the \emph{Average Treatment Effect on the Controls} (ATC), \emph{quantile treatment effects} (effects on specific percentiles of the outcome distribution), and \emph{conditional average treatment effects} (CATEs) that allow effects to vary with observed characteristics.
+The choice of estimand should be guided by the substantive question, not statistical convenience.
+
+\paragraph{Why Simple Comparisons Fail.}
+A naive approach to estimating the ATE would compare mean outcomes between treated and control groups:
+\begin{equation}
+    E[Y \mid D=1] - E[Y \mid D=0]
+\end{equation}
+Expanding this in terms of potential outcomes reveals the problem:
+\begin{align}
+    E[Y \mid D=1] - E[Y \mid D=0] &= E[Y^1 \mid D=1] - E[Y^0 \mid D=0] \\
+    &= \underbrace{E[Y^1 \mid D=1] - E[Y^0 \mid D=1]}_{\text{ATT}} + \underbrace{E[Y^0 \mid D=1] - E[Y^0 \mid D=0]}_{\text{Selection Bias}}
+\end{align}
+The first term is the ATT---the causal effect among the treated.
+The second term is \emph{selection bias}: The difference in baseline potential outcomes between those who select into treatment and those who do not.
+If treatment is self-selected, these groups may differ systematically even in the absence of treatment.
+High-ability developers may adopt new tools precisely because they are high-ability; comparing their outcomes to non-adopters confounds the tool's effect with pre-existing ability differences.
+
+The observed difference equals the causal effect only when selection bias is zero---that is, when $E[Y^0 \mid D=1] = E[Y^0 \mid D=0]$.
+This holds when treatment is randomly assigned, but rarely otherwise.
+
+\paragraph{Identifying Assumptions.}
+To bridge the gap between observable quantities and causal estimands, we require assumptions that discipline how potential outcomes relate to treatment assignment.
+Three assumptions are foundational:
+
+\begin{enumerate}[leftmargin=15pt]
+    \item \textbf{Stable Unit Treatment Value Assumption (SUTVA).}
+    This assumption has two components.
+    First, \emph{no interference}: The potential outcomes for unit $i$ depend only on $i$'s own treatment status, not on the treatment status of other units.
+    If one developer's adoption of a tool changes another developer's productivity (through collaboration, knowledge sharing, or competition), SUTVA is violated.
+    Second, \emph{no hidden variations of treatment}: There is only one version of treatment, so $Y_i^1$ is well-defined.
+    If ``adopting a tool'' means different things for different developers (some use it intensively, others superficially), the single potential outcome $Y_i^1$ may be poorly defined.
+    
+    SUTVA is often violated in networked settings.
+    If developers on the same team influence each other, individual-level analysis may be inappropriate; the relevant unit may be the team, not the developer.
+    
+    \item \textbf{Ignorability (Unconfoundedness, Conditional Independence).}
+    Conditional on observed covariates $X$, treatment assignment is independent of potential outcomes:
+    \begin{equation}
+        (Y^1, Y^0) \perp D \mid X
+    \end{equation}
+    This assumption asserts that, among units with identical observed characteristics, treatment is as-if randomly assigned.
+    Any systematic differences between treated and control groups are fully captured by $X$; once we condition on $X$, no unmeasured confounders remain.
+    
+    Ignorability is the critical assumption for observational studies.
+    It is inherently untestable---we cannot verify that all confounders have been measured because we cannot observe the unmeasured ones.
+    Its plausibility rests entirely on substantive knowledge of the data-generating process.
+    
+    \item \textbf{Overlap (Positivity, Common Support).}
+    For all values of $X$ in the population, both treatment states have positive probability:
+    \begin{equation}
+        0 < P(D=1 \mid X) < 1 \quad \text{for all } X
+    \end{equation}
+    This ensures that for any combination of covariates, we can find both treated and untreated units, enabling comparison.
+    If some covariate combinations are treated with probability 1 or 0, we have no counterfactual basis for estimating effects in that region.
+    
+    Overlap is testable: We can examine whether the distributions of covariates (or propensity scores) in treated and control groups have common support.
+    Violations suggest that certain treatment effects are not identified from the data.
+\end{enumerate}
+
+\paragraph{Identification Under Ignorability.}
+Under SUTVA, ignorability, and overlap, the ATE is identified from observed data.
+The key insight is that ignorability allows us to substitute observable conditional expectations for unobservable potential outcome means:
+\begin{align}
+    E[Y^1] &= E_X[E[Y^1 \mid X]] = E_X[E[Y^1 \mid X, D=1]] = E_X[E[Y \mid X, D=1]] \\
+    E[Y^0] &= E_X[E[Y^0 \mid X]] = E_X[E[Y^0 \mid X, D=0]] = E_X[E[Y \mid X, D=0]]
+\end{align}
+The first equality uses iterated expectations.
+The second uses ignorability: $E[Y^1 \mid X] = E[Y^1 \mid X, D=1]$ because treatment is independent of potential outcomes given $X$.
+The third uses the switching equation: Among the treated, observed $Y$ equals $Y^1$.
+
+Therefore:
+\begin{equation}
+    \text{ATE} = E_X[E[Y \mid D=1, X] - E[Y \mid D=0, X]]
+\end{equation}
+This expression involves only observable quantities: Conditional means of $Y$ given treatment status and covariates, averaged over the covariate distribution.
+Various estimation strategies---regression adjustment, propensity score matching, inverse probability weighting, doubly robust estimation---implement this identification result using different statistical approaches.
 
 \subsection{Graphical Causal Models}
 
-An alternative formalization uses directed acyclic graphs (DAGs) to represent causal relationships~\cite{pearl2009causality}.
+While the potential outcomes framework excels at defining estimands and clarifying the role of randomization, it is less helpful for reasoning about \emph{which} variables to condition on.
+The graphical causal model framework, developed by Pearl and colleagues, addresses this gap by representing causal assumptions as directed acyclic graphs (DAGs) and providing algorithmic criteria for determining when causal effects are identifiable~\cite{pearl2009causality}.
 
-\paragraph{Notation.} A DAG $G = (V, E)$ consists of variables (nodes) and directed edges representing direct causal effects.
-An edge $X \to Y$ indicates that $X$ directly causes $Y$.
+\paragraph{Directed Acyclic Graphs.}
+A DAG $G = (V, E)$ consists of a set of nodes $V$ representing variables and a set of directed edges $E$ representing direct causal relationships.
+An edge $X \to Y$ asserts that $X$ has a direct causal effect on $Y$---changing $X$ while holding all other causes of $Y$ fixed would change $Y$.
+The graph is ``acyclic'' because no variable can be its own ancestor: Following directed edges, one can never return to the starting node.
+This rules out simultaneous causation (which requires more complex frameworks) but permits chains of causation over time.
 
-\paragraph{The do-Operator.} Pearl distinguishes between observational conditioning $P(Y|X=x)$ and interventional conditioning $P(Y|do(X=x))$.
-The latter represents the distribution of $Y$ when $X$ is externally set to $x$, erasing all arrows into $X$.
+The power of DAGs lies in what they make explicit.
+Every arrow represents a causal claim; every absent arrow asserts the absence of a direct effect.
+Critics can challenge a causal model by questioning specific edges: ``Why do you assume $X$ affects $Y$ directly?'' or ``Have you considered that $Z$ might cause both $X$ and $Y$?''
+This transparency is impossible with regression equations, where causal assumptions are buried in the choice of variables and functional forms.
 
-\paragraph{Identification via Back-Door Criterion.} The causal effect of $X$ on $Y$ is identified by adjusting for a set $Z$ if:
-\begin{enumerate}
-    \item $Z$ blocks all back-door paths from $X$ to $Y$ (paths with an arrow into $X$)
-    \item $Z$ contains no descendants of $X$
+\paragraph{Paths and Associations.}
+In a DAG, variables can be associated through multiple mechanisms.
+A \emph{path} is any sequence of edges connecting two variables, regardless of direction.
+Three types of paths are fundamental:
+
+\begin{enumerate}[leftmargin=15pt]
+    \item \emph{Causal paths} (or directed paths): $X \to \cdots \to Y$.
+    All edges point from $X$ toward $Y$.
+    These represent the causal effect of $X$ on $Y$, possibly mediated through intermediate variables.
+    
+    \item \emph{Back-door paths} (or confounding paths): $X \leftarrow \cdots \to Y$ or $X \leftarrow \cdots \leftarrow Z \to \cdots \to Y$.
+    These paths have an arrow \emph{into} $X$ and connect $X$ to $Y$ through a common cause.
+    They represent spurious association due to confounding.
+    
+    \item \emph{Collider paths}: $X \to \cdots \to C \leftarrow \cdots \leftarrow Y$.
+    These paths pass through a \emph{collider}---a variable with arrows pointing into it from both directions.
+    Collider paths are naturally ``blocked'' and do not transmit association unless we condition on the collider (or its descendants), at which point they become ``open.''
 \end{enumerate}
-When satisfied: $P(Y|do(X=x)) = \sum_z P(Y|X=x, Z=z)P(Z=z)$.
 
-The graphical framework complements potential outcomes by making causal assumptions visually explicit and providing algorithmic tools for determining identifiability.
+\paragraph{d-Separation: When Variables Are Independent.}
+The criterion of \emph{d-separation} (``d'' for directional) determines when two variables are statistically independent given a conditioning set.
+A path between $X$ and $Y$ is \emph{blocked} by a set $Z$ if either:
+\begin{itemize}[leftmargin=15pt]
+    \item The path contains a non-collider (a variable with at most one arrow pointing in) that is in $Z$, or
+    \item The path contains a collider that is \emph{not} in $Z$ and has no descendants in $Z$.
+\end{itemize}
+Variables $X$ and $Y$ are d-separated by $Z$ if all paths between them are blocked by $Z$.
+D-separation implies conditional independence: If $X$ and $Y$ are d-separated by $Z$ in the graph, then $X \perp Y \mid Z$ in any distribution compatible with the graph.
+
+The practical implication is that we can read off conditional independence relations directly from the graph, without computing probabilities.
+This allows researchers to check whether their assumed causal structure is consistent with observed data (by testing the implied independencies) and to identify which variables must be conditioned on to block confounding.
+
+\paragraph{The do-Operator and Interventional Distributions.}
+The central distinction in Pearl's framework is between \emph{observing} that $X = x$ and \emph{intervening} to set $X = x$.
+These correspond to different probability distributions:
+\begin{itemize}[leftmargin=15pt]
+    \item $P(Y \mid X = x)$: The conditional distribution of $Y$ given that we \emph{observe} $X = x$.
+    This may reflect both the causal effect of $X$ on $Y$ and confounding from common causes.
+    
+    \item $P(Y \mid do(X = x))$: The distribution of $Y$ when we \emph{intervene} to set $X = x$, overriding whatever process normally determines $X$.
+    This isolates the causal effect, as the intervention breaks the connection between $X$ and its causes.
+\end{itemize}
+
+Graphically, the intervention $do(X = x)$ corresponds to \emph{graph surgery}: We delete all arrows pointing into $X$ (since the intervention replaces $X$'s natural causes) while preserving all arrows pointing out of $X$ (since $X$ still affects its descendants).
+In the modified graph, $X$ becomes an exogenous variable set to $x$, and the resulting distribution is the interventional distribution.
+
+The fundamental goal of causal inference is to estimate $P(Y \mid do(X = x))$ from observational data, which only provides $P(Y \mid X = x)$.
+When are these equal?
+Precisely when there is no confounding---that is, when all paths from $X$ to $Y$ except the causal paths are blocked.
+
+\paragraph{The Back-Door Criterion.}
+Pearl's back-door criterion provides a graphical test for when conditioning on a set of variables $Z$ suffices to identify the causal effect.
+A set $Z$ satisfies the back-door criterion relative to $(X, Y)$ if:
+\begin{enumerate}[leftmargin=15pt]
+    \item No variable in $Z$ is a descendant of $X$ (to avoid conditioning on mediators or colliders on the causal path).
+    \item $Z$ blocks all back-door paths from $X$ to $Y$ (paths with an arrow into $X$).
+\end{enumerate}
+
+When the back-door criterion is satisfied, the interventional distribution is identified by adjustment:
+\begin{equation}
+    P(Y \mid do(X = x)) = \sum_z P(Y \mid X = x, Z = z) P(Z = z)
+\end{equation}
+This formula has a natural interpretation: We compute the effect of $X$ on $Y$ within each stratum defined by $Z$, then average over the distribution of $Z$ in the population.
+The result is the causal effect, purged of confounding.
+
+The back-door criterion illuminates the ``bad controls'' problem discussed earlier.
+Conditioning on a mediator (a descendant of $X$ on the causal path) violates condition 1 and blocks part of the causal effect.
+Conditioning on a collider opens a previously blocked path and introduces bias.
+The graphical framework provides a systematic way to determine which variables should and should not be included in an adjustment set.
+
+\paragraph{Beyond the Back-Door Criterion.}
+When no set of observed variables satisfies the back-door criterion---perhaps because key confounders are unmeasured---causal effects may still be identifiable through alternative strategies.
+Pearl's do-calculus provides a complete set of rules for determining identifiability from any combination of observational and experimental data.
+The \emph{front-door criterion}, for instance, identifies causal effects through mediating variables when the direct path is confounded but the mediator-outcome relationship is not.
+Instrumental variables, discussed in Section~\ref{sec:identification}, can be understood graphically as exploiting exogenous variation that affects treatment but not outcomes directly.
+
+\paragraph{Connecting the Frameworks.}
+Though developed independently, the potential outcomes and graphical frameworks are mathematically compatible.
+The potential outcomes condition of ignorability---$(Y^1, Y^0) \perp D \mid X$---corresponds to d-separation in an appropriately constructed graph: $X$ d-separates $D$ from the potential outcomes when $X$ blocks all back-door paths.
+The two frameworks offer complementary strengths: Potential outcomes provide a rigorous language for estimands and clarify what randomization achieves; graphs provide visual representation of assumptions and algorithmic tools for determining adjustment sets.
+Fluency in both is valuable for the applied researcher.
 
 
 \section{Identification Strategies}
