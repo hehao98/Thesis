@@ -275,21 +275,19 @@ The observed outcome is determined by which potential outcome is ``revealed'' by
     Y_i = D_i \cdot Y_i(1) + (1 - D_i) \cdot Y_i(0)
 \end{equation}
 This switching equation makes explicit that we observe $Y_i(1)$ when $D_i = 1$ and $Y_i(0)$ when $D_i = 0$, but never both.
-
-\paragraph{The Fundamental Problem of Causal Inference.}
 The individual causal effect for unit $i$ is defined as:
 \begin{equation}
     \tau_i = Y_i(1) - Y_i(0)
 \end{equation}
 This quantity answers the question: How much would $i$'s outcome change if we switched $i$ from control to treatment?
-The difficulty---which Holland famously termed the ``fundamental problem of causal inference''---is that $\tau_i$ is inherently unobservable.
+The challenge is that $\tau_i$ is inherently unobservable.
 We can observe at most one of $Y_i(1)$ or $Y_i(0)$ for any given unit; the other remains forever counterfactual.
 A developer either adopts a tool or does not; a project either uses one language or another.
 We cannot rewind time and observe what would have happened under the alternative.
 
 This impossibility of observing individual causal effects has profound implications.
 It means that causal inference is fundamentally a problem of \emph{missing data}: For every treated unit, we are missing the control outcome; for every control unit, we are missing the treated outcome.
-The entire enterprise of causal inference consists of finding ways to fill in these missing potential outcomes---or, more precisely, to estimate population summaries without needing to observe them individually.
+The entire enterprise of causal inference consists of finding ways to fill missing potential outcomes---or, more precisely, to estimate population summaries without needing to observe them individually.
 
 \paragraph{Causal Estimands.}
 Since individual effects are unobservable, we focus on population-level summaries.
@@ -319,13 +317,12 @@ A naive approach to estimating the ATE would compare mean outcomes between treat
 Expanding this in terms of potential outcomes reveals the problem:
 \begin{align}
     E[Y \mid D=1] - E[Y \mid D=0] &= E[Y(1) \mid D=1] - E[Y(0) \mid D=0] \\
-    &= \underbrace{E[Y(1) \mid D=1] - E[Y(0) \mid D=1]}_{\text{ATT}} + \underbrace{E[Y(0) \mid D=1] - E[Y(0) \mid D=0]}_{\text{Selection Bias}}
+    &= \underbrace{E[Y(1) \mid D=1] - E[Y(0) \mid D=1]}_{\text{ATT}} \\ &+ \underbrace{E[Y(0) \mid D=1] - E[Y(0) \mid D=0]}_{\text{Selection Bias}}
 \end{align}
 The first term is the ATT---the causal effect among the treated.
 The second term is \emph{selection bias}: The difference in baseline potential outcomes between those who select into treatment and those who do not.
 If treatment is self-selected, these groups may differ systematically even in the absence of treatment.
-High-ability developers may adopt new tools precisely because they are high-ability; comparing their outcomes to non-adopters confounds the tool's effect with pre-existing ability differences.
-
+High-ability developers may adopt new tools precisely because they are high-ability; comparing their outcomes with those of non-adopters confounds the tool's effect with pre-existing ability differences.
 The observed difference equals the causal effect only when selection bias is zero---that is, when $E[Y(0) \mid D=1] = E[Y(0) \mid D=0]$.
 This holds when treatment is randomly assigned, but rarely otherwise.
 
@@ -340,7 +337,6 @@ Three assumptions are foundational:
     If one developer's adoption of a tool changes another developer's productivity (through collaboration, knowledge sharing, or competition), SUTVA is violated.
     Second, \emph{no hidden variations of treatment}: There is only one version of treatment, so $Y_i(1)$ is well-defined.
     If ``adopting a tool'' means different things for different developers (some use it intensively, others superficially), the single potential outcome $Y_i(1)$ may be poorly defined.
-    
     SUTVA is often violated in networked settings.
     If developers on the same team influence each other, individual-level analysis may be inappropriate; the relevant unit may be the team, not the developer.
     
@@ -351,10 +347,9 @@ Three assumptions are foundational:
     \end{equation}
     This assumption asserts that, among units with identical observed characteristics, treatment is as-if randomly assigned.
     Any systematic differences between treated and control groups are fully captured by $X$; once we condition on $X$, no unmeasured confounders remain.
-    
     Ignorability is the critical assumption for observational studies.
-    It is inherently untestable---we cannot verify that all confounders have been measured because we cannot observe the unmeasured ones.
-    Its plausibility rests entirely on substantive knowledge of the data-generating process.
+    It is inherently untestable---because we cannot observe the unmeasured confounders, we cannot verify that all confounders have been measured.
+    Its plausibility rests entirely on the researcher's knowledge of the data-generating process---or the plausibility of the causal theory based on the researcher's knowledge.
     
     \item \textbf{Overlap (Positivity, Common Support).}
     For all values of $X$ in the population, both treatment states have positive probability:
@@ -363,8 +358,7 @@ Three assumptions are foundational:
     \end{equation}
     This ensures that for any combination of covariates, we can find both treated and untreated units, enabling comparison.
     If some covariate combinations are treated with probability 1 or 0, we have no counterfactual basis for estimating effects in that region.
-    
-    Overlap is testable: We can examine whether the distributions of covariates (or propensity scores) in treated and control groups have common support.
+    Overlap is testable: We can usually examine whether the distributions of covariates (or propensity scores) in treated and control groups have common support.
     Violations suggest that certain treatment effects are not identified from the data.
 \end{enumerate}
 
@@ -423,11 +417,7 @@ Three types of paths are fundamental:
 
 \paragraph{d-Separation: When Variables Are Independent.}
 The criterion of \emph{d-separation} (``d'' for directional) determines when two variables are statistically independent given a conditioning set.
-A path between $X$ and $Y$ is \emph{blocked} by a set $Z$ if either:
-\begin{itemize}[leftmargin=15pt]
-    \item The path contains a non-collider (a variable with at most one arrow pointing in) that is in $Z$, or
-    \item The path contains a collider that is \emph{not} in $Z$ and has no descendants in $Z$.
-\end{itemize}
+A path between $X$ and $Y$ is \emph{blocked} by a set $Z$ if either: (1) The path contains a non-collider (a variable with at most one arrow pointing in) that is in $Z$, or (2) The path contains a collider that is \emph{not} in $Z$ and has no descendants in $Z$.
 Variables $X$ and $Y$ are d-separated by $Z$ if all paths between them are blocked by $Z$.
 D-separation implies conditional independence: If $X$ and $Y$ are d-separated by $Z$ in the graph, then $X \perp Y \mid Z$ in any distribution compatible with the graph.
 
@@ -481,9 +471,7 @@ Instrumental variables, discussed in Section~\ref{sec:identification}, can be un
 \paragraph{Connecting the Frameworks.}
 Though developed independently, the potential outcomes and graphical frameworks are mathematically compatible.
 The potential outcomes condition of ignorability---$(Y(1), Y(0)) \perp D \mid X$---corresponds to d-separation in an appropriately constructed graph: $X$ d-separates $D$ from the potential outcomes when $X$ blocks all back-door paths.
-The two frameworks offer complementary strengths: Potential outcomes provide a rigorous language for estimands and clarify what randomization achieves; graphs provide visual representation of assumptions and algorithmic tools for determining adjustment sets.
-Fluency in both is valuable for the applied researcher.
-
+The two frameworks offer complementary strengths: Potential outcomes provide a rigorous language for estimands and clarify what randomization achieves; graphs provide a visual representation of assumptions and algorithmic tools for determining adjustment sets.
 
 \section{Identification Strategies}
 \label{sec:identification}
