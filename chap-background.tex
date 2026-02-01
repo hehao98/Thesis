@@ -480,14 +480,14 @@ Instrumental variables, discussed in Section~\ref{sec:identification}, can be un
 How should an applied researcher use these frameworks?
 In practice, neither framework is a statistical method that one ``runs'' on data.
 Rather, they are \emph{conceptual tools for reasoning about causation}---languages for articulating what causal effect one seeks to estimate, what assumptions would justify that estimate, and what could go wrong.
-The actual estimation is performed by specific statistical methods---difference-in-differences, regression discontinuity, instrumental variables, matching---which the following sections present.
+The actual estimation is performed using specific statistical methods---difference-in-differences, regression discontinuity, instrumental variables, and matching---which are presented in the following sections.
 Each method makes specific assumptions (parallel trends, continuity at the threshold, exclusion restrictions) that can be understood and justified within either framework.
 
 The practical workflow typically proceeds as follows.
 First, the researcher uses the potential outcomes framework to clarify the research question: What is the treatment?
 What is the outcome?
 What causal estimand (ATE, ATT, LATE) is of interest?
-Second, the researcher draws a causal graph encoding domain knowledge about the data-generating process, identifying potential confounders, mediators, and colliders.
+Second, the researcher draws a causal graph that encodes domain knowledge of the data-generating process, identifying potential confounders, mediators, and colliders.
 This step forces explicit articulation of assumptions that might otherwise remain implicit.
 Third, the researcher selects an identification strategy---a research design that, under stated assumptions, provides a credible path from observed data to causal effects.
 The choice depends on what natural experiments or exogenous variation the setting provides.
@@ -502,7 +502,7 @@ Understanding both frameworks enables researchers to see what each method achiev
 \section{Identification Strategies}
 \label{sec:identification}
 
-This section presents research designs that, under their stated assumptions, provide credible causal identification.
+This section presents designs that, under their stated assumptions, provide credible causal identification.
 Each method is characterized by its identifying assumption and the alternative explanations it rules out.
 Unlike the control strategies discussed in Section~\ref{sec:control}, identification strategies provide a complete path from observed data to causal effects---if their assumptions hold, the resulting estimates have a causal interpretation without requiring additional untestable claims.
 
