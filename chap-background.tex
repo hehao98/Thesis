@@ -249,15 +249,15 @@ Having motivated the need for rigorous causal reasoning through the pitfalls of 
 The goal of formalization is not mathematical abstraction for its own sake, but precision: To state exactly what we mean by a ``causal effect,'' to articulate the assumptions required to estimate it, and to derive the logical consequences of those assumptions.
 Without this precision, debates about causation devolve into disputes over intuition; with it, we can identify exactly where disagreements lie and what evidence would resolve them.
 
-Two complementary frameworks dominate modern causal inference.
-The \emph{potential outcomes framework}, developed by Neyman and formalized by Rubin, defines causation through counterfactual comparison: What would have happened under alternative treatments?
-The \emph{graphical causal model framework}, developed by Pearl, represents causal relationships as directed graphs and provides algorithmic tools for determining when causal effects can be estimated from observational data.
-Though they differ in formalism and emphasis, the two frameworks are mathematically compatible and often yield identical conclusions.
+Two complementary formal frameworks dominate modern causal inference.
+The \emph{potential outcomes framework}, developed by Neyman~\cite{neyman1923application} and formalized by Rubin~\cite{rubin1974estimating}, defines causation through counterfactual comparison: What would have happened under alternative treatments?
+The \emph{graphical causal model framework}, developed by Pearl~\cite{pearl2009causality}, represents causal relationships as directed graphs and provides algorithmic tools for determining when causal effects can be estimated from observational data.
+Though they differ in their choice of formalism and emphasis, the two frameworks are mathematically compatible and often complementary.
 The choice between them is largely one of convenience and communication: Potential outcomes excel at defining estimands and clarifying what randomization achieves; graphical models excel at encoding assumptions visually and deriving adjustment strategies.
 
 \subsection{The Potential Outcomes Framework}
 
-The potential outcomes framework begins with a deceptively simple question: What does it mean to say that $X$ causes $Y$?
+The potential outcomes framework begins with a simple question: What does it mean to say that $X$ causes $Y$?
 The answer, formalized through counterfactual reasoning, is that $X$ causes $Y$ for a particular unit if $Y$ would have been different had $X$ been different, holding all else constant.
 This definition transforms causation from a vague philosophical concept into a precise comparison between two states of the world---one in which treatment occurs and one in which it does not.
 
