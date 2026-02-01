@@ -493,7 +493,7 @@ Third, the researcher selects an identification strategy---a research design tha
 The choice depends on what natural experiments or exogenous variation the setting provides.
 Finally, the researcher implements the chosen method using appropriate statistical techniques, conducts robustness checks, and interprets results in light of the assumptions made.
 
-Though developed independently, the two frameworks are mathematically compatible and often used together in this workflow.
+Though developed independently, the two frameworks are mathematically compatible and often used together.
 The potential outcomes condition of ignorability---$(Y(1), Y(0)) \perp D \mid X$---corresponds precisely to d-separation in an appropriately constructed graph.
 In practice, potential outcomes excel at the first step (defining estimands and clarifying what we want to learn), while graphical models excel at the second step (encoding assumptions visually and determining what to adjust for).
 The frameworks thus serve as the \emph{theoretical foundation} upon which specific methods rest: A difference-in-differences analysis implicitly assumes that the parallel trends assumption blocks all back-door paths; an instrumental variable strategy assumes the instrument satisfies exclusion restrictions that can be depicted graphically.
