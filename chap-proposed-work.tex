@@ -1,2 +1,335 @@
-1. Strengthening Causal Evidence in the Fake Star Study (GMM Analysis)    
-2. Sensitivity Analysis: DiD vs. Alternative Designs in the Cursor Study (Importance of causal inference techniques in )
+The empirical studies presented in Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, and~\ref{chp:cursor} demonstrate that robust causal inference methods can expose systematic gaps between practitioner beliefs and empirical reality.
+In each case, conventional wisdom---that dependency pinning improves security, that artificial popularity signals provide sustainable promotional benefits, and that AI coding assistants unambiguously improve productivity---was challenged through rigorous causal analysis.
+These findings validate the central thesis that software engineering myths, when subjected to appropriate methodological scrutiny, often yield conclusions contrary to practitioners' expectations.
+
+Building on these contributions, this chapter outlines the proposed work that extends the thesis in three directions.
+First, I propose to strengthen the causal evidence in the fake GitHub stars study (Chapter~\ref{chp:fake-stars}) by applying panel generalized method of moments (GMM) analysis, addressing limitations in the current panel autoregression approach (Section~\ref{sec:proposed-gmm}).
+Second, I propose a systematic sensitivity analysis comparing difference-in-differences with alternative statistical approaches in the Cursor study (Chapter~\ref{chp:cursor}), demonstrating how the choice of analytical method affects conclusions and the importance of robust causal inference designs (Section~\ref{sec:proposed-sensitivity}).
+Third, I propose revisiting the longstanding debate on programming languages and defect proneness~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17, DBLP:journals/toplas/BergerHMVV19}, applying causal inference strategies to a question that has resisted consensus despite extensive prior research (Section~\ref{sec:proposed-language}).
+Together, these proposed contributions aim to provide both empirical insights and a methodological blueprint for future empirical software engineering research seeking to establish credible causal evidence.
+
+\section{Strengthening Causal Evidence in the Fake Star Study}
+\label{sec:proposed-gmm}
+
+\subsection{Motivation and Limitations of the Current Study}
+
+The fake GitHub stars study (Chapter~\ref{chp:fake-stars}) provides substantial evidence regarding the prevalence, characteristics, and short-term ineffectiveness of fake star campaigns.
+Specifically, the RQ4 analysis employs panel autoregression models to estimate the promotional effect of fake stars, finding that fake stars have a modest positive effect on attracting real stars in the short term (one to two months) but become a liability in the long term.
+While these findings are consistent across multiple model specifications (Table~\ref{tab:all-regressions}) and provide initial evidence against the growth hacking hypothesis, the current analysis has several methodological limitations that warrant additional investigation.
+
+First, the panel autoregression approach assumes that the relationship between fake stars and subsequent organic growth is unidirectional: repositories acquire fake stars, which then influences their ability to attract real stars.
+However, this assumption may be violated in practice.
+Repositories experiencing organic growth may also be more likely to purchase fake stars to amplify momentum, creating a potential reverse causality problem.
+The current study acknowledges this limitation but does not rigorously address it.
+
+Second, while the panel autoregression models include fixed effects to control for time-invariant repository characteristics, they do not fully account for time-varying confounders that may influence both fake star acquisition and organic growth.
+For example, external promotional activities (e.g., social media campaigns, conference presentations, or product launches) may coincide with fake star purchases, and these unobserved time-varying factors could bias the estimated effects.
+
+Third, the current analysis relies on the assumption that lagged values of fake and real stars are exogenous after conditioning on fixed effects.
+This assumption, while common in panel data analysis, may be violated if there exist dynamic feedback loops between variables that are not fully captured by the specified lag structure.
+
+\subsection{Proposed Analysis: Panel GMM Estimation}
+
+To address these limitations, I propose applying the Arellano-Bond dynamic panel generalized method of moments (GMM) estimator~\cite{arellano1991some}, which provides consistent estimates when explanatory variables are potentially endogenous.
+This approach has been successfully applied in Chapter~\ref{chp:cursor} to disentangle the temporal interactions between development velocity and software quality; applying the same methodology to the fake stars study would strengthen the causal evidence and enable more direct comparisons across the two empirical contexts.
+
+Specifically, I propose estimating the following dynamic panel model:
+\begin{equation}
+\label{eq:proposed-gmm-fake}
+\textit{real}_{i,t} = \mu_i + \lambda_t + \rho \cdot \textit{real}_{i,t-1} + \beta \cdot \textit{fake}_{i,t} + \Gamma' Z_{i,t} + \epsilon_{i,t}
+\end{equation}
+where $\textit{real}_{i,t}$ represents the count of real (non-fake) stars received by repository $i$ in month $t$; $\textit{fake}_{i,t}$ represents the count of fake stars acquired in month $t$; $\mu_i$ and $\lambda_t$ are repository and time fixed effects, respectively; $Z_{i,t}$ includes time-varying control variables (age, release status, authentic development activity); and $\epsilon_{i,t}$ is the error term.
+
+The key innovation of GMM estimation lies in its treatment of potentially endogenous regressors.
+Rather than assuming that $\textit{fake}_{i,t}$ is exogenous, the GMM approach uses lagged values of the endogenous variables as instrumental variables.
+Under the assumption that $\textit{fake}_{i,t-2}$, $\textit{fake}_{i,t-3}$, etc., are correlated with current fake stars but uncorrelated with the current error term (conditional on fixed effects), these lagged values provide valid instruments for identification.
+
+The validity of this approach rests on two testable assumptions:
+\begin{enumerate}[leftmargin=15pt]
+    \item \textbf{Instrument validity}: The lagged values must be uncorrelated with the contemporaneous error term, testable via the Sargan test of overidentifying restrictions.
+    \item \textbf{No serial correlation in the original errors}: While the first-differenced errors will exhibit first-order autocorrelation by construction, there should be no second-order autocorrelation, testable via the AR(2) test.
+\end{enumerate}
+
+Passing these specification tests would provide stronger evidence that the estimated effects represent genuine causal relationships rather than spurious correlations arising from endogeneity.
+
+\subsection{Expected Contributions}
+
+The proposed GMM analysis is expected to contribute in three ways.
+First, it will provide more rigorous causal evidence regarding the promotional (in)effectiveness of fake stars.
+If the GMM estimates confirm the panel autoregression findings---that fake stars provide only transient benefits and become long-term liabilities---this would substantially strengthen the main conclusions of Chapter~\ref{chp:fake-stars}.
+Alternatively, if GMM reveals different effect magnitudes or patterns, this would indicate that endogeneity bias affected the original estimates, providing important methodological insights.
+
+Second, the proposed analysis enables a direct methodological comparison between panel autoregression and panel GMM within the same empirical context.
+This comparison will illuminate when and why the choice of estimation method matters for causal inference in software engineering research.
+
+Third, this analysis demonstrates the generalizability of the GMM approach introduced in Chapter~\ref{chp:cursor} to different empirical settings within software engineering.
+By applying the same methodological framework across two distinct studies---one examining tool adoption effects on code quality (Cursor) and another examining promotional signal manipulation (fake stars)---the thesis establishes GMM as a broadly applicable technique for addressing endogeneity concerns in longitudinal software repository data.
+
+\section{Sensitivity Analysis: Comparing DiD with Alternative Designs}
+\label{sec:proposed-sensitivity}
+
+\subsection{Motivation: The Importance of Causal Identification}
+
+The Cursor study (Chapter~\ref{chp:cursor}) employs a difference-in-differences (DiD) design with staggered adoption to estimate the causal effect of Cursor adoption on development velocity and software quality.
+The study finds that Cursor adoption leads to transient velocity gains but persistent increases in technical debt, contradicting the prevailing narrative that AI coding assistants unambiguously improve developer productivity.
+These findings have important implications for practitioners, tool designers, and researchers.
+
+However, the study's conclusions depend critically on the methodological choice to employ DiD rather than simpler correlational or descriptive analyses.
+While Chapter~\ref{chp:cursor} provides extensive robustness checks comparing different DiD estimators (two-way fixed effects, Callaway and Sant'Anna, Borusyak imputation), it does not systematically compare DiD with fundamentally different analytical approaches.
+This leaves open the question: \emph{Would the study have reached the same conclusions using descriptive or correlational methods commonly employed in empirical software engineering research?}
+
+This question is not merely academic.
+If DiD and simpler methods yield similar conclusions, one might argue that the additional methodological complexity is unnecessary.
+Conversely, if DiD yields substantially different---and more credible---conclusions, this would demonstrate the practical importance of robust causal inference methods and motivate their broader adoption in the field.
+
+\subsection{Proposed Analysis: Systematic Methodological Comparison}
+
+I propose a systematic sensitivity analysis that re-analyzes the Cursor adoption data using a hierarchy of analytical approaches, ranging from purely descriptive statistics to sophisticated causal inference designs.
+Specifically, I will implement and compare the following approaches:
+
+\paragraph{Approach 1: Descriptive Comparison}
+The simplest approach compares outcome means between Cursor-adopting repositories and non-adopting repositories without adjusting for potential confounders.
+This approach, while naive, represents a baseline that practitioners might employ when evaluating tool effectiveness based on observational data.
+Formally, the descriptive estimator is:
+\begin{equation}
+\hat{\tau}_{\text{desc}} = \bar{Y}_{\text{treated}} - \bar{Y}_{\text{control}}
+\end{equation}
+where $\bar{Y}_{\text{treated}}$ and $\bar{Y}_{\text{control}}$ are the mean outcomes in the treated and control groups, respectively, computed over all post-adoption observations.
+
+\paragraph{Approach 2: Cross-Sectional Regression}
+A slightly more sophisticated approach uses cross-sectional regression to control for observable differences between treated and control repositories.
+This approach, common in empirical software engineering, estimates:
+\begin{equation}
+Y_{it} = \alpha + \beta D_{it} + \Gamma' Z_{it} + \epsilon_{it}
+\end{equation}
+where $D_{it}$ is a treatment indicator and $Z_{it}$ includes time-varying covariates (lines of code, contributors, stars, issues).
+The coefficient $\hat{\beta}$ estimates the treatment effect conditional on observables.
+
+\paragraph{Approach 3: One-Way Fixed Effects (Repository Only)}
+Adding repository fixed effects controls for time-invariant unobserved heterogeneity:
+\begin{equation}
+Y_{it} = \mu_i + \beta D_{it} + \Gamma' Z_{it} + \epsilon_{it}
+\end{equation}
+This approach, often described as ``controlling for project characteristics,'' is frequently employed in longitudinal software repository analyses.
+However, it does not account for time-varying confounders common to all repositories.
+
+\paragraph{Approach 4: One-Way Fixed Effects (Time Only)}
+Alternatively, time fixed effects control for macro trends affecting all repositories:
+\begin{equation}
+Y_{it} = \lambda_t + \beta D_{it} + \Gamma' Z_{it} + \epsilon_{it}
+\end{equation}
+This approach accounts for factors such as changes in GitHub platform features, seasonal patterns in open-source activity, or evolving LLM capabilities.
+
+\paragraph{Approach 5: Two-Way Fixed Effects (TWFE)}
+Combining both repository and time fixed effects yields the TWFE estimator, a standard approach in panel data analysis:
+\begin{equation}
+Y_{it} = \mu_i + \lambda_t + \beta D_{it} + \Gamma' Z_{it} + \epsilon_{it}
+\end{equation}
+As discussed in Chapter~\ref{chp:cursor}, TWFE can produce biased estimates under staggered adoption with heterogeneous treatment effects.
+
+\paragraph{Approach 6: Modern DiD Estimators}
+Finally, the Borusyak imputation estimator and Callaway-Sant'Anna estimator represent state-of-the-art approaches designed explicitly for staggered adoption settings.
+These methods avoid the ``forbidden comparisons'' that can bias TWFE estimates and provide valid inference under weaker assumptions.
+
+\subsection{Comparison Framework}
+
+For each approach, I will report:
+\begin{enumerate}[leftmargin=15pt]
+    \item \textbf{Point estimates and confidence intervals}: The estimated treatment effects on each outcome (commits, lines added, static analysis warnings, duplicate line density, code complexity).
+    \item \textbf{Statistical significance}: Whether the estimated effects are statistically distinguishable from zero at conventional significance levels.
+    \item \textbf{Sign and magnitude}: Whether the qualitative conclusions (e.g., velocity increase, quality decrease) are consistent across approaches.
+    \item \textbf{Temporal dynamics}: Whether the approaches capture the transient nature of velocity gains and the persistence of quality degradation.
+\end{enumerate}
+
+Additionally, I will assess the \emph{plausibility} of each approach by examining:
+\begin{itemize}[leftmargin=15pt]
+    \item \textbf{Pre-trend tests}: For approaches that support pre-trend analysis (DiD variants), whether parallel trends hold.
+    \item \textbf{Covariate balance}: For approaches involving comparison groups, whether treatment and control groups are comparable on observable characteristics.
+    \item \textbf{Specification tests}: For approaches with testable assumptions (e.g., Sargan test for GMM), whether the assumptions are satisfied.
+\end{itemize}
+
+\subsection{Expected Findings and Contributions}
+
+Based on preliminary intuitions and prior research on the limitations of correlational analysis~\cite{DBLP:journals/toplas/BergerHMVV19}, I hypothesize that:
+\begin{enumerate}[leftmargin=15pt]
+    \item Descriptive comparisons and cross-sectional regressions will overestimate the positive effects of Cursor adoption on velocity, as they fail to account for selection bias (more active repositories may be more likely to adopt Cursor).
+    \item Approaches without time fixed effects will confound Cursor effects with broader trends in open-source development activity.
+    \item TWFE may produce attenuated or biased estimates due to negative weighting from ``forbidden comparisons'' under treatment effect heterogeneity.
+    \item Modern DiD estimators will reveal the transient nature of velocity gains and the persistence of quality degradation that simpler methods obscure.
+\end{enumerate}
+
+If confirmed, these hypotheses would demonstrate that \emph{the choice of analytical method materially affects conclusions about AI tool effectiveness}.
+This finding would carry important implications for the interpretation of prior empirical studies on AI coding assistants, many of which rely on correlational evidence or simple before-after comparisons.
+More broadly, the proposed analysis would serve as a methodological case study illustrating why robust causal inference methods are necessary for credible empirical software engineering research.
+
+The expected contributions of this sensitivity analysis are threefold.
+First, it will provide a concrete demonstration of how different analytical approaches can lead to different conclusions on the same data, reinforcing the thesis argument that methodological rigor matters for myth-busting research.
+Second, it will offer practical guidance for researchers selecting among alternative analytical approaches, highlighting the trade-offs between simplicity and validity.
+Third, it will establish a template for systematic methodological comparison that can be applied in future empirical software engineering studies.
+
+\section{Revisiting the Programming Language and Defect Proneness Debate}
+\label{sec:proposed-language}
+
+\subsection{Background: A Longstanding Controversy}
+
+The question of whether programming language choice causally affects software defect rates represents one of the most contentious debates in empirical software engineering.
+The seminal study by \citet{DBLP:conf/sigsoft/RayPFD14}, published at FSE 2014 and later extended in Communications of the ACM~\cite{DBLP:journals/cacm/RayPDF17}, analyzed millions of commits across thousands of GitHub projects and concluded that programming language has a significant but modest effect on defect proneness.
+Specifically, the study found that functional languages (Haskell, Scala, Clojure) and statically-typed languages (Java, C\#, C++) are associated with fewer defects compared to dynamically-typed languages (JavaScript, Ruby, Python).
+
+However, a rigorous reproduction study by \citet{DBLP:journals/toplas/BergerHMVV19} challenged these conclusions on methodological grounds.
+The reproduction identified several issues with the original study: errors in language classification, inadequate handling of polyglot repositories, and the use of statistical models inappropriate for the data structure.
+After correcting these issues, the reproduction found that many of the original effects shrank dramatically or failed to replicate entirely.
+
+The ensuing debate~\cite{DBLP:journals/corr/abs-1911-07393, DBLP:journals/corr/abs-1911-11894} crystallized around a fundamental methodological question: Can observational analysis of GitHub data ever establish causal claims about the effect of programming language on defect proneness?
+The critics argued that such analysis ``is necessarily measuring correlation and not establishing causation, as it does not constitute an experiment''~\cite{DBLP:journals/corr/abs-1911-11894}.
+
+This debate exemplifies the broader problem motivating this thesis: the field's inability to reach consensus on empirical questions due to methodological limitations.
+Both the original study and the reproduction relied fundamentally on correlational analysis, even when sophisticated statistical controls were employed.
+Neither study employed identification strategies that would warrant causal interpretation under explicitly stated assumptions.
+I propose to revisit this debate using the causal inference lens developed throughout this thesis.
+
+\subsection{Proposed Analysis: Identification and Control Strategies}
+
+The fundamental challenge in establishing causal claims about programming language effects is that language choice is not random.
+Developers select languages based on project requirements, personal expertise, team composition, organizational mandates, and ecosystem maturity---factors that may independently affect defect rates.
+Simple comparisons between projects using different languages will therefore conflate language effects with selection effects.
+
+I propose a two-pronged approach that combines control strategies to address observable confounding with identification strategies that exploit quasi-experimental variation.
+
+\subsubsection{Control Strategy: Developer and Repository Fixed Effects}
+
+The first component of my approach leverages the panel structure of software repository data to control for unobserved heterogeneity at both the developer and repository levels.
+The key insight is that many developers and repositories work with multiple programming languages over time, creating within-unit variation that can be exploited for identification.
+
+Specifically, I propose estimating fixed effects models of the form:
+\begin{equation}
+\textit{Defects}_{ijt} = \alpha_i + \gamma_j + \lambda_t + \beta \cdot \textit{Language}_{ijt} + \Gamma' Z_{ijt} + \epsilon_{ijt}
+\end{equation}
+where $\textit{Defects}_{ijt}$ represents defect-related commits by developer $i$ in repository $j$ at time $t$; $\alpha_i$ represents developer fixed effects capturing time-invariant developer characteristics (skill level, coding style, attention to quality); $\gamma_j$ represents repository fixed effects capturing time-invariant project characteristics (complexity, domain, team culture); $\lambda_t$ represents time fixed effects capturing temporal trends; and $\textit{Language}_{ijt}$ indicates the programming language used.
+
+This specification controls for confounders that are constant within developers (e.g., expertise) or within repositories (e.g., project complexity).
+The identifying variation comes from developers who contribute to multiple languages or repositories that use multiple languages, enabling within-unit comparisons that are less susceptible to selection bias than between-unit comparisons.
+
+However, fixed effects alone cannot address time-varying confounders or selection on unobservables.
+A developer who switches from JavaScript to TypeScript may do so precisely because they are working on a more complex feature requiring stronger typing---in which case the language switch is confounded with feature complexity.
+This motivates the second component of my approach.
+
+\subsubsection{Identification Strategy: Natural Experiments on Language Migration}
+
+The second component exploits quasi-experimental variation arising from language migration events.
+Specifically, I propose to identify repositories that underwent systematic language migrations---transitions from one primary language to another---and use these events as natural experiments for estimating language effects.
+
+The rationale is as follows: When a repository migrates from Language A to Language B (e.g., from JavaScript to TypeScript), the migration decision is endogenous and cannot be treated as random.
+However, the \emph{timing} of migration may exhibit quasi-random variation conditional on the decision to migrate.
+Some repositories migrate early in the observation period; others migrate late.
+This staggered timing creates variation that can be exploited using the difference-in-differences framework developed in Chapter~\ref{chp:cursor}.
+
+Formally, let $E_j$ denote the time of language migration for repository $j$.
+I propose estimating:
+\begin{equation}
+\textit{Defects}_{jt} = \gamma_j + \lambda_t + \sum_{h=-k}^{m} \tau_h \cdot \mathbf{1}[t = E_j + h] + \Gamma' Z_{jt} + \epsilon_{jt}
+\end{equation}
+where $\tau_h$ represents the treatment effect $h$ periods relative to migration.
+For $h < 0$, these estimates serve as pre-trend tests; for $h \geq 0$, they estimate the dynamic effect of language migration on defect rates.
+
+This design requires several assumptions for causal interpretation:
+\begin{enumerate}[leftmargin=15pt]
+    \item \textbf{Parallel trends}: Absent migration, repositories that migrate early would have followed similar defect trajectories as repositories that migrate late.
+    \item \textbf{No anticipation}: Defect rates do not change in anticipation of migration (testable via pre-trend analysis).
+    \item \textbf{Exogenous timing}: Conditional on the decision to migrate, the timing of migration is not correlated with time-varying determinants of defect rates.
+\end{enumerate}
+
+While these assumptions cannot be directly verified, they can be assessed through diagnostic tests (pre-trend analysis, placebo tests) and robustness checks (varying the migration definition, excluding borderline cases).
+
+\subsubsection{Case Study: JavaScript to TypeScript Migration}
+
+As a concrete instantiation of this approach, I propose focusing on the JavaScript to TypeScript migration, which offers several methodological advantages.
+First, TypeScript is a strict superset of JavaScript, enabling gradual adoption that creates rich within-repository variation.
+Second, the migration is observable through file extensions and compilation configurations, enabling reliable identification of migration events.
+Third, the JavaScript/TypeScript comparison directly tests the hypothesis that static typing reduces defects---one of the central claims in the original language study~\cite{DBLP:conf/sigsoft/RayPFD14}.
+Fourth, JavaScript and TypeScript are the most common languages in the Cursor study dataset (Chapter~\ref{chp:cursor}), providing a natural connection between the proposed and completed work.
+
+I will operationalize the analysis as follows:
+\begin{enumerate}[leftmargin=15pt]
+    \item \textbf{Identify migration events}: For each repository, track the proportion of code in TypeScript versus JavaScript over time. Define migration as a sustained shift from majority-JavaScript to majority-TypeScript.
+    \item \textbf{Construct treatment and comparison groups}: Treated repositories are those that undergo migration during the observation period; comparison repositories are those that remain JavaScript-dominant throughout.
+    \item \textbf{Measure defect outcomes}: Operationalize defects using bug-fix commits (identified via commit message patterns~\cite{DBLP:conf/sigsoft/RayPFD14}), static analysis warnings (using the SonarQube infrastructure from Chapter~\ref{chp:cursor}), or issue reports labeled as bugs.
+    \item \textbf{Apply DiD estimation}: Estimate the effect of migration using the Borusyak imputation estimator, which has shown robust performance in Chapter~\ref{chp:cursor}.
+\end{enumerate}
+
+\subsection{Expected Challenges and Limitations}
+
+The proposed analysis faces several challenges that must be acknowledged.
+First, language migration is endogenous.
+Repositories migrate for reasons (e.g., perceived quality benefits, ecosystem maturity, team expertise) that may independently affect defect rates.
+While the DiD design addresses some selection concerns, it cannot fully eliminate confounding from time-varying factors correlated with both migration timing and defect rates.
+
+Second, the parallel trends assumption may be violated if migrating repositories are on different trajectories than non-migrating repositories before migration.
+Pre-trend tests can assess plausibility but cannot definitively validate the assumption.
+
+Third, the generalizability of findings from JavaScript/TypeScript migration to broader language comparisons is limited.
+TypeScript and JavaScript share syntax and runtime, making migration relatively seamless compared to more drastic language changes (e.g., from C++ to Rust).
+
+Fourth, defining and measuring ``defects'' in software repositories remains methodologically challenging.
+Bug-fix commits may be noisy proxies for actual defects; static analysis warnings include false positives; issue labels are inconsistently applied.
+
+Despite these limitations, the proposed analysis represents a substantial methodological advance over prior work.
+By combining control strategies (fixed effects) with identification strategies (DiD on migration events), the analysis provides stronger warrants for causal inference than purely correlational approaches.
+Moreover, the explicit articulation of identifying assumptions enables transparent evaluation of the analysis's strengths and limitations.
+
+\subsection{Expected Contributions}
+
+The proposed analysis on programming language and defect proneness is expected to contribute in several ways.
+First, it will provide new empirical evidence on a longstanding and consequential question, using methods that address the fundamental criticism leveled at prior work---that correlational analysis cannot establish causation.
+
+Second, it will demonstrate how the causal inference methods developed throughout this thesis (fixed effects, DiD, GMM) can be applied to questions beyond tool adoption and signal manipulation.
+This demonstrates the generalizability of the methodological framework and provides a template for future research on contested software engineering questions.
+
+Third, the analysis will produce a concrete comparison between correlational and causal inference approaches on the same data, complementing the proposed sensitivity analysis on the Cursor study (Section~\ref{sec:proposed-sensitivity}).
+Together, these analyses will provide compelling evidence for the thesis argument that robust causal inference methods yield different---and more trustworthy---findings than descriptive or correlational approaches.
+
+Finally, regardless of whether the analysis finds that programming language causally affects defect proneness, the methodological contribution stands.
+If the analysis finds effects consistent with prior work~\cite{DBLP:conf/sigsoft/RayPFD14}, it would provide stronger warrants for the claimed relationships.
+If the analysis finds null effects consistent with the reproduction~\cite{DBLP:journals/toplas/BergerHMVV19}, it would suggest that prior findings were indeed artifacts of confounding.
+Either way, the field benefits from a more rigorous treatment of a consequential question.
+
+\section{Timeline and Feasibility}
+\label{sec:proposed-timeline}
+
+Table~\ref{tab:proposed-timeline} presents the anticipated timeline for completing the proposed work.
+All three proposed contributions build on methodological foundations and data infrastructure developed through the completed empirical studies (Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, \ref{chp:cursor}), reducing implementation risk and enabling efficient execution.
+
+\begin{table}[h]
+\centering
+\caption{Proposed timeline for completing the thesis.}
+\label{tab:proposed-timeline}
+\begin{tabular}{llp{8cm}}
+\toprule
+\textbf{Phase} & \textbf{Timeline} & \textbf{Activities} \\
+\midrule
+Phase 1 & Months 1--3 & Implement GMM analysis for fake stars study (Section~\ref{sec:proposed-gmm}); conduct specification tests and robustness checks; write up findings. \\
+\addlinespace
+Phase 2 & Months 3--6 & Implement systematic methodological comparison for Cursor study (Section~\ref{sec:proposed-sensitivity}); document differences across approaches; synthesize lessons learned. \\
+\addlinespace
+Phase 3 & Months 5--9 & Construct language migration dataset; implement fixed effects and DiD analysis for language study (Section~\ref{sec:proposed-language}); conduct sensitivity analyses. \\
+\addlinespace
+Phase 4 & Months 9--12 & Integrate findings across all proposed work; revise and finalize thesis chapters; prepare thesis defense. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The proposed timeline reflects several efficiency considerations.
+First, the GMM analysis for the fake stars study (Phase 1) leverages existing code infrastructure from Chapter~\ref{chp:cursor}, requiring primarily adaptation rather than development from scratch.
+Second, the methodological comparison for the Cursor study (Phase 2) uses existing processed data and can proceed in parallel with the early stages of Phase 3.
+Third, the language migration study (Phase 3) requires new data collection but can leverage the SonarQube infrastructure and GHArchive pipelines developed for prior chapters.
+Finally, Phases 2 and 3 are designed to overlap, enabling efficient use of time while awaiting computational results.
+
+\section{Summary}
+
+This chapter has outlined three proposed contributions that extend the thesis in complementary directions.
+The GMM analysis for the fake stars study (Section~\ref{sec:proposed-gmm}) addresses endogeneity concerns in the current panel autoregression approach, strengthening the causal evidence for the finding that fake stars provide only transient promotional benefits.
+The systematic methodological comparison for the Cursor study (Section~\ref{sec:proposed-sensitivity}) demonstrates how the choice of analytical method affects conclusions, providing concrete evidence for the thesis argument that robust causal inference methods are necessary for credible empirical research.
+The programming language study (Section~\ref{sec:proposed-language}) applies the causal inference framework to a longstanding contested question, illustrating the generalizability of the approach and providing a template for future research.
+
+Together with the completed empirical studies, these proposed contributions demonstrate that \emph{the application of robust causal inference methods to software engineering myths exposes systematic gaps between practitioner beliefs and empirical reality}.
+By providing both empirical insights and methodological guidance, this thesis aims to contribute to the transformation of software engineering into a more evidence-based discipline.
