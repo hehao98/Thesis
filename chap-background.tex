@@ -212,7 +212,7 @@ The interpretation of ``controlling for $Z$'' depends entirely on the causal str
 
 The preceding discussion may leave the impression that multivariate regression is never useful for causal inference.
 This would be an overstatement---and an impractical one.
-The formal condition under which regression identifies causal effects is \emph{selection on observables} (also called conditional ignorability): $(Y^1, Y^0) \perp D \mid X$, meaning that conditional on observed covariates, treatment is as-if randomly assigned.
+The formal condition under which regression identifies causal effects is \emph{selection on observables} (also called conditional ignorability): $(Y(1), Y(0)) \perp D \mid X$, meaning that conditional on observed covariates, treatment is as-if randomly assigned.
 This requires that all confounders be measured and correctly included, that no post-treatment variables contaminate the model, and that there is sufficient overlap between the treated and control groups.
 Methods including propensity score matching, inverse probability weighting, and regression adjustment all rest on this same assumption---they differ only in implementation, not in the fundamental identification claim.
 
@@ -266,24 +266,24 @@ Consider a population of units indexed by $i = 1, \ldots, N$.
 Each unit is characterized by a treatment indicator $D_i \in \{0, 1\}$, where $D_i = 1$ indicates that unit $i$ received treatment and $D_i = 0$ indicates control.
 The key conceptual move is to posit that each unit has \emph{two} potential outcomes:
 \begin{itemize}[leftmargin=15pt]
-    \item $Y_i^1$: The outcome that \emph{would} obtain if unit $i$ receives treatment ($D_i = 1$)
-    \item $Y_i^0$: The outcome that \emph{would} obtain if unit $i$ does not receive treatment ($D_i = 0$)
+    \item $Y_i(1)$: The outcome that \emph{would} obtain if unit $i$ receives treatment ($D_i = 1$)
+    \item $Y_i(0)$: The outcome that \emph{would} obtain if unit $i$ does not receive treatment ($D_i = 0$)
 \end{itemize}
 These potential outcomes exist conceptually for every unit, regardless of which treatment the unit actually receives.
 The observed outcome is determined by which potential outcome is ``revealed'' by the treatment assignment:
 \begin{equation}
-    Y_i = D_i \cdot Y_i^1 + (1 - D_i) \cdot Y_i^0
+    Y_i = D_i \cdot Y_i(1) + (1 - D_i) \cdot Y_i(0)
 \end{equation}
-This switching equation makes explicit that we observe $Y_i^1$ when $D_i = 1$ and $Y_i^0$ when $D_i = 0$, but never both.
+This switching equation makes explicit that we observe $Y_i(1)$ when $D_i = 1$ and $Y_i(0)$ when $D_i = 0$, but never both.
 
 \paragraph{The Fundamental Problem of Causal Inference.}
 The individual causal effect for unit $i$ is defined as:
 \begin{equation}
-    \tau_i = Y_i^1 - Y_i^0
+    \tau_i = Y_i(1) - Y_i(0)
 \end{equation}
 This quantity answers the question: How much would $i$'s outcome change if we switched $i$ from control to treatment?
 The difficulty---which Holland famously termed the ``fundamental problem of causal inference''---is that $\tau_i$ is inherently unobservable.
-We can observe at most one of $Y_i^1$ or $Y_i^0$ for any given unit; the other remains forever counterfactual.
+We can observe at most one of $Y_i(1)$ or $Y_i(0)$ for any given unit; the other remains forever counterfactual.
 A developer either adopts a tool or does not; a project either uses one language or another.
 We cannot rewind time and observe what would have happened under the alternative.
 
@@ -295,14 +295,14 @@ The entire enterprise of causal inference consists of finding ways to fill in th
 Since individual effects are unobservable, we focus on population-level summaries.
 The most common estimand is the \emph{Average Treatment Effect} (ATE):
 \begin{equation}
-    \text{ATE} = E[Y^1 - Y^0] = E[Y^1] - E[Y^0]
+    \text{ATE} = E[Y(1) - Y(0)] = E[Y(1)] - E[Y(0)]
 \end{equation}
 The ATE answers: On average across the population, how much does treatment change outcomes?
 This is the quantity of interest when we ask whether a policy should be adopted universally.
 
 An alternative estimand is the \emph{Average Treatment Effect on the Treated} (ATT):
 \begin{equation}
-    \text{ATT} = E[Y^1 - Y^0 \mid D = 1]
+    \text{ATT} = E[Y(1) - Y(0) \mid D = 1]
 \end{equation}
 The ATT answers: Among those who actually received treatment, what was the average effect?
 This is relevant when evaluating an existing program: Given that certain people chose to participate, did participation help them?
@@ -318,15 +318,15 @@ A naive approach to estimating the ATE would compare mean outcomes between treat
 \end{equation}
 Expanding this in terms of potential outcomes reveals the problem:
 \begin{align}
-    E[Y \mid D=1] - E[Y \mid D=0] &= E[Y^1 \mid D=1] - E[Y^0 \mid D=0] \\
-    &= \underbrace{E[Y^1 \mid D=1] - E[Y^0 \mid D=1]}_{\text{ATT}} + \underbrace{E[Y^0 \mid D=1] - E[Y^0 \mid D=0]}_{\text{Selection Bias}}
+    E[Y \mid D=1] - E[Y \mid D=0] &= E[Y(1) \mid D=1] - E[Y(0) \mid D=0] \\
+    &= \underbrace{E[Y(1) \mid D=1] - E[Y(0) \mid D=1]}_{\text{ATT}} + \underbrace{E[Y(0) \mid D=1] - E[Y(0) \mid D=0]}_{\text{Selection Bias}}
 \end{align}
 The first term is the ATT---the causal effect among the treated.
 The second term is \emph{selection bias}: The difference in baseline potential outcomes between those who select into treatment and those who do not.
 If treatment is self-selected, these groups may differ systematically even in the absence of treatment.
 High-ability developers may adopt new tools precisely because they are high-ability; comparing their outcomes to non-adopters confounds the tool's effect with pre-existing ability differences.
 
-The observed difference equals the causal effect only when selection bias is zero---that is, when $E[Y^0 \mid D=1] = E[Y^0 \mid D=0]$.
+The observed difference equals the causal effect only when selection bias is zero---that is, when $E[Y(0) \mid D=1] = E[Y(0) \mid D=0]$.
 This holds when treatment is randomly assigned, but rarely otherwise.
 
 \paragraph{Identifying Assumptions.}
@@ -338,8 +338,8 @@ Three assumptions are foundational:
     This assumption has two components.
     First, \emph{no interference}: The potential outcomes for unit $i$ depend only on $i$'s own treatment status, not on the treatment status of other units.
     If one developer's adoption of a tool changes another developer's productivity (through collaboration, knowledge sharing, or competition), SUTVA is violated.
-    Second, \emph{no hidden variations of treatment}: There is only one version of treatment, so $Y_i^1$ is well-defined.
-    If ``adopting a tool'' means different things for different developers (some use it intensively, others superficially), the single potential outcome $Y_i^1$ may be poorly defined.
+    Second, \emph{no hidden variations of treatment}: There is only one version of treatment, so $Y_i(1)$ is well-defined.
+    If ``adopting a tool'' means different things for different developers (some use it intensively, others superficially), the single potential outcome $Y_i(1)$ may be poorly defined.
     
     SUTVA is often violated in networked settings.
     If developers on the same team influence each other, individual-level analysis may be inappropriate; the relevant unit may be the team, not the developer.
@@ -347,7 +347,7 @@ Three assumptions are foundational:
     \item \textbf{Ignorability (Unconfoundedness, Conditional Independence).}
     Conditional on observed covariates $X$, treatment assignment is independent of potential outcomes:
     \begin{equation}
-        (Y^1, Y^0) \perp D \mid X
+        (Y(1), Y(0)) \perp D \mid X
     \end{equation}
     This assumption asserts that, among units with identical observed characteristics, treatment is as-if randomly assigned.
     Any systematic differences between treated and control groups are fully captured by $X$; once we condition on $X$, no unmeasured confounders remain.
@@ -372,12 +372,12 @@ Three assumptions are foundational:
 Under SUTVA, ignorability, and overlap, the ATE is identified from observed data.
 The key insight is that ignorability allows us to substitute observable conditional expectations for unobservable potential outcome means:
 \begin{align}
-    E[Y^1] &= E_X[E[Y^1 \mid X]] = E_X[E[Y^1 \mid X, D=1]] = E_X[E[Y \mid X, D=1]] \\
-    E[Y^0] &= E_X[E[Y^0 \mid X]] = E_X[E[Y^0 \mid X, D=0]] = E_X[E[Y \mid X, D=0]]
+    E[Y(1)] &= E_X[E[Y(1) \mid X]] = E_X[E[Y(1) \mid X, D=1]] = E_X[E[Y \mid X, D=1]] \\
+    E[Y(0)] &= E_X[E[Y(0) \mid X]] = E_X[E[Y(0) \mid X, D=0]] = E_X[E[Y \mid X, D=0]]
 \end{align}
 The first equality uses iterated expectations.
-The second uses ignorability: $E[Y^1 \mid X] = E[Y^1 \mid X, D=1]$ because treatment is independent of potential outcomes given $X$.
-The third uses the switching equation: Among the treated, observed $Y$ equals $Y^1$.
+The second uses ignorability: $E[Y(1) \mid X] = E[Y(1) \mid X, D=1]$ because treatment is independent of potential outcomes given $X$.
+The third uses the switching equation: Among the treated, observed $Y$ equals $Y(1)$.
 
 Therefore:
 \begin{equation}
@@ -480,7 +480,7 @@ Instrumental variables, discussed in Section~\ref{sec:identification}, can be un
 
 \paragraph{Connecting the Frameworks.}
 Though developed independently, the potential outcomes and graphical frameworks are mathematically compatible.
-The potential outcomes condition of ignorability---$(Y^1, Y^0) \perp D \mid X$---corresponds to d-separation in an appropriately constructed graph: $X$ d-separates $D$ from the potential outcomes when $X$ blocks all back-door paths.
+The potential outcomes condition of ignorability---$(Y(1), Y(0)) \perp D \mid X$---corresponds to d-separation in an appropriately constructed graph: $X$ d-separates $D$ from the potential outcomes when $X$ blocks all back-door paths.
 The two frameworks offer complementary strengths: Potential outcomes provide a rigorous language for estimands and clarify what randomization achieves; graphs provide visual representation of assumptions and algorithmic tools for determining adjustment sets.
 Fluency in both is valuable for the applied researcher.
 
