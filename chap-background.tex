@@ -480,14 +480,14 @@ Instrumental variables, discussed in Section~\ref{sec:identification}, can be un
 How should an applied researcher use these frameworks?
 In practice, neither framework is a statistical method that one ``runs'' on data.
 Rather, they are \emph{conceptual tools for reasoning about causation}---languages for articulating what causal effect one seeks to estimate, what assumptions would justify that estimate, and what could go wrong.
-The actual estimation is performed using specific statistical methods---difference-in-differences, regression discontinuity, instrumental variables, and matching---which are presented in the following sections.
+The actual estimation is performed by specific statistical methods---difference-in-differences, regression discontinuity, instrumental variables, matching---which the following sections present.
 Each method makes specific assumptions (parallel trends, continuity at the threshold, exclusion restrictions) that can be understood and justified within either framework.
 
 The practical workflow typically proceeds as follows.
 First, the researcher uses the potential outcomes framework to clarify the research question: What is the treatment?
 What is the outcome?
 What causal estimand (ATE, ATT, LATE) is of interest?
-Second, the researcher draws a causal graph that encodes domain knowledge of the data-generating process, identifying potential confounders, mediators, and colliders.
+Second, the researcher draws a causal graph encoding domain knowledge about the data-generating process, identifying potential confounders, mediators, and colliders.
 This step forces explicit articulation of assumptions that might otherwise remain implicit.
 Third, the researcher selects an identification strategy---a research design that, under stated assumptions, provides a credible path from observed data to causal effects.
 The choice depends on what natural experiments or exogenous variation the setting provides.
@@ -502,7 +502,7 @@ Understanding both frameworks enables researchers to see what each method achiev
 \section{Identification Strategies}
 \label{sec:identification}
 
-This section presents designs that, under their stated assumptions, provide credible causal identification.
+This section presents research designs that, under their stated assumptions, provide credible causal identification.
 Each method is characterized by its identifying assumption and the alternative explanations it rules out.
 Unlike the control strategies discussed in Section~\ref{sec:control}, identification strategies provide a complete path from observed data to causal effects---if their assumptions hold, the resulting estimates have a causal interpretation without requiring additional untestable claims.
 
@@ -754,107 +754,453 @@ Credible IV analyses require transparent argument about why these alternative ch
 
 Unlike identification strategies, control strategies address specific sources of confounding without providing complete causal identification.
 They are valuable tools but should be combined with substantive arguments about remaining threats.
+The distinction is important: Identification strategies (RCTs, DiD, RDD, IV) provide a complete logical path from data to causal effects under their stated assumptions; control strategies reduce confounding but leave open the possibility that unmeasured confounders or other threats remain.
 
 \subsection{Matching and Propensity Scores}
 
-Matching constructs comparison groups by pairing treated units with similar untreated units based on observed covariates.
+\paragraph{Historical Context.}
+Matching---the idea of comparing treated units to similar untreated units---has ancient roots in experimental design, but its modern statistical formalization emerged in the 1970s and 1980s.
+Donald Rubin's 1973 paper on matching in observational studies provided theoretical foundations, and his collaboration with Paul Rosenbaum in 1983 introduced the propensity score, which revolutionized matching methods~\cite{rosenbaum1983central}.
+The propensity score reduced the ``curse of dimensionality'' in matching: Instead of finding exact matches on dozens of covariates (typically impossible), researchers could match on a single scalar summary.
+This innovation made matching practical for studies with many confounders and propelled its widespread adoption in epidemiology, economics, and the social sciences.
 
-\paragraph{Propensity Score.} The propensity score $e(X) = P(D=1|X)$ summarizes covariate information~\cite{rosenbaum1983central}.
-Under ignorability, matching on propensity scores balances observed confounders.
+\paragraph{Intuition.}
+The fundamental challenge in observational studies is that treated and control groups differ systematically.
+If we simply compare outcomes between GitHub repositories that adopted continuous integration (CI) and those that did not, any difference might reflect CI's effect or might reflect pre-existing differences between adopters and non-adopters.
+Perhaps repositories with more active maintainers both adopt CI and have better outcomes, regardless of CI.
 
-\paragraph{Limitation.} Matching only adjusts for \emph{observed} covariates.
-If important confounders are unmeasured---as is typical with repository data---estimates remain biased.
-Sensitivity analysis can assess robustness to unobserved confounding.
+Matching addresses this by constructing a comparison group that ``looks like'' the treatment group on observed characteristics.
+For each treated repository, we find untreated repositories with similar characteristics---similar size, age, programming language, contributor count---and compare outcomes within these matched pairs.
+If matching succeeds in balancing all confounders, the matched comparison approximates what a randomized experiment would have produced.
+
+The propensity score provides an elegant way to accomplish this.
+Rather than matching on each covariate separately, we model the probability of treatment given covariates and match on this single number.
+Rosenbaum and Rubin proved that if matching on all covariates would eliminate confounding, then matching on the propensity score does too.
+Intuitively, units with the same propensity score are equally likely to be treated based on observed characteristics, so treatment assignment among them is ``as if random'' with respect to those characteristics.
+
+\paragraph{Formal Framework.}
+Let $X_i$ denote a vector of pre-treatment covariates for unit $i$, $D_i \in \{0,1\}$ the treatment indicator, and $Y_i$ the outcome.
+The propensity score is defined as:
+\begin{equation}
+    e(X_i) = P(D_i = 1 \mid X_i)
+\end{equation}
+In practice, the propensity score is estimated via logistic regression or machine learning methods.
+Rosenbaum and Rubin's balancing theorem states that if treatment assignment is ignorable given $X$---that is, $(Y(1), Y(0)) \perp D \mid X$---then it is also ignorable given the propensity score:
+\begin{equation}
+    (Y(1), Y(0)) \perp D \mid e(X)
+\end{equation}
+
+Several matching methods use propensity scores:
+\begin{itemize}[leftmargin=15pt]
+    \item \textbf{Nearest-neighbor matching}: Each treated unit is matched to the control unit(s) with the closest propensity score.
+    \item \textbf{Caliper matching}: Matches are only accepted if the propensity score difference is below a threshold.
+    \item \textbf{Stratification}: Units are grouped into strata based on propensity score quantiles; effects are estimated within each stratum and pooled.
+    \item \textbf{Inverse probability weighting (IPW)}: Rather than matching, each unit is weighted by the inverse of its probability of receiving the treatment it actually received.
+\end{itemize}
+
+After matching, covariate balance is assessed by comparing means (or distributions) of covariates between matched treatment and control groups.
+Standardized mean differences below 0.1 are often considered acceptable.
+The treatment effect is then estimated as the difference in mean outcomes between matched groups.
+
+\paragraph{Limitations.}
+The critical limitation of matching is that it only adjusts for \emph{observed} covariates.
+If important confounders are unmeasured, matching does not eliminate their influence, and estimates remain biased.
+This is a fundamental limitation: No amount of statistical sophistication can adjust for variables you have not measured.
+
+In software engineering research, this limitation is particularly relevant.
+Repository data captures code and process metrics but often misses crucial factors: developer skill, organizational support, project importance, or strategic decisions.
+If projects adopt a tool because they face unusual challenges (and would have had worse outcomes regardless), matching on observable characteristics will not remove this selection bias.
+
+Sensitivity analysis methods---particularly Rosenbaum bounds---help assess how robust conclusions are to unmeasured confounding.
+These methods ask: ``How strong would an unmeasured confounder need to be to explain away the observed effect?''
+If the answer is ``implausibly strong,'' we gain some confidence; if a moderate confounder could reverse conclusions, we must acknowledge uncertainty.
+
+\paragraph{Application in Software Engineering.}
+Matching is well-suited for evaluating the effects of tool adoptions, process changes, or organizational decisions when randomization is infeasible.
+Consider studying whether adopting a static analysis tool reduces bug rates.
+Repositories that adopt static analysis may differ systematically from those that do not---perhaps they are larger, more active, or maintained by more experienced teams.
+These differences confound any naive comparison.
+
+A matching study would proceed as follows.
+First, identify treated repositories (those that adopted static analysis) and potential controls (those that did not).
+Second, estimate propensity scores using pre-treatment characteristics: repository age, programming language, number of contributors, prior commit frequency, prior bug rates, and any other available confounders.
+Third, match each treated repository to one or more control repositories with similar propensity scores.
+Fourth, verify that matching achieved covariate balance.
+Finally, compare post-adoption bug rates between matched treatment and control groups.
+
+The credibility of this analysis rests on the assumption that, conditional on the matched covariates, treatment assignment is as good as random.
+This is a strong assumption---unmeasured factors like developer expertise or organizational culture might still confound the comparison.
+Researchers should acknowledge this limitation, conduct sensitivity analyses, and interpret results as suggestive rather than definitive.
 
 \subsection{Fixed Effects and Panel Models}
 
-Fixed effects models exploit within-unit variation over time to control for time-invariant unobserved heterogeneity.
+\paragraph{Historical Context.}
+Fixed effects estimation emerged from the econometrics of panel data---datasets tracking the same entities over multiple time periods.
+The method has roots in early twentieth-century work on agricultural experiments and economic indices, but its modern formalization came in the 1960s and 1970s with the work of economists like Mundlak and Balestra.
+The Hausman test (1978) provided a principled way to choose between fixed and random effects specifications, and subsequent decades saw widespread adoption in labor economics, industrial organization, and policy evaluation.
+Panel methods became standard tools for controlling for unobserved heterogeneity in settings where randomization is impossible.
 
-\paragraph{Model.} The fixed effects specification:
+\paragraph{Intuition.}
+Fixed effects exploit a simple but powerful idea: If we observe the same unit (person, project, organization) over time, we can control for all characteristics of that unit that do not change over time, even if we cannot measure them.
+Consider the challenge of estimating whether adopting TypeScript improves code quality.
+Repositories using TypeScript might have better quality because TypeScript's type system catches bugs, or because repositories with disciplined development practices both adopt TypeScript and write better code.
+Developer skill, organizational culture, and codebase complexity are difficult to measure but might confound the comparison.
+
+Fixed effects address this by focusing on \emph{within-unit} variation.
+Rather than comparing TypeScript repositories to JavaScript repositories, we compare each repository to itself over time: How did its code quality change when it transitioned from JavaScript to TypeScript?
+By using each unit as its own control, we eliminate all time-invariant differences between units.
+If a repository has especially skilled maintainers, this affects both its pre-TypeScript and post-TypeScript periods equally and cannot explain any change at the transition.
+
+The key insight is that many confounders are time-invariant or change slowly.
+Developer ability, project complexity, organizational resources---these factors may differ dramatically across projects but remain relatively stable within a project over the study period.
+Fixed effects automatically control for all such factors without requiring us to measure them.
+
+\paragraph{Formal Framework.}
+Consider a panel dataset with $N$ entities observed over $T$ periods.
+Let $Y_{it}$ denote the outcome for entity $i$ at time $t$, $D_{it}$ the treatment indicator, and $X_{it}$ a vector of time-varying covariates.
+The fixed effects model is:
 \begin{equation}
-    Y_{it} = \alpha + \beta D_{it} + \mu_i + \epsilon_{it}
+    Y_{it} = \alpha + \beta D_{it} + X'_{it}\gamma + \mu_i + \epsilon_{it}
 \end{equation}
-uses entity-level dummies $\mu_i$ to absorb all time-invariant characteristics.
+where $\mu_i$ represents the fixed effect for entity $i$---a unit-specific intercept capturing all time-invariant characteristics.
 
-\paragraph{Limitation.} Fixed effects control only for \emph{time-invariant} confounders.
-If treatment adoption correlates with time-varying unobservables, estimates remain biased.
-Unlike DiD, fixed effects provides no parallel trends test or built-in falsification check.
+Estimation proceeds by ``demeaning'' the data: subtracting each variable's entity-specific mean.
+Define $\bar{Y}_i = \frac{1}{T}\sum_t Y_{it}$ and similarly for other variables.
+The within-transformed model is:
+\begin{equation}
+    (Y_{it} - \bar{Y}_i) = \beta (D_{it} - \bar{D}_i) + (X_{it} - \bar{X}_i)'\gamma + (\epsilon_{it} - \bar{\epsilon}_i)
+\end{equation}
+The fixed effects $\mu_i$ cancel out, and ordinary least squares on the transformed data yields consistent estimates of $\beta$ and $\gamma$.
+
+Time fixed effects can be added to control for common shocks affecting all units:
+\begin{equation}
+    Y_{it} = \alpha + \beta D_{it} + X'_{it}\gamma + \mu_i + \lambda_t + \epsilon_{it}
+\end{equation}
+This ``two-way fixed effects'' specification controls for both unit-specific and time-specific unobserved heterogeneity.
+It is the workhorse model for panel data analysis and underlies the standard difference-in-differences estimator.
+
+\paragraph{Limitations.}
+Fixed effects control only for \emph{time-invariant} confounders.
+If treatment adoption correlates with time-varying unobservables---factors that change over time and affect both treatment and outcomes---estimates remain biased.
+Consider a repository that adopts a new tool precisely when it receives a funding boost that also increases contributor activity.
+Fixed effects cannot disentangle the tool's effect from the funding's effect, because the funding-related improvement varies over time.
+
+A second limitation is that fixed effects provide no built-in falsification check.
+Unlike difference-in-differences, which allows testing parallel pre-trends, pure fixed effects estimation offers no clear diagnostic for whether the identifying assumption (no time-varying confounding) holds.
+This is why researchers often prefer DiD specifications that explicitly examine pre-treatment dynamics.
+
+Third, fixed effects discard between-unit variation, using only within-unit changes for identification.
+This can reduce statistical power, particularly if treatment status varies little within units.
+If most repositories either always have CI or never have CI, with few transitions, fixed effects estimation may be imprecise.
+
+\paragraph{Application in Software Engineering.}
+Fixed effects are appropriate when studying how outcomes change as repositories or developers adopt new practices, tools, or policies.
+Consider evaluating whether mandatory code review improves code quality.
+At some point, an organization mandates code review for all pull requests; we observe the same repositories before and after the mandate.
+
+A fixed effects analysis would estimate the change in code quality associated with the mandate, controlling for repository fixed effects (absorbing stable differences between repositories) and time fixed effects (absorbing industry-wide trends in quality).
+The treatment effect is identified from within-repository changes at the time of the mandate.
+
+The identifying assumption is that no other time-varying factors coincided with the mandate.
+If the organization simultaneously improved its CI pipeline, hired senior engineers, or changed leadership, these confound the estimate.
+Researchers should examine whether the mandate was exogenous to other changes and, where possible, look for falsification tests---for example, whether effects appear before the mandate (which would suggest confounding) or whether unrelated outcomes change (which would suggest broader organizational shifts).
 
 \subsection{Generalized Method of Moments}
 
-While DiD estimates treatment effects on outcomes, it does not directly capture dynamic relationships between variables.
-The generalized method of moments (GMM) framework addresses settings with:
-\begin{itemize}
-    \item Dynamic dependence (current outcomes depend on past outcomes)
-    \item Potential bidirectional causality between variables
-    \item Short panels with many entities
-\end{itemize}
+\paragraph{Historical Context.}
+The generalized method of moments (GMM) was formalized by Lars Peter Hansen in his 1982 \emph{Econometrica} paper, work that contributed to his 2013 Nobel Prize in Economics.
+GMM unified earlier estimation approaches---method of moments, instrumental variables, maximum likelihood---within a single framework based on moment conditions.
+For panel data with dynamic relationships, the Arellano-Bond estimator (1991) applied GMM to handle lagged dependent variables and endogeneity~\cite{arellano1991some}.
+This approach became central to empirical work in corporate finance, growth economics, and any field where current outcomes depend on past outcomes.
 
-\paragraph{Arellano-Bond Estimation.} For testing whether $X_t \to Y_t$ in the presence of intervention $D$~\cite{arellano1991some}:
+\paragraph{Intuition.}
+Many phenomena exhibit dynamic dependence: Today's code quality depends on yesterday's code quality; this month's contributor activity depends on last month's activity.
+Standard regression methods struggle with such settings because the lagged dependent variable is correlated with the error term in fixed effects models, leading to biased estimates.
+
+GMM addresses this by using lagged values of the dependent variable as instrumental variables for the first-differenced model.
+The intuition is that once we difference the data to remove fixed effects, lagged levels from earlier periods are correlated with the differenced lagged dependent variable (relevance) but uncorrelated with the differenced error term if errors are serially uncorrelated (exogeneity).
+This provides valid instruments for consistent estimation.
+
+Beyond handling dynamics, GMM is useful when researchers suspect bidirectional causality or want to test specific causal orderings.
+Does productivity affect tool adoption, or does tool adoption affect productivity?
+By specifying different lag structures and testing overidentifying restrictions, researchers can probe which causal directions the data support.
+
+\paragraph{Formal Framework.}
+Consider a dynamic panel model:
 \begin{equation}
 \label{eq:dynamic-gmm}
-    Y_{it} = \alpha + \rho Y_{i,t-1} + \beta D_{it} + \gamma X_{it} + \mu_i + \lambda_t + Z'_{it}\Theta + \epsilon_{it}
+    Y_{it} = \rho Y_{i,t-1} + \beta D_{it} + X'_{it}\gamma + \mu_i + \lambda_t + \epsilon_{it}
 \end{equation}
-First-differencing eliminates fixed effects; lagged values serve as instruments under sequential exogeneity~\cite{windmeijer2005finite}.
+where $\rho$ captures persistence in the outcome, and $\beta$ is the treatment effect of interest.
+The fixed effects $\mu_i$ create a correlation between $Y_{i,t-1}$ and the composite error $(\mu_i + \epsilon_{it})$, biasing OLS estimates.
 
-\paragraph{Application.} In this thesis, GMM complements DiD by decomposing mechanisms through which tool adoption affects long-term outcomes (Chapter~\ref{chp:cursor}).
+First-differencing eliminates the fixed effects:
+\begin{equation}
+    \Delta Y_{it} = \rho \Delta Y_{i,t-1} + \beta \Delta D_{it} + \Delta X'_{it}\gamma + \Delta \lambda_t + \Delta \epsilon_{it}
+\end{equation}
+But now $\Delta Y_{i,t-1} = Y_{i,t-1} - Y_{i,t-2}$ is correlated with $\Delta \epsilon_{it} = \epsilon_{it} - \epsilon_{i,t-1}$ through the common term $\epsilon_{i,t-1}$.
 
+The Arellano-Bond approach uses lagged levels $Y_{i,t-2}, Y_{i,t-3}, \ldots$ as instruments for $\Delta Y_{i,t-1}$.
+Under the assumption that errors are serially uncorrelated (sequential exogeneity), these lagged levels are uncorrelated with $\Delta \epsilon_{it}$ but correlated with $\Delta Y_{i,t-1}$.
+The moment conditions are:
+\begin{equation}
+    E[Y_{i,t-s} \cdot \Delta \epsilon_{it}] = 0 \quad \text{for } s \geq 2
+\end{equation}
 
-\section{Applicability to Software Engineering Research}
-\label{sec:applicability}
+GMM estimation combines all available moment conditions and weights them optimally.
+The Sargan-Hansen test of overidentifying restrictions assesses whether the instruments are jointly valid.
+The Arellano-Bond test for serial correlation checks whether errors are indeed uncorrelated at the required lags.
 
-The methods presented above were developed primarily in economics and epidemiology.
-Their application to software engineering requires attention to domain-specific considerations:
+System GMM extends this by adding level equations alongside differenced equations, using lagged differences as instruments for levels.
+This can improve efficiency, particularly when the outcome is persistent and levels carry substantial information.
 
-\paragraph{Data Availability.} Software repositories provide rich observational data---commits, issues, code metrics---but lack the experimental variation that enables clean identification.
-Natural experiments (policy changes, platform updates) are rare and often confounded.
+\paragraph{Limitations.}
+GMM requires careful specification and diagnostic testing.
+Weak instruments---lagged values that have low correlation with differenced variables---lead to imprecise and potentially biased estimates.
+Too many instruments (a common problem with long panels) can cause overfitting and make the Sargan-Hansen test unreliable.
+The sequential exogeneity assumption---that past outcomes affect current outcomes only through the specified dynamic structure, not through omitted time-varying confounders---is fundamentally untestable.
 
-\paragraph{Unit of Analysis.} Causal effects may operate at different levels (developer, project, organization) with potential interference across units.
-SUTVA violations are common when developers collaborate or projects share dependencies.
+GMM is also less transparent than DiD or fixed effects.
+The instrumental variables logic is subtle, and results can be sensitive to the number of lags used as instruments, the weighting matrix, and whether system GMM or difference GMM is employed.
+Researchers should report extensive sensitivity checks and diagnostics.
 
-\paragraph{Measurement.} Outcome variables (productivity, quality) are often proxied by imperfect metrics.
-Treatment timing may be measured with error.
-These measurement issues can attenuate estimates or introduce bias.
+\paragraph{Application in Software Engineering.}
+GMM is appropriate when studying dynamic relationships in software development---settings where current outcomes depend on past outcomes, and simple before-after comparisons may be misleading.
+Consider investigating whether adopting an AI coding assistant improves productivity.
+Productivity is persistent: A repository that was highly productive last month is likely to be productive this month.
+Failing to account for this persistence overstates the tool's effect if adoption coincided with an already-increasing productivity trend.
 
-\paragraph{External Validity.} Estimates from one context (e.g., open-source GitHub projects) may not generalize to others (e.g., proprietary enterprise development).
-Effect heterogeneity across contexts is the norm rather than the exception.
+A GMM analysis would model current productivity as depending on lagged productivity and treatment status:
+\begin{equation}
+    \text{Productivity}_{it} = \rho \cdot \text{Productivity}_{i,t-1} + \beta \cdot \text{AI\_Tool}_{it} + \mu_i + \lambda_t + \epsilon_{it}
+\end{equation}
+Using lagged productivity levels as instruments for differenced lagged productivity, GMM provides consistent estimates of both the persistence parameter $\rho$ and the treatment effect $\beta$.
 
-Despite these challenges, quasi-experimental methods offer substantial improvements over naive correlational analyses.
-The key is transparency: clearly stating assumptions, probing their plausibility, and acknowledging limitations.
+GMM can also help disentangle causal direction.
+Does using the AI tool cause higher productivity, or do more productive developers adopt AI tools?
+By testing whether lagged productivity predicts current tool use (and vice versa), and by examining whether effects appear before or after adoption, researchers can probe which causal story the data best support.
+While GMM cannot definitively establish causation, it provides more rigorous evidence than simple correlational analyses and can rule out certain causal orderings.
 
+In this thesis, GMM complements DiD by examining dynamic mechanisms through which tool adoption affects long-term outcomes (Chapter~\ref{chp:cursor}).
+DiD estimates the overall effect of adoption; GMM decomposes this effect into immediate impacts versus persistent changes, helping distinguish genuine productivity gains from temporary adjustment effects.
 
 \section{Threats to Validity in Causal Designs}
 \label{sec:threats}
 
-Every causal design faces threats that could undermine its validity.
-Rigorous research anticipates these threats and addresses them through design, analysis, or honest acknowledgment.
+Every causal design faces threats that could undermine its conclusions.
+Understanding these threats is essential for both designing studies and evaluating others' research.
+This section introduces the key categories of validity threats and the tools researchers use to assess robustness.
 
 \subsection{Internal Validity}
 
-Internal validity concerns whether the estimated effect reflects the true causal relationship in the study sample:
-\begin{itemize}
-    \item \textbf{Confounding}: Unmeasured variables affecting both treatment and outcome
-    \item \textbf{Selection Bias}: Non-random attrition or sample selection
-    \item \textbf{Measurement Error}: Mismeasured treatment or outcomes
-    \item \textbf{Spillovers}: Treatment effects propagating across units
-\end{itemize}
+Internal validity concerns whether the estimated effect reflects the true causal relationship within the study sample.
+A study has high internal validity if we can confidently attribute the observed outcome difference to the treatment rather than to other factors.
+The primary threats to internal validity include:
+
+\paragraph{Confounding.}
+Confounding occurs when an unmeasured variable affects both treatment assignment and outcomes, creating a spurious association.
+If repositories with more experienced maintainers both adopt new tools and produce higher-quality code, the observed tool-quality association may reflect maintainer skill rather than the tool's effect.
+Randomization eliminates confounding by construction; observational designs must either measure and adjust for confounders or rely on design-based strategies (DiD, RDD, IV) that address confounding through other means.
+
+\paragraph{Selection Bias.}
+Selection bias arises when the process determining who enters the study or who receives treatment is related to potential outcomes.
+If only repositories facing quality problems adopt a static analysis tool (hoping it will help), comparing adopters to non-adopters confounds the tool's effect with the pre-existing quality differential.
+Selection can also occur through differential attrition: if struggling projects drop out of the study, the remaining sample is no longer representative.
+
+\paragraph{Measurement Error.}
+Imprecise or biased measurement of treatments or outcomes can attenuate or distort estimates.
+If we measure ``tool adoption'' using an imperfect proxy (e.g., presence of a configuration file that may not indicate actual use), treatment status is mismeasured, biasing estimates toward zero.
+If outcomes are measured with systematic error correlated with treatment, bias can go in either direction.
+
+\paragraph{Spillovers and Interference.}
+The Stable Unit Treatment Value Assumption (SUTVA) requires that one unit's treatment does not affect another's outcomes.
+In software engineering, this assumption is often violated: Developers share knowledge, projects share dependencies, and practices spread through organizations.
+If adopting a tool in one repository improves code quality in related repositories (through shared learning or code reuse), simple treatment-control comparisons underestimate the tool's total effect.
 
 \subsection{External Validity}
 
-External validity concerns whether findings generalize beyond the study context:
-\begin{itemize}
-    \item \textbf{Population Generalizability}: Do effects hold in other populations?
-    \item \textbf{Temporal Generalizability}: Do effects persist over time?
-    \item \textbf{Context Dependence}: Do effects vary across settings?
-\end{itemize}
+External validity concerns whether findings generalize beyond the specific study context to other populations, settings, or times.
+A study can have perfect internal validity---correctly identifying the causal effect in its sample---yet provide little guidance for other contexts.
+
+\paragraph{Population Generalizability.}
+Effects estimated on one population may not apply to others.
+Studies of open-source GitHub repositories may not generalize to proprietary enterprise development.
+Effects observed among early adopters (often more skilled or motivated) may not hold for later adopters.
+Volunteer participants in experiments may differ systematically from the broader developer population.
+
+\paragraph{Temporal Generalizability.}
+Effects observed at one time may not persist as technology and practices evolve.
+The productivity impact of early AI coding assistants may change dramatically as the tools improve.
+Best practices from the 2010s may not apply in the 2030s.
+
+\paragraph{Context Dependence.}
+Effects may depend on organizational culture, developer expertise, project type, programming language, or other contextual factors in ways that limit transferability.
+A tool that helps novices may hinder experts; a practice that works for small teams may fail at scale.
+
+\paragraph{Treatment Heterogeneity.}
+The average treatment effect reported in studies may mask substantial variation across subgroups.
+Understanding who benefits and who does not is often more actionable than knowing the average effect.
 
 \subsection{Sensitivity Analysis}
 
-Given that identifying assumptions are untestable, sensitivity analysis explores how conclusions change under assumption violations:
-\begin{itemize}
-    \item \textbf{Rosenbaum Bounds}: How much unmeasured confounding would be needed to explain away the result?
-    \item \textbf{Parallel Trends Robustness}: How sensitive are DiD estimates to pre-trend extrapolation?
-    \item \textbf{Multiple Estimators}: Do different estimators with different assumptions yield consistent conclusions?
-\end{itemize}
+Since identifying assumptions are fundamentally untestable, sensitivity analysis explores how conclusions would change if assumptions were violated.
+Rather than claiming assumptions are satisfied, rigorous research examines their plausibility and demonstrates robustness.
 
-The credibility of causal claims rests not on claiming assumptions are satisfied, but on transparently examining their plausibility and demonstrating robustness to reasonable violations.
+\paragraph{Rosenbaum Bounds.}
+For matching and propensity score studies, Rosenbaum bounds quantify how strong an unmeasured confounder would need to be to explain away the observed effect.
+If the result is robust to confounders implausibly stronger than any known variable, confidence increases.
+If a moderate confounder could reverse conclusions, appropriate caution is warranted.
+
+\paragraph{Parallel Trends Robustness.}
+For difference-in-differences, researchers examine sensitivity to pre-trend specifications.
+Do conclusions change if we use different pre-treatment windows?
+What if we allow for differential pre-trends and extrapolate them?
+Event study plots visualizing pre-treatment coefficients help assess whether the parallel trends assumption is plausible.
+
+\paragraph{Multiple Estimators.}
+When different estimators with different assumptions yield consistent conclusions, confidence grows.
+If TWFE, Callaway-Sant'Anna, and imputation estimators all show similar effects, the result is unlikely to be an artifact of any single method's assumptions.
+Divergent results signal that conclusions depend on methodological choices and warrant investigation.
+
+\paragraph{Placebo Tests.}
+Placebo tests examine whether effects appear where they should not.
+If treatment effects appear before treatment occurs, this suggests confounding rather than causation.
+If treatment affects outcomes it should not influence (e.g., pre-determined characteristics), something is wrong with the design.
+Passing placebo tests does not prove validity, but failing them is informative.
+
+\subsection{Construct Validity}
+
+Beyond internal and external validity, construct validity concerns whether the measured variables actually capture the theoretical constructs of interest.
+In software engineering, this is particularly challenging:
+
+\paragraph{Operationalizing Treatments.}
+``Adopting continuous integration'' may mean different things: Setting up a CI system? Actually running tests on every commit? Responding to failures promptly?
+How we operationalize treatment affects what effect we estimate.
+
+\paragraph{Operationalizing Outcomes.}
+``Code quality'' might be measured as defect density, code review comments, static analysis warnings, or maintainability indices.
+These proxies may not perfectly capture the underlying construct, and different operationalizations can yield different conclusions.
+
+\paragraph{Measurement Validity.}
+Even well-defined metrics may be measured imperfectly.
+Commit counts as a productivity measure conflate productive work with commit granularity conventions.
+Issue counts conflate bugs with feature requests and user reports with automated detections.
+
+The credibility of causal claims rests not on claiming that assumptions are satisfied, but on transparently examining their plausibility and demonstrating robustness to reasonable violations.
+
+
+\section{A Pragmatic Approach to Causal Inference in Software Engineering}
+\label{sec:pragmatic}
+
+The preceding sections have presented causal inference with appropriate rigor, emphasizing the assumptions underlying each method and the threats that can undermine conclusions.
+This rigor is essential---but it can also be paralyzing.
+If every observational study suffers from potential confounding, if every natural experiment has debatable assumptions, and if even randomized experiments face external validity concerns, can we learn anything useful?
+
+This section argues that we can, provided we approach causal inference pragmatically.
+The goal is not epistemological perfection but actionable evidence that improves upon intuition and correlational analysis.
+Software engineering researchers must navigate trade-offs thoughtfully, choosing appropriate methods for their contexts and communicating uncertainty honestly.
+
+\subsection{The Internal-External Validity Trade-off}
+
+The most fundamental trade-off in empirical research is between internal validity (did we correctly identify the causal effect in our study?) and external validity (does the effect generalize to settings we care about?).
+These two goals are often in tension, and no study achieves perfection on both.
+
+Consider a randomized controlled trial evaluating an AI coding assistant.
+If we recruit volunteer participants, run the study in a controlled environment, and measure carefully defined tasks, we may achieve excellent internal validity---we know the tool caused the observed productivity difference.
+But the participants may not represent typical developers; the tasks may not reflect real work; the environment may not capture the pressures and interruptions of actual practice.
+The clean causal estimate may not generalize to contexts that matter.
+
+Conversely, a large-scale observational study of AI tool adoption across thousands of GitHub repositories captures real-world variation and naturally represents diverse contexts.
+But without randomization, we cannot be certain that observed productivity differences reflect the tool's effect rather than selection---perhaps more capable developers adopted the tool first.
+The estimate may be externally valid (it reflects what happens in the real world) but internally questionable (we do not know if the tool caused it).
+
+This trade-off is not a flaw to be fixed but a reality to be navigated.
+The goal is not to find the one perfect study but to build knowledge through multiple studies with different strengths, whose convergent findings provide confidence that transcends any single study's limitations.
+
+\subsection{A Hierarchy of Evidence}
+
+Rather than treating causal inference as all-or-nothing, it is useful to think of a spectrum of evidence quality.
+Different research questions warrant different standards, and different contexts permit different designs.
+
+At the top of the hierarchy sit randomized experiments with representative samples---rare in software engineering but occasionally achievable through A/B testing at large technology companies.
+These studies provide strong internal validity, and external validity when samples are representative.
+
+Below this are natural experiments and quasi-experimental designs: regression discontinuity, instrumental variables, and well-executed difference-in-differences studies.
+These achieve internal validity under specific assumptions that may be partially testable (e.g., parallel pre-trends, no manipulation at thresholds).
+External validity depends on how representative the setting is.
+
+Next come observational studies with careful control strategies: matching, propensity scores, fixed effects, and theory-driven covariate adjustment.
+These reduce confounding but cannot eliminate it; internal validity depends on untestable assumptions about unobserved confounders.
+
+At the bottom are descriptive and correlational studies, which document patterns but make no causal claims.
+These are valuable for exploration, hypothesis generation, and understanding prevalence, but they cannot answer ``what if'' questions about interventions.
+
+\paragraph{What the Hierarchy Does Not Mean.}
+The hierarchy does not imply that lower-tier studies are worthless or that only randomized experiments deserve publication.
+A thoughtful observational study of real-world tool adoption may provide more useful guidance than a randomized experiment on a contrived task with unrepresentative participants.
+The hierarchy is about the strength of \emph{causal} evidence, not overall scientific value.
+
+Moreover, the hierarchy is not about methodological purity.
+A difference-in-differences study with obviously violated parallel trends is worse than a careful descriptive study that does not overclaim.
+Execution quality matters as much as design choice.
+
+\subsection{Principles for Pragmatic Practice}
+
+Given these trade-offs, how should software engineering researchers approach causal inference?
+Several principles can guide pragmatic practice.
+
+\paragraph{Match the Design to the Question and Context.}
+Not every question requires the strongest causal design.
+For exploratory research, descriptive studies are appropriate.
+For consequential decisions (should we mandate this tool?), stronger evidence is warranted.
+Consider what designs are feasible given the setting: Can you randomize? Is there a natural experiment? What data are available?
+Choose the strongest design that is credible in your context, rather than forcing an inappropriate method.
+
+\paragraph{Be Transparent About Assumptions and Limitations.}
+Every causal claim rests on assumptions.
+State them explicitly.
+Discuss their plausibility in your specific context.
+Acknowledge what could go wrong.
+Transparency about limitations does not weaken a paper; it strengthens it by demonstrating that the authors understand the evidence they are providing.
+
+\paragraph{Conduct Sensitivity Analysis.}
+Since identifying assumptions are untestable, explore how conclusions change if assumptions are violated.
+Use Rosenbaum bounds, examine parallel trends robustness, apply multiple estimators, and conduct placebo tests.
+If conclusions are robust across these checks, confidence grows; if they are fragile, appropriate caution is warranted.
+
+\paragraph{Embrace Triangulation.}
+No single study, however well-designed, provides definitive evidence.
+Knowledge accumulates through replication across contexts, methods, and research teams.
+When RCTs, observational studies, and qualitative research all point in the same direction, confidence grows.
+When they diverge, the discrepancy is informative---perhaps effects are context-dependent, or perhaps some studies have unrecognized biases.
+
+\paragraph{Report Effect Heterogeneity.}
+Average effects often hide substantial variation.
+A tool that improves productivity by 10\% on average might help novices by 30\% while slowing experts by 10\%.
+Examining how effects vary across subgroups---by experience level, project type, programming language---provides more actionable insights than a single average and helps readers assess external validity to their context.
+
+\paragraph{Communicate Uncertainty Honestly.}
+Statistical significance is not the same as practical importance or certainty.
+Report confidence intervals, discuss the magnitude of effects in practical terms, and acknowledge when evidence is suggestive rather than definitive.
+Overclaiming undermines scientific credibility; appropriate humility builds trust.
+
+\subsection{The Value of Imperfect Evidence}
+
+It is tempting to conclude that without a perfect randomized experiment, we cannot learn anything about causation.
+This is too pessimistic.
+Imperfect evidence, accumulated thoughtfully, can guide decisions better than no evidence or purely intuitive reasoning.
+
+Consider a hypothetical: Should an organization adopt a new static analysis tool?
+A correlational study finds that repositories using the tool have 20\% fewer bugs.
+This is not causal evidence---maybe better-organized teams adopt the tool and also write better code.
+But a difference-in-differences study finds that bug rates drop by 15\% after adoption, with no pre-trend.
+A matching study on similar repositories finds a 12\% reduction.
+Developer interviews reveal that the tool catches common mistakes.
+
+No single study is definitive.
+But together, they suggest the tool probably helps, though the effect might be smaller than naive correlations suggest, and might vary across contexts.
+This is useful guidance---not certainty, but evidence that can inform a reasoned decision.
+
+The goal of causal inference in software engineering is not to achieve epistemological perfection but to provide better evidence than we would have otherwise.
+By using rigorous designs where possible, being transparent about limitations, and triangulating across studies, researchers can contribute genuine knowledge even in a field where randomized experiments are rare and observational data are imperfect.
+The credibility of causal claims ultimately rests not on claiming that assumptions are satisfied, but on transparently examining their plausibility, demonstrating robustness to reasonable violations, and honestly communicating what the evidence can and cannot tell us.
