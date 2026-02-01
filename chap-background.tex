@@ -101,8 +101,8 @@ The answer is almost certainly no, and understanding why requires distinguishing
 \paragraph{Confounding: The Hidden Common Cause.}
 Confounding occurs when a third variable $Z$ causally affects both the treatment $X$ and the outcome $Y$, inducing an association between them even when no direct causal relationship exists.
 In our programming language example, consider \emph{developer expertise}.
-Experienced developers are both more likely to choose functional languages (perhaps because these require more sophisticated programming knowledge) and more likely to write low-defect code (because expertise directly reduces errors).
-The observed correlation between functional languages and fewer defects may simply reflect this selection effect: We are comparing code written by different types of developers, not the causal effect of the language itself.
+It is very likely that experienced developers are both more likely to choose functional languages (perhaps because these require more sophisticated programming knowledge) and more likely to write low-defect code (because expertise directly reduces errors).
+If the above mechanism were true, the observed correlation between functional languages and fewer defects may simply reflect this selection effect: We are comparing code written by different types of developers, not the causal effect of the language itself.
 
 To see this mathematically, let $Y$ denote defect density, $X$ denote language choice (1 for functional, 0 for imperative), and $Z$ denote developer expertise.
 The true data-generating process might be:
@@ -116,7 +116,7 @@ More precisely, decomposing the observed association:
 \begin{equation}
     E[Y | X=1] - E[Y | X=0] = \underbrace{\tau}_{\text{causal effect}} + \underbrace{E[Z | X=1] - E[Z | X=0]}_{\text{selection difference}} \cdot \underbrace{\frac{\partial Y}{\partial Z}}_{\text{effect of $Z$}}
 \end{equation}
-If the causal effect $\tau = 0$ but functional language adopters have higher expertise ($E[Z|X=1] > E[Z|X=0]$) and expertise reduces defects ($\partial Y / \partial Z < 0$), we observe a negative correlation between functional languages and defects---a pure artifact of selection.
+If the causal effect $\tau = 0$ but functional language adopters have higher expertise ($E[Z|X=1] > E[Z|X=0]$) and expertise reduces defects ($\partial Y / \partial Z < 0$), we observe a negative correlation between functional languages and defects---but it is a pure artifact of selection.
 
 \paragraph{Reverse Causality: Getting the Arrow Backwards.}
 Reverse causality occurs when the observed association reflects $Y$ causing $X$ rather than $X$ causing $Y$.
@@ -139,7 +139,7 @@ This correlation is entirely an artifact of conditioning on success---it tells u
 More subtly, analyzing only projects that ``survived'' to a certain age conditions on a post-treatment variable (survival), potentially inducing bias.
 If functional language projects fail faster when they have bugs (because functional programming communities have higher quality standards), the surviving functional projects are a selected sample, and comparisons with surviving imperative projects are confounded.
 
-\subsection{Why Multivariate Regression Does Not Suffice}
+\subsection{Why Multivariate Regression (Usually) Does Not Suffice}
 
 Confronted with confounding, researchers often reach for what seems like an obvious solution: ``control for'' the confounders using multivariate regression.
 If developer expertise confounds the language-defect relationship, why not simply add expertise as a covariate?
@@ -175,24 +175,24 @@ A subtler problem is that not all variables \emph{should} be controlled for, eve
 Including the wrong controls can introduce bias where none existed, or amplify existing bias.
 Two cases are particularly important:
 
-\emph{Mediator bias.}
-A mediator is a variable on the causal pathway from treatment to outcome ($X \to M \to Y$).
-Controlling for a mediator blocks part of the causal effect and biases the estimate toward zero.
-In our example, suppose functional languages reduce defects partly by encouraging immutability, which in turn prevents certain bug classes.
-If we ``control for'' use of immutable data structures, we block this pathway and underestimate the total effect of language choice.
-
-\emph{Collider bias.}
-A collider is a variable caused by both treatment and outcome ($X \to C \leftarrow Y$).
-Conditioning on a collider \emph{creates} spurious associations between its causes, even when they are independent.
-Suppose a project's ``popularity'' depends on both the novelty of its language choice and its quality.
-Controlling for popularity induces a negative correlation between language novelty and quality among popular projects: If we know a project is popular, learning it uses a novel language makes us infer it must have lower quality (otherwise, why would quality alone not suffice for popularity?).
-This is pure statistical artifact.
-
+\begin{itemize}[leftmargin=15pt]
+    \item \emph{Mediator bias.}
+    A mediator is a variable on the causal pathway from treatment to outcome ($X \to M \to Y$).
+    Controlling for a mediator blocks part of the causal effect and biases the estimate toward zero.
+    In our example, suppose functional languages reduce defects partly by encouraging immutability, which in turn prevents certain bug classes.
+    If we ``control for'' use of immutable data structures, we block this pathway and underestimate the true effect of language choice on defect proneness.
+    \item \emph{Collider bias.}
+    A collider is a variable caused by both treatment and outcome ($X \to C \leftarrow Y$).
+    Conditioning on a collider \emph{creates} spurious associations between its causes, even when they are independent.
+    Suppose a project's ``popularity'' depends on both the novelty of its language choice and its quality.
+    Controlling for popularity induces a negative correlation between language novelty and quality among popular projects: If we know a project is popular, learning it uses a novel language makes us infer it must have lower quality (otherwise, why would quality alone not suffice for popularity?).
+    This is a pure statistical artifact.
+\end{itemize}
 The lesson is that without a causal model specifying the data-generating process, researchers cannot determine which controls are appropriate.
 Regression software will happily estimate coefficients regardless of whether the specification is causally meaningful.
 
 \paragraph{Functional Form Misspecification.}
-Standard regression assumes linear, additive relationships.
+An even subtler problem for multivariate regressions is that most standard regressions assume linear, additive relationships.
 If the true effect is nonlinear, if treatment effects are heterogeneous, or if confounders interact with treatment, the regression coefficient may not correspond to any meaningful causal quantity.
 In our example, the effect of language choice may depend on project size, team composition, or application domain.
 A single coefficient averaging across all contexts may be misleading for any particular context.
@@ -206,12 +206,9 @@ This interpretation fails for multiple reasons:
     \item If $Z$ is a confounder but imperfectly measured, residual confounding persists.
     \item If important confounders remain omitted, the estimate is still biased regardless of what was included.
 \end{itemize}
-The interpretation of ``controlling for $Z$'' depends entirely on the causal structure relating $X$, $Y$, and $Z$---structure that regression alone cannot reveal.
+The interpretation of ``controlling for $Z$'' depends entirely on the causal structure relating $X$, $Y$, and $Z$---a structure that regression alone cannot reveal.
 
-The programming language debate illustrates these problems vividly.
-Subsequent reanalyses of the original study~\cite{DBLP:journals/toplas/BergerHMVV19} found that effect sizes shrank dramatically after addressing methodological issues, with some effects reversing sign.
-The original correlations were not ``wrong'' in a statistical sense---they accurately described associations in the data---but they could not support causal claims because the fundamental identification problem remained unaddressed.
-No amount of additional controls or robustness checks could resolve this; what was needed was either a credible natural experiment or explicit acknowledgment that the findings were descriptive rather than causal.
+
 
 
 \section{Formalizing Causal Inference}
