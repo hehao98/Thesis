@@ -566,7 +566,7 @@ Yet, these limitations do not diminish the value of RCTs when they are feasible 
 
 \paragraph{Historical Context.}
 Difference-in-differences (DiD) has roots in 19th-century epidemiology---John Snow's comparison of cholera rates across London water companies implicitly used the logic of DiD---but its modern form crystallized in labor economics.
-The method gained prominence through Ashenfelter's 1978 study of job training programs and achieved canonical status with Card and Krueger's 1994 study of minimum wage effects in New Jersey and Pennsylvania~\cite{card1993minimum}.
+The method gained prominence through Ashenfelter's 1978 study of job training programs~\cite{ashenfelter1978estimating} and achieved canonical status with Card and Krueger's 1994 study of minimum wage effects in New Jersey and Pennsylvania~\cite{card1993minimum}.
 This study compared employment changes in New Jersey fast-food restaurants (where the minimum wage increased) with those in neighboring Pennsylvania (where it did not), finding no negative employment effect and overturning decades of conventional economic wisdom.
 The ``credibility revolution'' in economics, recognized by the 2021 Nobel Prize, built substantially on the widespread adoption of DiD and related methods~\cite{cunningham2021causal}.
 
@@ -626,17 +626,17 @@ Post-treatment coefficients $\tau_k$ for $k \geq 0$ trace out the dynamic treatm
 
 \paragraph{Application in Software Engineering.}
 While currently still not common in software engineering research, DiD designs are potentially well-suited for a family of empirical software engineering problems on the effects of tool adoptions, policy changes, or platform updates in software development.
-Recent examples illustrate this potential: Fang et al.\ used a DiD design to estimate the causal effect of tweets on open-source project popularity and contributor growth~\cite{DBLP:conf/icse/FangLHV22}, and Chapter~\ref{chp:cursor} of this thesis applies DiD with staggered adoption to estimate the effects of Cursor AI on development velocity and software quality.
+Recent examples illustrate this potential: Fang et al.\ used a DiD design to estimate the causal effect of tweets on open-source project popularity and contributor growth~\cite{DBLP:conf/icse/FangLHV22}; Casanueva et al.\ applied DiD to estimate how the COVID-19 pandemic disproportionately affected women's contributions to public code~\cite{casanueva2025impact}; and Chapter~\ref{chp:cursor} of this thesis applies DiD with staggered adoption to estimate the effects of Cursor AI on development velocity and software quality.
 These studies demonstrate that DiD is broadly applicable in software engineering contexts, where natural variation in adoption timing creates quasi-experimental conditions, to support causal claims to important software engineering problems.
 
 \subsection{Regression Discontinuity}
 
 \paragraph{Historical Context.}
-The regression discontinuity design (RDD) was invented by psychologists Donald Thistlethwaite and Donald Campbell in 1960 to evaluate the effect of National Merit Scholarships on career aspirations.
+The regression discontinuity design (RDD) was invented by psychologists Donald Thistlethwaite and Donald Campbell in 1960 to evaluate the effect of National Merit Scholarships on career aspirations~\cite{thistlethwaite1960regression}.
 Students just above the scholarship cutoff received awards; those just below did not.
 By comparing outcomes for students on either side of this arbitrary threshold, the authors could estimate the scholarship's effect without the selection bias that would plague comparisons of scholarship recipients to non-recipients generally.
 The method languished in relative obscurity until economists rediscovered it in the 1990s, after which it became one of the most credible quasi-experimental designs available.
-Angrist and Lavy's 1999 study of class size effects, exploiting a maximum class size rule, exemplifies the modern application of RDD in social science.
+Angrist and Lavy's 1999 study of class size effects, exploiting a maximum class size rule, exemplifies the modern application of RDD in social science~\cite{angrist1999using}.
 
 \paragraph{Intuition.}
 The power of RDD derives from the arbitrariness of cutoffs.
@@ -690,9 +690,9 @@ Identifying genuine RDD opportunities in software engineering remains an open ch
 \subsection{Instrumental Variables}
 
 \paragraph{Historical Context.}
-Instrumental variables estimation has deep roots in economics, originating with Philip Wright's 1928 study of supply and demand for butter and flaxseed.
+Instrumental variables estimation has deep roots in economics, originating with Philip Wright's 1928 study of supply and demand for butter and flaxseed~\cite{wright1928tariff, stock2003retrospectives}.
 Wright recognized that ordinary regression of quantity on price conflates supply and demand responses; weather shocks that affect supply but not demand provide an instrument for identifying the demand curve.
-The method was formalized by the Cowles Commission economists in the 1940s and became central to structural econometrics.
+The method was formalized by the Cowles Commission economists in the 1940s and became central to structural econometrics~\cite{stock2003retrospectives}.
 Its application to causal inference in program evaluation was systematized by Angrist and Imbens in their influential 1996 paper, which introduced the Local Average Treatment Effect (LATE) interpretation and earned them the 2021 Nobel Prize~\cite{angrist1996identification}.
 
 \paragraph{Intuition.}
@@ -846,8 +846,8 @@ Researchers should acknowledge this limitation, conduct sensitivity analyses, an
 
 \paragraph{Historical Context.}
 Fixed effects estimation emerged from the econometrics of panel data---datasets tracking the same entities over multiple time periods.
-The method has roots in early twentieth-century work on agricultural experiments and economic indices, but its modern formalization came in the 1960s and 1970s with the work of economists like Mundlak and Balestra.
-The Hausman test (1978) provided a principled way to choose between fixed and random effects specifications, and subsequent decades saw widespread adoption in labor economics, industrial organization, and policy evaluation.
+The method has roots in early twentieth-century work on agricultural experiments and economic indices, but its modern formalization came in the 1960s and 1970s with the work of economists like Mundlak and Balestra~\cite{mundlak1978pooling, balestra1966pooling}.
+The Hausman test provided a principled way to choose between fixed and random effects specifications~\cite{hausman1978specification}, and subsequent decades saw widespread adoption in labor economics, industrial organization, and policy evaluation.
 Panel methods became standard tools for controlling for unobserved heterogeneity in settings where randomization is impossible.
 
 \paragraph{Intuition.}
@@ -918,7 +918,7 @@ Researchers should examine whether the mandate was exogenous to other changes an
 \subsection{Generalized Method of Moments}
 
 \paragraph{Historical Context.}
-The generalized method of moments (GMM) was formalized by Lars Peter Hansen in his 1982 \emph{Econometrica} paper, work that contributed to his 2013 Nobel Prize in Economics.
+The generalized method of moments (GMM) was formalized by Lars Peter Hansen in his 1982 \emph{Econometrica} paper~\cite{hansen1982large}, work that contributed to his 2013 Nobel Prize in Economics.
 GMM unified earlier estimation approaches---method of moments, instrumental variables, maximum likelihood---within a single framework based on moment conditions.
 For panel data with dynamic relationships, the Arellano-Bond estimator (1991) applied GMM to handle lagged dependent variables and endogeneity~\cite{arellano1991some}.
 This approach became central to empirical work in corporate finance, growth economics, and any field where current outcomes depend on past outcomes.
