@@ -504,79 +504,249 @@ Understanding both frameworks enables researchers to see what each method achiev
 
 This section presents research designs that, under their stated assumptions, provide credible causal identification.
 Each method is characterized by its identifying assumption and the alternative explanations it rules out.
+Unlike the control strategies discussed in Section~\ref{sec:control}, identification strategies provide a complete path from observed data to causal effects---if their assumptions hold, the resulting estimates have a causal interpretation without requiring additional untestable claims.
 
 \subsection{Randomized Controlled Trials}
 
-Fisher's pioneering work~\cite{fisher1971design} demonstrates that random assignment to treatment and control groups ensures unbiased estimation of causal effects.
-Randomization guarantees that treatment is independent of potential outcomes---both observed and unobserved confounders are balanced in expectation.
+\paragraph{Historical Context.}
+The randomized controlled trial (RCT) emerged from agricultural research in the early twentieth century.
+Ronald Fisher, working at the Rothamsted Experimental Station, developed the theoretical foundations of randomization in his landmark 1935 book \emph{The Design of Experiments}~\cite{fisher1971design}.
+Fisher's key insight was that random assignment of treatments to experimental units provides a principled basis for statistical inference: It ensures that treatment and control groups are comparable in expectation across all characteristics, observed and unobserved, and it justifies the use of probability theory to quantify uncertainty.
+The method revolutionized medical research after Austin Bradford Hill applied it to the first modern clinical trial of streptomycin for tuberculosis in 1948, establishing the RCT as the ``gold standard'' for evaluating medical interventions~\cite{bothwell2016assessing}.
 
-The ATE is simply estimated as the difference in mean outcomes:
+\paragraph{Intuition.}
+The power of randomization lies in its simplicity: By flipping a coin to determine who receives treatment, we break the link between treatment assignment and all potential confounders.
+Before randomization, treated and control groups might differ systematically---perhaps more motivated patients seek treatment, or better-funded teams adopt new tools.
+These pre-existing differences confound any comparison of outcomes.
+Randomization eliminates this problem by ensuring that, on average, the only difference between groups is the treatment itself.
+Any difference in outcomes can therefore be attributed to the treatment rather than to selection effects.
+
+\paragraph{Formal Framework.}
+Let $D_i \in \{0, 1\}$ denote random treatment assignment for unit $i$.
+Randomization ensures that treatment is independent of potential outcomes:
 \begin{equation}
-    \widehat{ATE} = \bar{Y}_{\text{treated}} - \bar{Y}_{\text{control}}
+    (Y_i(1), Y_i(0)) \perp D_i
 \end{equation}
+This is the strongest form of ignorability---it holds unconditionally, without requiring adjustment for covariates.
+Under this assumption, the ATE is identified by a simple difference in means:
+\begin{equation}
+    \text{ATE} = E[Y_i(1)] - E[Y_i(0)] = E[Y_i | D_i = 1] - E[Y_i | D_i = 0]
+\end{equation}
+The sample analogue provides an unbiased estimator:
+\begin{equation}
+    \widehat{\text{ATE}} = \frac{1}{n_1} \sum_{i: D_i = 1} Y_i - \frac{1}{n_0} \sum_{i: D_i = 0} Y_i
+\end{equation}
+where $n_1$ and $n_0$ are the numbers of treated and control units, respectively.
+Standard errors follow from the randomization distribution or, asymptotically, from the central limit theorem.
 
-RCTs remain the gold standard for causal inference in medicine~\cite{bothwell2016assessing} and are increasingly used in technology through A/B testing~\cite{kohavi2020trustworthy}.
-However, randomization is often infeasible in software engineering contexts: we cannot randomly assign programming languages to projects or force developers to adopt tools.
-This motivates quasi-experimental methods that approximate experimental conditions.
+\paragraph{Application in Software Engineering.}
+RCTs are increasingly common in software engineering through A/B testing~\cite{kohavi2020trustworthy}.
+Large technology companies run thousands of experiments annually, randomly assigning users to different interface designs, recommendation algorithms, or feature variants.
+Consider evaluating whether a new code review tool improves software quality.
+If the organization can randomly assign teams to use the new tool versus the existing workflow, the resulting comparison provides clean causal evidence.
+The randomization ensures that any differences in defect rates reflect the tool's effect rather than differences in team skill or project complexity.
+
+However, many software engineering questions resist randomization.
+We cannot randomly assign programming languages to projects, force developers to adopt tools they resist, or experimentally manipulate organizational culture.
+In these settings, quasi-experimental methods that approximate randomization become essential.
 
 \subsection{Difference-in-Differences}
 
-One of the workhorse methods for causal inference in observational data is \emph{difference-in-differences} (DiD)~\cite{card1993minimum, cunningham2021causal}.
-Its high-level idea is to estimate the treatment effect by comparing changes in outcomes for a treatment group before and after intervention with changes in a control group \emph{over the same period}.
+\paragraph{Historical Context.}
+Difference-in-differences (DiD) has roots in nineteenth-century epidemiology---John Snow's comparison of cholera rates across London water companies implicitly used the logic of DiD---but its modern form crystallized in labor economics.
+The method gained prominence through Ashenfelter's 1978 study of job training programs and achieved canonical status with Card and Krueger's 1994 study of minimum wage effects in New Jersey and Pennsylvania~\cite{card1993minimum}.
+This study compared employment changes in New Jersey fast-food restaurants (where minimum wage increased) to changes in neighboring Pennsylvania (where it did not), finding no negative employment effect and overturning decades of conventional economic wisdom.
+The ``credibility revolution'' in economics, recognized by the 2021 Nobel Prize, built substantially on the widespread adoption of DiD and related methods~\cite{cunningham2021causal}.
 
-\paragraph{Identifying Assumption: Parallel Trends.} In the absence of treatment, the treatment and control groups would have followed parallel outcome trajectories.
-This assumption is partially testable by examining pre-treatment trends.
+\paragraph{Intuition.}
+The core insight of DiD is that we can control for unobserved confounders by exploiting \emph{changes over time}.
+Suppose we want to know whether adopting continuous integration (CI) improves code quality.
+Simply comparing projects with and without CI conflates the treatment effect with selection: Perhaps better-organized teams both adopt CI and write better code.
+The naive cross-sectional comparison captures this selection effect along with any true causal effect.
 
-\paragraph{Panel Data Setting.} When $N$ entities are observed over $T$ periods with staggered treatment adoption~\cite{athey2022design}, the ATE corresponds to $\beta$ in:
+DiD addresses this by adding a temporal dimension.
+We observe projects before and after CI adoption and compare their \emph{change} in quality to the change in similar projects that did not adopt CI over the same period.
+If both groups would have followed parallel trajectories absent treatment, then any differential change can be attributed to CI adoption.
+The method effectively ``differences out'' time-invariant confounders (team quality, project complexity) by focusing on within-unit changes, and ``differences out'' common time trends (industry-wide quality improvements) by comparing to a control group.
+
+\paragraph{Formal Framework.}
+Consider the canonical $2 \times 2$ case with two groups (treatment and control) and two periods (before and after).
+Let $Y_{gt}$ denote the mean outcome for group $g \in \{0, 1\}$ at time $t \in \{0, 1\}$, where $g = 1$ indicates the treatment group and $t = 1$ indicates the post-treatment period.
+The DiD estimator is:
+\begin{equation}
+    \widehat{\tau}_{\text{DiD}} = (Y_{1,1} - Y_{1,0}) - (Y_{0,1} - Y_{0,0})
+\end{equation}
+The first difference $(Y_{1,1} - Y_{1,0})$ captures the change in the treatment group; the second difference $(Y_{0,1} - Y_{0,0})$ captures the counterfactual change that would have occurred absent treatment.
+
+The identifying assumption is \emph{parallel trends}: In the absence of treatment, both groups would have experienced the same change in outcomes.
+Formally, letting $Y_{gt}(0)$ denote potential outcomes under control:
+\begin{equation}
+    E[Y_{1,1}(0) - Y_{1,0}(0)] = E[Y_{0,1}(0) - Y_{0,0}(0)]
+\end{equation}
+Under this assumption, the DiD estimator identifies the ATT:
+\begin{equation}
+    \tau_{\text{ATT}} = E[Y_{1,1}(1) - Y_{1,1}(0)] = \widehat{\tau}_{\text{DiD}}
+\end{equation}
+
+\paragraph{Panel Data and Staggered Adoption.}
+When multiple entities are observed over multiple periods with treatment adoption occurring at different times, DiD extends to the panel setting~\cite{athey2022design}.
+The standard two-way fixed effects (TWFE) specification is:
 \begin{equation}
 \label{eq:base-did}
-    Y_{it} = \alpha + \beta D_{it} + \mu_i + \lambda_t + X'_{it}\Gamma + \epsilon_{it}
+    Y_{it} = \alpha + \tau D_{it} + \mu_i + \lambda_t + \epsilon_{it}
 \end{equation}
-where $\mu_i$ are entity fixed effects, $\lambda_t$ are time fixed effects, and $D_{it}$ indicates treatment status.
+where $\mu_i$ are entity fixed effects (absorbing time-invariant characteristics), $\lambda_t$ are time fixed effects (absorbing common shocks), and $D_{it}$ indicates whether entity $i$ is treated at time $t$.
 
-\paragraph{Event Study Design.} To examine dynamic treatment effects, we estimate:
+Recent methodological advances have revealed that TWFE can produce biased estimates when treatment effects vary across units or over time~\cite{goodman2021difference, de2020two}.
+The problem arises because TWFE implicitly uses already-treated units as controls for newly-treated units, potentially introducing negative weights.
+Modern estimators address this through clean control comparisons~\cite{callaway2021difference}, imputation methods~\cite{borusyak2024revisiting}, or stacking approaches~\cite{baker2022much}.
+Best practice now involves reporting results from multiple estimators and conducting sensitivity analyses~\cite{roth2023s}.
+
+\paragraph{Event Studies.}
+To examine dynamic treatment effects and assess the parallel trends assumption, researchers estimate event study specifications:
 \begin{equation}
 \label{eq:panel-event}
-     Y_{it} = \alpha + \sum_{j=2}^{J}\beta_j(\text{Lead}~j)_{it} + \sum_{k=1}^{K} \gamma_k (\text{Lag}~k)_{it} + \mu_i + \lambda_t + X'_{it}\Gamma + \epsilon_{it}
+    Y_{it} = \alpha + \sum_{k \neq -1} \tau_k \cdot \mathbf{1}[K_{it} = k] + \mu_i + \lambda_t + \epsilon_{it}
 \end{equation}
-Pre-treatment coefficients ($\beta_j$) serve as placebo tests; significant pre-trends suggest violations of parallel trends.
+where $K_{it}$ denotes the number of periods relative to treatment adoption (negative for pre-treatment, positive for post-treatment).
+The coefficients $\tau_k$ for $k < 0$ serve as placebo tests: Significant pre-trends suggest that treatment and control groups were already diverging before treatment, violating parallel trends.
+Post-treatment coefficients $\tau_k$ for $k \geq 0$ trace out the dynamic treatment effect.
 
-\paragraph{Recent Advances.} Traditional two-way fixed effects (TWFE) estimation can produce biased estimates under treatment effect heterogeneity~\cite{goodman2021difference, de2020two}.
-Modern estimators address this through stacking~\cite{baker2022much}, imputation~\cite{borusyak2024revisiting}, or group-time aggregation~\cite{callaway2021difference}.
-Sensitivity analysis across multiple estimators strengthens credibility~\cite{roth2023s}.
+\paragraph{Application in Software Engineering.}
+DiD is well-suited for studying the effects of tool adoptions, policy changes, or platform updates in software development.
+Consider studying whether GitHub's introduction of code scanning alerts (a security feature) reduces vulnerabilities in repositories.
+Projects that enable code scanning form the treatment group; similar projects that do not enable it form the control group.
+By comparing changes in vulnerability counts before and after the feature's availability, we can estimate its effect while controlling for baseline differences between projects and secular trends in security practices.
+
+The parallel trends assumption requires that, absent code scanning, both groups would have experienced similar changes in vulnerabilities.
+This is plausible if the decision to enable scanning is unrelated to anticipated changes in security outcomes---a claim strengthened if pre-treatment trends are parallel.
+Threats arise if projects enable scanning precisely when they expect security problems, or if adopters differ systematically in ways that affect vulnerability trajectories.
 
 \subsection{Regression Discontinuity}
 
-Regression discontinuity designs (RDD) exploit sharp thresholds in treatment assignment.
-When treatment is determined by whether a running variable $R$ exceeds a cutoff $c$, units just above and below the threshold are quasi-randomly assigned.
+\paragraph{Historical Context.}
+The regression discontinuity design (RDD) was invented by psychologists Donald Thistlethwaite and Donald Campbell in 1960 to evaluate the effect of National Merit Scholarships on career aspirations.
+Students just above the scholarship cutoff received awards; those just below did not.
+By comparing outcomes for students on either side of this arbitrary threshold, the authors could estimate the scholarship's effect without the selection bias that would plague comparisons of scholarship recipients to non-recipients generally.
+The method languished in relative obscurity until economists rediscovered it in the 1990s, after which it became one of the most credible quasi-experimental designs available.
+Angrist and Lavy's 1999 study of class size effects, exploiting a maximum class size rule, exemplifies the modern application of RDD in social science.
 
-\paragraph{Identifying Assumption: Continuity.} Potential outcomes are continuous at the threshold.
-This implies that units cannot precisely manipulate their position relative to the cutoff.
+\paragraph{Intuition.}
+The power of RDD derives from the arbitrariness of cutoffs.
+When treatment is assigned based on whether a continuous variable (the ``running variable'') exceeds a threshold, units just above and just below the cutoff are essentially identical---they differ only by an infinitesimal amount on the running variable.
+If the cutoff is set at 70 points, a student scoring 70.1 is virtually indistinguishable from one scoring 69.9 in all respects except their treatment status.
+Comparing outcomes for these nearly-identical units approximates a local randomized experiment at the threshold.
 
-\paragraph{Estimation.} The treatment effect is identified as the discontinuity in outcomes at the cutoff:
+The key requirement is that units cannot precisely manipulate their position relative to the cutoff.
+If students can ensure they score exactly above the threshold, those who do so may differ systematically from those who do not, reintroducing selection bias.
+But if scoring involves some randomness or imprecision, manipulation becomes impossible, and the design remains valid.
+
+\paragraph{Formal Framework.}
+Let $R_i$ denote the running variable for unit $i$, $c$ the cutoff, and $D_i = \mathbf{1}[R_i \geq c]$ the treatment indicator.
+The sharp RDD identifies the treatment effect at the cutoff as the discontinuity in the conditional expectation function:
 \begin{equation}
-    \tau = \lim_{r \downarrow c} E[Y|R=r] - \lim_{r \uparrow c} E[Y|R=r]
+    \tau_{\text{RDD}} = \lim_{r \downarrow c} E[Y_i | R_i = r] - \lim_{r \uparrow c} E[Y_i | R_i = r]
 \end{equation}
 
-RDD provides strong local identification but estimates effects only at the threshold, limiting external validity.
+The identifying assumption is \emph{continuity}: The conditional expectations of potential outcomes are continuous at the cutoff.
+Formally:
+\begin{equation}
+    \lim_{r \downarrow c} E[Y_i(d) | R_i = r] = \lim_{r \uparrow c} E[Y_i(d) | R_i = r] \quad \text{for } d \in \{0, 1\}
+\end{equation}
+This rules out any discontinuity in outcomes at $c$ except that caused by the treatment itself.
+
+Estimation typically employs local polynomial regression, fitting separate polynomials on each side of the cutoff and estimating the discontinuity as the difference in predicted values at $c$.
+Bandwidth selection---how much data around the cutoff to use---involves a bias-variance tradeoff: Narrower bandwidths reduce bias from model misspecification but increase variance.
+Optimal bandwidth selectors and robust confidence intervals are now standard~\cite{calonico2014robust}.
+
+\paragraph{Fuzzy RDD.}
+In many applications, crossing the threshold increases the \emph{probability} of treatment rather than determining it completely.
+The fuzzy RDD extends the design to this setting by using the discontinuity in treatment probability as an instrument:
+\begin{equation}
+    \tau_{\text{Fuzzy}} = \frac{\lim_{r \downarrow c} E[Y_i | R_i = r] - \lim_{r \uparrow c} E[Y_i | R_i = r]}{\lim_{r \downarrow c} E[D_i | R_i = r] - \lim_{r \uparrow c} E[D_i | R_i = r]}
+\end{equation}
+This identifies a local average treatment effect for compliers at the threshold.
+
+\paragraph{Application in Software Engineering.}
+RDD applies whenever software systems or platforms use threshold-based rules for resource allocation, feature access, or automated decisions.
+Consider a platform that automatically archives repositories with fewer than 10 stars after one year of inactivity.
+Repositories just above and below this threshold are nearly identical in popularity, but those below face archival while those above remain active.
+Comparing long-term outcomes (contributor activity, survival, fork rates) for repositories near this cutoff could reveal the causal effect of archival policies on project health.
+
+Another example involves code quality gates: If a continuous integration system blocks merges when code coverage falls below 80\%, comparing projects hovering just above and below this threshold reveals the effect of enforced quality standards on downstream outcomes like bug rates or refactoring costs.
+
+The key requirement is that the running variable (stars, coverage) cannot be precisely manipulated to game the threshold.
+If repository owners can easily inflate star counts or developers can write trivial tests to boost coverage, the design's validity is compromised.
 
 \subsection{Instrumental Variables}
 
-Instrumental variables (IV) address endogeneity by isolating exogenous variation in treatment.
+\paragraph{Historical Context.}
+Instrumental variables estimation has deep roots in economics, originating with Philip Wright's 1928 study of supply and demand for butter and flaxseed.
+Wright recognized that ordinary regression of quantity on price conflates supply and demand responses; weather shocks that affect supply but not demand provide an instrument for identifying the demand curve.
+The method was formalized by the Cowles Commission economists in the 1940s and became central to structural econometrics.
+Its application to causal inference in program evaluation was systematized by Angrist and Imbens in their influential 1996 paper, which introduced the Local Average Treatment Effect (LATE) interpretation and earned them the 2021 Nobel Prize~\cite{angrist1996identification}.
 
-\paragraph{Identifying Assumptions.} A valid instrument $Z$ must satisfy:
-\begin{enumerate}
-    \item \textbf{Relevance}: $Z$ affects treatment ($Cov(Z, D) \neq 0$)
-    \item \textbf{Exclusion Restriction}: $Z$ affects outcomes only through treatment
-    \item \textbf{Independence}: $Z$ is independent of unmeasured confounders
+\paragraph{Intuition.}
+Instrumental variables address situations where treatment is endogenous---correlated with unobserved factors that also affect outcomes.
+The strategy is to find a source of variation in treatment that is ``exogenous''---unrelated to the confounders---and use only that variation for estimation.
+This exogenous variation is the ``instrument.''
+
+Consider the challenge of estimating whether completing a computer science degree increases earnings.
+Simply comparing graduates to non-graduates conflates the degree's effect with selection: Students who complete degrees may have higher ability, motivation, or family resources that would have led to higher earnings regardless.
+An instrument must affect degree completion but influence earnings only through its effect on completing the degree.
+Geographic proximity to a college might work: Students who grow up near colleges are more likely to attend (relevance), but proximity itself does not directly affect later earnings (exclusion restriction).
+By focusing on the earnings variation explained by proximity---variation that is plausibly unrelated to unobserved ability---we can isolate the degree's causal effect.
+
+\paragraph{Formal Framework.}
+Let $D_i$ denote the endogenous treatment, $Y_i$ the outcome, $Z_i$ the instrument, and $U_i$ unobserved confounders.
+The core problem is that $Cov(D_i, U_i) \neq 0$, so regressing $Y$ on $D$ yields biased estimates.
+A valid instrument satisfies three conditions:
+\begin{enumerate}[leftmargin=15pt]
+    \item \textbf{Relevance}: $Cov(Z_i, D_i) \neq 0$.
+    The instrument must affect treatment.
+    This condition is testable by examining the first-stage regression of $D$ on $Z$.
+    
+    \item \textbf{Independence (Exogeneity)}: $Cov(Z_i, U_i) = 0$.
+    The instrument must be uncorrelated with unobserved confounders.
+    This condition is fundamentally untestable but must be argued on substantive grounds.
+    
+    \item \textbf{Exclusion Restriction}: $Z_i$ affects $Y_i$ only through $D_i$.
+    There is no direct effect of the instrument on outcomes.
+    This condition is also untestable and must be justified by theory or institutional knowledge.
 \end{enumerate}
 
-\paragraph{Estimation.} Under these assumptions, the causal effect is:
+Under these assumptions, the IV estimator identifies the causal effect:
 \begin{equation}
-    \beta_{IV} = \frac{Cov(Y, Z)}{Cov(D, Z)}
+    \beta_{\text{IV}} = \frac{Cov(Y_i, Z_i)}{Cov(D_i, Z_i)}
 \end{equation}
+This is the ratio of the reduced-form effect of $Z$ on $Y$ to the first-stage effect of $Z$ on $D$.
+In the two-stage least squares (2SLS) implementation, we first regress $D$ on $Z$ to obtain predicted values $\hat{D}$, then regress $Y$ on $\hat{D}$.
+The second-stage coefficient is the IV estimate.
 
-With heterogeneous treatment effects, IV identifies the Local Average Treatment Effect (LATE)---the effect for units whose treatment status is changed by the instrument (compliers)~\cite{angrist1996identification}.
+\paragraph{Local Average Treatment Effect.}
+When treatment effects are heterogeneous, IV does not identify the ATE.
+Angrist and Imbens showed that IV identifies the \emph{Local Average Treatment Effect} (LATE): The average effect for ``compliers''---units whose treatment status is changed by the instrument~\cite{angrist1996identification}.
+Units who would always take treatment regardless of the instrument (always-takers) and those who would never take treatment (never-takers) contribute no identifying variation.
+Defiers---who do the opposite of what the instrument encourages---are typically assumed not to exist (monotonicity assumption).
+
+The LATE interpretation has important implications: The estimated effect may not generalize to the full population if compliers differ systematically from always-takers and never-takers.
+Understanding who the compliers are is essential for interpreting IV results.
+
+\paragraph{Application in Software Engineering.}
+Finding valid instruments in software engineering is challenging but not impossible.
+Consider estimating whether attending a coding bootcamp improves employment outcomes.
+Bootcamp attendance is endogenous: Motivated individuals both seek training and find jobs.
+An instrument might be the opening of a bootcamp campus in a city---this plausibly increases local attendance (relevance) but does not directly affect employment except through training (exclusion restriction).
+
+Another example involves platform features.
+To estimate whether enabling two-factor authentication reduces account compromises, one might use the timing of reminder emails as an instrument.
+Receiving a reminder increases the probability of enabling 2FA (relevance), and the timing of automated reminders is plausibly random with respect to individual security outcomes (independence).
+The exclusion restriction requires that reminders affect security only through their effect on 2FA adoption, not through other channels like increased security awareness.
+
+The fundamental difficulty with IV is justifying the exclusion restriction: How do we know the instrument affects outcomes only through treatment?
+In software engineering contexts, instruments often have plausible alternative pathways.
+A new bootcamp in a city may affect local labor markets beyond training; reminder emails may increase general security awareness.
+Credible IV analyses require transparent argument about why these alternative channels are negligible and, where possible, empirical tests of the exclusion restriction's implications.
 
 
 \section{Control Strategies}
