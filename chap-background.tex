@@ -541,26 +541,26 @@ Standard errors follow from the randomization distribution or, asymptotically, f
 
 \paragraph{RCTs in Computer Science Research.}
 Randomized experiments have a rich tradition across computer science, though their prevalence varies by subfield.
-In human-computer interaction (HCI), controlled experiments comparing interface designs, interaction techniques, or visualization methods are standard practice; the field inherited experimental traditions from psychology and human factors engineering~\cite{DBLP:conf/chi/Vaithilingam0G22}.
+In human-computer interaction (HCI) research, controlled experiments comparing interface designs, interaction techniques, or visualization methods are standard practice, as the field inherited experimental traditions from psychology and human factors engineering~\cite{DBLP:conf/chi/Vaithilingam0G22}.
 In computing education research, randomized trials routinely evaluate pedagogical interventions---comparing teaching methods, programming environments, or curricular structures---with studies randomly assigning students to different instructional conditions.
-In industry, A/B testing has become ubiquitous for user experience research~\cite{kohavi2020trustworthy}.
+In the IT industry, A/B testing has become ubiquitous for user experience research~\cite{kohavi2020trustworthy}.
 Large technology companies run thousands of online experiments annually, randomly assigning users to different interface designs, recommendation algorithms, or feature variants, and measuring outcomes like engagement, conversion, or retention.
-These experiments provide clean causal evidence for product decisions because randomization eliminates the selection effects that plague observational comparisons.
+These experiments provide clear causal evidence for product decisions because randomization eliminates the selection effects that plague observational comparisons.
 
 \paragraph{Application in Software Engineering.}
 Within software engineering research, RCTs are less common but increasingly influential.
 A prominent recent example is the METR study by Becker et al., which conducted a randomized controlled trial with experienced open-source developers working on their own real-world projects~\cite{DBLP:journals/corr/abs-2507-09089}.
-The study found that AI tools did not significantly improve completion time for experienced developers---a result that diverged from earlier experiments showing large productivity gains.
-Such experiments provide clean causal evidence while maintaining relevance to real-world practice.
+The study found that AI tools did not significantly reduce completion time for experienced developers---a result that diverged from earlier experiments showing large productivity gains.
+Such experiments provide clear causal evidence while maintaining relevance to real-world practice.
 
-While the appeal of RCTs in software engineering is clear, RCTs also face significant practical limitations in software engineering contexts.
-First, many important questions resist randomization and are impratical for an RCT design.
-It would be prohibitively expensive, unethical, or just plainly infeasible, to run an experiment to randomly assign programming languages to projects in production, assign developers to adopt tools they resist, or experimentally manipulate organizational culture.
-Second, practical constraints limit experiment duration and scale: Software projects unfold over months or years, but experiments typically run for days or weeks. 
-A tool that initially slows developers (as they learn it) but eventually accelerates them would show negative effects in a week-long experiment but positive effects over months.
+While the appeal of RCTs in software engineering is clear, they also face significant practical limitations in this context.
+First, many important questions are not amenable to randomization and are impractical for an RCT design.
+It would be prohibitively expensive, unethical, or simply infeasible to run an experiment randomly assigning programming languages to projects in production, assigning developers to adopt tools they resist, or experimentally manipulating organizational culture.
+Second, practical constraints limit the duration and scale of experiments: Software projects unfold over months or years, whereas experiments typically run for days or weeks. 
+A tool that initially slows developers (as they learn it) but eventually accelerates them would show negative effects in a week-long experiment, but positive effects over months.
 Finally, perhaps the most fundamental limitation of RCTs in software engineering is external validity~\cite{DBLP:journals/ese/KalliamvakouGBS16}.
 For example, laboratory experiments with student participants completing artificial tasks may not generalize to professional developers working on production systems under real-world pressures.
-Yet, these limitations do not diminish the value of RCTs when they are feasible and well-executed---they provide an important source of triangulation at one side of trade-offs: highest internal validity and limited external validity.
+Yet, these limitations do not diminish the value of RCTs when they are feasible and well-executed---they provide an important source of triangulation on one side of the trade-off: limited external validity in exchange for the highest internal validity.
 
 \subsection{Difference-in-Differences}
 
@@ -574,24 +574,22 @@ The ``credibility revolution'' in economics, recognized by the 2021 Nobel Prize,
 The core insight of DiD is that we can control for unobserved confounders by exploiting \emph{changes over time}.
 For example, suppose we want to know whether adopting continuous integration (CI) improves code quality.
 Simply comparing projects with and without CI conflates the treatment effect with selection: Perhaps better-organized teams both adopt CI and write better code.
-The naive cross-sectional comparison captures this selection effect along with any true causal effect.
-
-DiD addresses this by adding a temporal dimension.
-We observe projects before and after CI adoption and compare their \emph{change} in quality with that of similar projects that did not adopt CI over the same period.
-If both groups had followed parallel trajectories absent treatment, then any differential change can be attributed to CI adoption.
+The naive cross-sectional comparison captures this selection effect along with any true causal effect. 
+DiD addresses this by adding a temporal dimension: We observe projects before and after CI adoption and compare the \emph{change} in quality of these projects with that of similar projects that did not adopt CI over the same period.
+If both groups had followed parallel trajectories in the absence of treatment, then any differential change can be attributed to CI adoption.
 The method effectively ``differences out'' time-invariant confounders (team quality, project complexity) by focusing on within-unit changes, and ``differences out'' common time trends (industry-wide quality improvements) by comparing to a control group.
 
 \paragraph{Formal Framework.}
 Consider the canonical $2 \times 2$ case with two groups (treatment and control) and two periods (before and after).
-Let $Y_{gt}$ denote the mean outcome for group $g \in \{0, 1\}$ at time $t \in \{0, 1\}$, where $g = 1$ indicates the treatment group and $t = 1$ indicates the post-treatment period.
+Let $Y_{g,t}$ denote the mean outcome for group $g \in \{0, 1\}$ at time $t \in \{0, 1\}$, where $g = 1$ indicates the treatment group and $t = 1$ indicates the post-treatment period.
 The DiD estimator is:
 \begin{equation}
     \widehat{\tau}_{\text{DiD}} = (Y_{1,1} - Y_{1,0}) - (Y_{0,1} - Y_{0,0})
 \end{equation}
-The first difference $(Y_{1,1} - Y_{1,0})$ captures the change in the treatment group; the second difference $(Y_{0,1} - Y_{0,0})$ captures the counterfactual change that would have occurred absent treatment.
+The first difference $(Y_{1,1} - Y_{1,0})$ captures the change in the treatment group; the second difference $(Y_{0,1} - Y_{0,0})$ captures the counterfactual change that would have occurred in the absence of treatment.
 
 The identifying assumption is \emph{parallel trends}: In the absence of treatment, both groups would have experienced the same change in outcomes.
-Formally, letting $Y_{gt}(0)$ denote potential outcomes under control:
+Formally, letting $Y_{g,t}(0)$ denote potential outcomes under control:
 \begin{equation}
     E[Y_{1,1}(0) - Y_{1,0}(0)] = E[Y_{0,1}(0) - Y_{0,0}(0)]
 \end{equation}
@@ -609,11 +607,6 @@ The standard two-way fixed effects (TWFE) specification is:
 \end{equation}
 where $\mu_i$ are entity fixed effects (absorbing time-invariant characteristics), $\lambda_t$ are time fixed effects (absorbing common shocks), and $D_{it}$ indicates whether entity $i$ is treated at time $t$.
 
-Recent methodological advances have revealed that TWFE can produce biased estimates when treatment effects vary across units or over time~\cite{goodman2021difference, de2020two}.
-The problem arises because TWFE implicitly uses already-treated units as controls for newly-treated units, potentially introducing negative weights.
-Modern estimators address this through clean control comparisons~\cite{callaway2021difference}, imputation methods~\cite{borusyak2024revisiting}, or stacking approaches~\cite{baker2022much}.
-Best practice now involves reporting results from multiple estimators and conducting sensitivity analyses~\cite{roth2023s}.
-
 \paragraph{Event Studies.}
 To examine dynamic treatment effects and assess the parallel trends assumption, researchers estimate event study specifications:
 \begin{equation}
@@ -622,7 +615,13 @@ To examine dynamic treatment effects and assess the parallel trends assumption, 
 \end{equation}
 where $K_{it}$ denotes the number of periods relative to treatment adoption (negative for pre-treatment, positive for post-treatment).
 The coefficients $\tau_k$ for $k < 0$ serve as placebo tests: Significant pre-trends suggest that treatment and control groups were already diverging before treatment, violating parallel trends.
-Post-treatment coefficients $\tau_k$ for $k \geq 0$ trace out the dynamic treatment effect.
+Post-treatment coefficients $\tau_k$ for $k \geq 0$ trace out the dynamic treatment effect after adoption.
+
+\paragraph{Recent Advances.}
+Recent methodological advances have revealed that TWFE can produce biased estimates when treatment effects vary across units or over time~\cite{goodman2021difference, de2020two}.
+The problem arises because TWFE implicitly uses already-treated units as controls for newly-treated units, potentially introducing negative weights.
+Modern estimators address this through clean control comparisons~\cite{callaway2021difference}, imputation methods~\cite{borusyak2024revisiting}, or stacking approaches~\cite{baker2022much}.
+Best practice now involves reporting results from multiple estimators and conducting sensitivity analyses~\cite{roth2023s}.
 
 \paragraph{Application in Software Engineering.}
 While currently still not common in software engineering research, DiD designs are potentially well-suited for a family of empirical software engineering problems on the effects of tool adoptions, policy changes, or platform updates in software development.
