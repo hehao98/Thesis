@@ -85,46 +85,133 @@ Finally, Section~\ref{sec:threats} discusses threats to validity in causal desig
 \label{sec:pitfalls}
 
 Before presenting the causal inference toolkit, it is instructive to examine why naive approaches fail.
-Understanding these pitfalls clarifies what causal methods must overcome and why simple statistical adjustments are often insufficient.
+Understanding these pitfalls not only clarifies what causal methods must overcome but also reveals why the solutions are non-trivial---why simply ``being careful'' or ``controlling for more variables'' cannot substitute for genuine causal reasoning.
 
 \subsection{Why Correlation Does Not Imply Causation}
 
-The dictum ``correlation does not imply causation'' is familiar to every researcher, yet violations remain pervasive in practice.
-Three distinct mechanisms can generate spurious correlations:
+The dictum ``correlation does not imply causation'' is perhaps the most frequently cited methodological principle in empirical research, yet it remains the most frequently violated.
+The violation persists not because researchers are careless, but because the underlying mechanisms that generate spurious correlations are subtle and pervasive.
+Let us examine these mechanisms through the lens of our programming language example.
 
-\paragraph{Confounding.} A third variable $Z$ that causally affects both $X$ and $Y$ can induce a correlation between them even when no direct causal relationship exists.
-For example, ice cream sales and drowning deaths are positively correlated---not because ice cream causes drowning, but because summer weather (the confounder) increases both.
-In software engineering, developer experience may confound the relationship between tool adoption and productivity: experienced developers are both more likely to adopt new tools and more productive, creating a spurious association.
+Recall the question: Does choice of programming language causally affect defect-proneness?
+Suppose we compute the correlation between language type (say, functional vs. imperative) and defect density across thousands of GitHub projects and find that functional language projects have 20\% fewer defects.
+Can we conclude that switching to a functional language would reduce defects by 20\%?
+The answer is almost certainly no, and understanding why requires distinguishing three mechanisms that can generate spurious correlations.
 
-\paragraph{Reverse Causality.} The observed association may reflect $Y$ causing $X$ rather than $X$ causing $Y$.
-If we observe that projects using continuous integration have fewer bugs, is it because CI prevents bugs, or because low-bug projects are more likely to adopt CI (perhaps because they have better engineering practices overall)?
+\paragraph{Confounding: The Hidden Common Cause.}
+Confounding occurs when a third variable $Z$ causally affects both the treatment $X$ and the outcome $Y$, inducing an association between them even when no direct causal relationship exists.
+In our programming language example, consider \emph{developer expertise}.
+Experienced developers are both more likely to choose functional languages (perhaps because these require more sophisticated programming knowledge) and more likely to write low-defect code (because expertise directly reduces errors).
+The observed correlation between functional languages and fewer defects may simply reflect this selection effect: We are comparing code written by different types of developers, not the causal effect of the language itself.
 
-\paragraph{Selection Bias.} The sample under study may not represent the population of interest, or the process generating the data may induce spurious associations.
-Conditioning on a collider---a variable caused by both $X$ and $Y$---can create artificial correlations.
-For instance, among published studies, we may observe a negative correlation between methodological rigor and surprising results, not because rigor prevents surprising findings, but because only surprising-yet-rigorous or unsurprising-but-easy studies get published.
+To see this mathematically, let $Y$ denote defect density, $X$ denote language choice (1 for functional, 0 for imperative), and $Z$ denote developer expertise.
+The true data-generating process might be:
+\begin{align}
+    X &= f(Z, U_X) \quad \text{(language choice depends on expertise)} \\
+    Y &= g(Z, U_Y) \quad \text{(defects depend on expertise, not language)}
+\end{align}
+where $U_X$ and $U_Y$ are independent error terms.
+Even though $X$ has no causal effect on $Y$, the correlation $\text{Cor}(X, Y) \neq 0$ because both are driven by the common cause $Z$.
+More precisely, decomposing the observed association:
+\begin{equation}
+    E[Y | X=1] - E[Y | X=0] = \underbrace{\tau}_{\text{causal effect}} + \underbrace{E[Z | X=1] - E[Z | X=0]}_{\text{selection difference}} \cdot \underbrace{\frac{\partial Y}{\partial Z}}_{\text{effect of $Z$}}
+\end{equation}
+If the causal effect $\tau = 0$ but functional language adopters have higher expertise ($E[Z|X=1] > E[Z|X=0]$) and expertise reduces defects ($\partial Y / \partial Z < 0$), we observe a negative correlation between functional languages and defects---a pure artifact of selection.
+
+\paragraph{Reverse Causality: Getting the Arrow Backwards.}
+Reverse causality occurs when the observed association reflects $Y$ causing $X$ rather than $X$ causing $Y$.
+In our example, perhaps teams whose projects have persistent quality problems switch to more ``rigorous'' languages like Haskell in an attempt to impose discipline.
+If this were true, we might observe that Haskell projects have \emph{more} defects---not because Haskell causes defects, but because defect-prone teams select into Haskell.
+Alternatively, successful low-defect projects may attract functional programming enthusiasts who refactor the codebase, creating the opposite spurious correlation.
+
+The fundamental problem is that cross-sectional data cannot distinguish between $X \to Y$ and $Y \to X$.
+Both causal structures generate the same correlation.
+Only temporal information (did language choice precede defect reduction?) combined with careful reasoning about the selection process can help disentangle these possibilities.
+
+\paragraph{Selection Bias: Conditioning on a Consequence.}
+Selection bias arises when the sample is not representative of the population of interest, or when the data-generating process induces spurious associations through conditioning on a \emph{collider}---a variable caused by both $X$ and $Y$.
+
+Consider an extreme example: Suppose we analyze only ``successful'' GitHub projects (those with more than 1,000 stars).
+A project becomes successful if it either (a) solves a valuable problem despite bugs, or (b) has exceptional code quality.
+Among successful projects, we might observe a \emph{negative} correlation between functional languages and defects: Successful functional projects may have achieved success through quality, while successful imperative projects may have succeeded despite bugs by solving critical problems.
+This correlation is entirely an artifact of conditioning on success---it tells us nothing about the causal effect of language choice.
+
+More subtly, analyzing only projects that ``survived'' to a certain age conditions on a post-treatment variable (survival), potentially inducing bias.
+If functional language projects fail faster when they have bugs (because functional programming communities have higher quality standards), the surviving functional projects are a selected sample, and comparisons with surviving imperative projects are confounded.
 
 \subsection{Why Multivariate Regression Does Not Suffice}
 
-A common response to confounding concerns is to ``control for'' potential confounders using multivariate regression.
-While sometimes helpful, this approach has fundamental limitations:
+Confronted with confounding, researchers often reach for what seems like an obvious solution: ``control for'' the confounders using multivariate regression.
+If developer expertise confounds the language-defect relationship, why not simply add expertise as a covariate?
+While intuitive, this approach has fundamental limitations that render it insufficient for causal inference.
 
-\paragraph{Omitted Variable Bias.} Regression can only adjust for \emph{observed} confounders.
-If important confounders are unmeasured---as is typically the case with repository mining data---the resulting estimates remain biased.
-No amount of control variables can substitute for a credible identification strategy.
+\paragraph{Omitted Variable Bias: The Inescapable Problem of Unobserved Confounders.}
+The most fundamental limitation is that regression can only adjust for \emph{observed} confounders.
+In practice, important confounders are often unmeasured or unmeasurable.
+Returning to our example, consider the confounders that plausibly affect both language choice and defect rates: Developer expertise, yes, but also team culture, project complexity, application domain, code review practices, testing discipline, deadline pressure, and organizational incentives.
+Can we measure all of these from repository data?
+Certainly not.
 
-\paragraph{Bad Controls.} Not all variables should be controlled for.
-Conditioning on a mediator (a variable on the causal path from $X$ to $Y$) blocks part of the causal effect and biases the estimate.
-Conditioning on a collider induces spurious associations.
-Without a causal model specifying the data-generating process, researchers cannot determine which controls are appropriate.
+The mathematical consequence is stark.
+Suppose the true model is:
+\begin{equation}
+    Y_i = \alpha + \tau X_i + \beta Z_i + \gamma U_i + \epsilon_i
+\end{equation}
+where $Z$ is an observed confounder and $U$ is an unobserved confounder.
+If we regress $Y$ on $X$ and $Z$ only, the estimated coefficient on $X$ is:
+\begin{equation}
+    \hat{\tau} \xrightarrow{p} \tau + \gamma \cdot \frac{\text{Cov}(X, U | Z)}{\text{Var}(X | Z)}
+\end{equation}
+The bias term $\gamma \cdot \text{Cov}(X, U | Z) / \text{Var}(X | Z)$ depends on the relationship between treatment and the omitted confounder \emph{after} controlling for $Z$.
+Unless $\text{Cov}(X, U | Z) = 0$---which would require $Z$ to fully mediate the relationship between $X$ and $U$---the estimate remains biased.
+Adding more controls helps only if those controls are themselves confounders; adding irrelevant controls simply reduces precision without reducing bias.
 
-\paragraph{Functional Form Assumptions.} Standard regression assumes linear relationships and additive effects.
-If the true relationship is nonlinear or involves interactions, misspecified models can produce misleading estimates even when all relevant variables are included.
+The uncomfortable implication is that \emph{no amount of control variables can substitute for a credible identification strategy}.
+A regression with 50 covariates is no more causally credible than one with 5 if the key confounders remain unobserved.
+The number of controls is irrelevant; what matters is whether the remaining variation in treatment is as-if random.
 
-\paragraph{The Table 2 Fallacy.} A regression table showing that a coefficient ``remains significant after controlling for $Z$'' does not establish causality.
-If $Z$ is a mediator, the controlled estimate is biased downward.
-If $Z$ is a collider, conditioning on it introduces bias.
-If $Z$ is a confounder but imperfectly measured, residual confounding persists.
-The interpretation of ``controlling for'' depends entirely on the causal structure, which regression alone cannot reveal.
+\paragraph{Bad Controls: When Adjustment Makes Things Worse.}
+A subtler problem is that not all variables \emph{should} be controlled for, even if they are observed.
+Including the wrong controls can introduce bias where none existed, or amplify existing bias.
+Two cases are particularly important:
+
+\emph{Mediator bias.}
+A mediator is a variable on the causal pathway from treatment to outcome ($X \to M \to Y$).
+Controlling for a mediator blocks part of the causal effect and biases the estimate toward zero.
+In our example, suppose functional languages reduce defects partly by encouraging immutability, which in turn prevents certain bug classes.
+If we ``control for'' use of immutable data structures, we block this pathway and underestimate the total effect of language choice.
+
+\emph{Collider bias.}
+A collider is a variable caused by both treatment and outcome ($X \to C \leftarrow Y$).
+Conditioning on a collider \emph{creates} spurious associations between its causes, even when they are independent.
+Suppose a project's ``popularity'' depends on both the novelty of its language choice and its quality.
+Controlling for popularity induces a negative correlation between language novelty and quality among popular projects: If we know a project is popular, learning it uses a novel language makes us infer it must have lower quality (otherwise, why would quality alone not suffice for popularity?).
+This is pure statistical artifact.
+
+The lesson is that without a causal model specifying the data-generating process, researchers cannot determine which controls are appropriate.
+Regression software will happily estimate coefficients regardless of whether the specification is causally meaningful.
+
+\paragraph{Functional Form Misspecification.}
+Standard regression assumes linear, additive relationships.
+If the true effect is nonlinear, if treatment effects are heterogeneous, or if confounders interact with treatment, the regression coefficient may not correspond to any meaningful causal quantity.
+In our example, the effect of language choice may depend on project size, team composition, or application domain.
+A single coefficient averaging across all contexts may be misleading for any particular context.
+
+\paragraph{The Table 2 Fallacy: Misinterpreting ``Controlled'' Estimates.}
+These problems manifest in a pervasive interpretive error that Westreich and Greenland term the ``Table 2 Fallacy''~\cite{westreich2013table}: The belief that if a coefficient ``remains significant after controlling for $Z$,'' the association must be causal.
+This interpretation fails for multiple reasons:
+\begin{itemize}
+    \item If $Z$ is a mediator, the controlled estimate underestimates the true effect.
+    \item If $Z$ is a collider, conditioning on it introduces spurious association.
+    \item If $Z$ is a confounder but imperfectly measured, residual confounding persists.
+    \item If important confounders remain omitted, the estimate is still biased regardless of what was included.
+\end{itemize}
+The interpretation of ``controlling for $Z$'' depends entirely on the causal structure relating $X$, $Y$, and $Z$---structure that regression alone cannot reveal.
+
+The programming language debate illustrates these problems vividly.
+Subsequent reanalyses of the original study~\cite{DBLP:journals/toplas/BergerHMVV19} found that effect sizes shrank dramatically after addressing methodological issues, with some effects reversing sign.
+The original correlations were not ``wrong'' in a statistical sense---they accurately described associations in the data---but they could not support causal claims because the fundamental identification problem remained unaddressed.
+No amount of additional controls or robustness checks could resolve this; what was needed was either a credible natural experiment or explicit acknowledgment that the findings were descriptive rather than causal.
 
 
 \section{Formalizing Causal Inference}
