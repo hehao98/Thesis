@@ -208,7 +208,7 @@ This interpretation fails for multiple reasons:
 \end{itemize}
 The interpretation of ``controlling for $Z$'' depends entirely on the causal structure relating $X$, $Y$, and $Z$---a structure that regression alone cannot reveal.
 
-\subsection{When Can Multivariate Regression Support Causal Claims?}
+\subsection{When Can Multivariate Regression Support Causal Claims}
 
 The preceding discussion may leave the impression that multivariate regression is never useful for causal inference.
 This would be an overstatement---and an impractical one.
@@ -504,13 +504,13 @@ Understanding both frameworks enables researchers to see what each method achiev
 
 This section presents research designs that, under their stated assumptions, provide credible causal identification.
 Each method is characterized by its identifying assumption and the alternative explanations it rules out.
-Unlike the control strategies discussed in Section~\ref{sec:control}, identification strategies provide a complete path from observed data to causal effects---if their assumptions hold, the resulting estimates have a causal interpretation without requiring additional untestable claims.
+Unlike the control strategies discussed in Section~\ref{sec:control}, identification strategies provide a complete path from observed data to causal effects---if their assumptions hold, the resulting estimates would have a causal interpretation.
 
 \subsection{Randomized Controlled Trials}
 
 \paragraph{Historical Context.}
-The randomized controlled trial (RCT) emerged from agricultural research in the early twentieth century.
-Ronald Fisher, working at the Rothamsted Experimental Station, developed the theoretical foundations of randomization in his landmark 1935 book \emph{The Design of Experiments}~\cite{fisher1971design}.
+The randomized controlled trial (RCT) emerged from agricultural research in the early 20th century.
+Ronald Fisher, working at the Rothamsted Experimental Station at that time, developed the theoretical foundations of randomization in his landmark 1935 book \emph{The Design of Experiments}~\cite{fisher1971design}.
 Fisher's key insight was that random assignment of treatments to experimental units provides a principled basis for statistical inference: It ensures that treatment and control groups are comparable in expectation across all characteristics, observed and unobserved, and it justifies the use of probability theory to quantify uncertainty.
 The method revolutionized medical research after Austin Bradford Hill applied it to the first modern clinical trial of streptomycin for tuberculosis in 1948, establishing the RCT as the ``gold standard'' for evaluating medical interventions~\cite{bothwell2016assessing}.
 
@@ -540,10 +540,10 @@ where $n_1$ and $n_0$ are the numbers of treated and control units, respectively
 Standard errors follow from the randomization distribution or, asymptotically, from the central limit theorem.
 
 \paragraph{Application in Software Engineering.}
-RCTs are increasingly common in software engineering through A/B testing~\cite{kohavi2020trustworthy}.
+RCTs are increasingly common in computer science research software engineering through A/B testing~\cite{kohavi2020trustworthy}.
 Large technology companies run thousands of experiments annually, randomly assigning users to different interface designs, recommendation algorithms, or feature variants.
 Consider evaluating whether a new code review tool improves software quality.
-If the organization can randomly assign teams to use the new tool versus the existing workflow, the resulting comparison provides clean causal evidence.
+If the organization can randomly assign teams to use the new tool versus the existing workflow, the resulting comparison provides clear causal evidence.
 The randomization ensures that any differences in defect rates reflect the tool's effect rather than differences in team skill or project complexity.
 
 However, many software engineering questions resist randomization.
@@ -553,9 +553,9 @@ In these settings, quasi-experimental methods that approximate randomization bec
 \subsection{Difference-in-Differences}
 
 \paragraph{Historical Context.}
-Difference-in-differences (DiD) has roots in nineteenth-century epidemiology---John Snow's comparison of cholera rates across London water companies implicitly used the logic of DiD---but its modern form crystallized in labor economics.
+Difference-in-differences (DiD) has roots in 19th-century epidemiology---John Snow's comparison of cholera rates across London water companies implicitly used the logic of DiD---but its modern form crystallized in labor economics.
 The method gained prominence through Ashenfelter's 1978 study of job training programs and achieved canonical status with Card and Krueger's 1994 study of minimum wage effects in New Jersey and Pennsylvania~\cite{card1993minimum}.
-This study compared employment changes in New Jersey fast-food restaurants (where minimum wage increased) to changes in neighboring Pennsylvania (where it did not), finding no negative employment effect and overturning decades of conventional economic wisdom.
+This study compared employment changes in New Jersey fast-food restaurants (where the minimum wage increased) with those in neighboring Pennsylvania (where it did not), finding no negative employment effect and overturning decades of conventional economic wisdom.
 The ``credibility revolution'' in economics, recognized by the 2021 Nobel Prize, built substantially on the widespread adoption of DiD and related methods~\cite{cunningham2021causal}.
 
 \paragraph{Intuition.}
@@ -565,8 +565,8 @@ Simply comparing projects with and without CI conflates the treatment effect wit
 The naive cross-sectional comparison captures this selection effect along with any true causal effect.
 
 DiD addresses this by adding a temporal dimension.
-We observe projects before and after CI adoption and compare their \emph{change} in quality to the change in similar projects that did not adopt CI over the same period.
-If both groups would have followed parallel trajectories absent treatment, then any differential change can be attributed to CI adoption.
+We observe projects before and after CI adoption and compare their \emph{change} in quality with that of similar projects that did not adopt CI over the same period.
+If both groups had followed parallel trajectories absent treatment, then any differential change can be attributed to CI adoption.
 The method effectively ``differences out'' time-invariant confounders (team quality, project complexity) by focusing on within-unit changes, and ``differences out'' common time trends (industry-wide quality improvements) by comparing to a control group.
 
 \paragraph{Formal Framework.}
@@ -1089,7 +1089,7 @@ Issue counts conflate bugs with feature requests and user reports with automated
 The credibility of causal claims rests not on claiming that assumptions are satisfied, but on transparently examining their plausibility and demonstrating robustness to reasonable violations.
 
 
-\section{A Pragmatic Approach to Causal Inference in Software Engineering}
+\section{A Pragmatic Approach to Causal Inference in Empirical Software Engineering}
 \label{sec:pragmatic}
 
 The preceding sections have presented causal inference with appropriate rigor, emphasizing the assumptions underlying each method and the threats that can undermine conclusions.
@@ -1111,8 +1111,8 @@ But the participants may not represent typical developers; the tasks may not ref
 The clean causal estimate may not generalize to contexts that matter.
 
 Conversely, a large-scale observational study of AI tool adoption across thousands of GitHub repositories captures real-world variation and naturally represents diverse contexts.
-But without randomization, we cannot be certain that observed productivity differences reflect the tool's effect rather than selection---perhaps more capable developers adopted the tool first.
-The estimate may be externally valid (it reflects what happens in the real world) but internally questionable (we do not know if the tool caused it).
+But without randomization, we cannot be certain that observed productivity differences reflect the tool's effect rather than selection---perhaps more capable developers adopted the tool first because they are also more tech-savvy.
+The estimate may be externally valid (it reflects what happens in the real world), but internally questionable (we do not know if the tool caused it).
 
 This trade-off is not a flaw to be fixed but a reality to be navigated.
 The goal is not to find the one perfect study but to build knowledge through multiple studies with different strengths, whose convergent findings provide confidence that transcends any single study's limitations.
