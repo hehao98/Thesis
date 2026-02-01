@@ -213,8 +213,8 @@ The interpretation of ``controlling for $Z$'' depends entirely on the causal str
 The preceding discussion may leave the impression that multivariate regression is never useful for causal inference.
 This would be an overstatement---and an impractical one.
 The formal condition under which regression identifies causal effects is \emph{selection on observables} (also called conditional ignorability): $(Y^1, Y^0) \perp D \mid X$, meaning that conditional on observed covariates, treatment is as-if randomly assigned.
-This requires that all confounders are measured and correctly included, no post-treatment variables contaminate the model, and sufficient overlap exists between treated and control groups.
-Propensity score matching, inverse probability weighting, and regression adjustment all rest on this same assumption---they differ only in implementation, not in the fundamental identification claim.
+This requires that all confounders be measured and correctly included, that no post-treatment variables contaminate the model, and that there is sufficient overlap between the treated and control groups.
+Methods including propensity score matching, inverse probability weighting, and regression adjustment all rest on this same assumption---they differ only in implementation, not in the fundamental identification claim.
 
 \paragraph{The Role of Theory.}
 This is where causal inference rejoins substantive domain knowledge.
@@ -233,16 +233,14 @@ But ``stronger'' does not mean ``never justified.''
 If we insisted on ironclad causal identification for every empirical claim, much of applied research would grind to a halt.
 Medicine advanced for centuries on observational evidence before randomized trials became standard.
 Economics developed theories of market behavior, labor supply, and human capital from correlational data long before the credibility revolution.
-Software engineering cannot always wait for perfect natural experiments---practitioners need actionable insights now, even if those insights come with uncertainty.
+Software engineering cannot always wait for perfect causally valid designs---practitioners need actionable insights now, even if those insights come with uncertainty.
 
 The honest position is not that regression-based causal claims are invalid, but that they occupy a different place on the credibility spectrum.
 A well-theorized regression study---one that explicitly articulates its causal model, defends the completeness of its adjustment set, addresses obvious threats, and conducts sensitivity analysis (e.g., Rosenbaum bounds~\cite{rosenbaum2002observational}, $E$-values~\cite{vanderweele2017sensitivity}, or coefficient stability tests~\cite{oster2019unobservable})---provides weaker but still informative evidence.
 The key is transparency: Rather than claiming an effect is ``proven,'' the researcher specifies the conditions under which the estimate would be unbiased and invites scrutiny of whether those conditions hold.
 Readers can then calibrate their confidence accordingly.
-
-The danger lies not in using regression for causal questions, but in doing so naively---treating statistical significance as proof of causation, adding controls atheoretically, or ignoring obvious confounders.
-A regression grounded in careful causal reasoning, even if imperfect, advances knowledge more than one that pretends correlations speak for themselves.
-The goal of this thesis is not to dismiss such work, but to articulate clearly what assumptions underlie different methods, so that researchers can choose designs appropriate to their questions and honestly communicate the strength of their evidence.
+The danger lies not in using regression for causal questions, but in doing so naively.
+The goal of this thesis is not to dismiss all prior work based on multivariate regressions, but to articulate clearly the assumptions underlying different methods, so that researchers can choose designs appropriate to their questions and honestly communicate the strength of their evidence.
 
 \section{Formalizing Causal Inference}
 \label{sec:formalism}
