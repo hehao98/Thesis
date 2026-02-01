@@ -995,9 +995,9 @@ If repositories with more experienced maintainers are both more likely to adopt 
 Randomized experiments eliminate confounding by construction, since random assignment ensures that treatment and control groups are, in expectation, identical on all characteristics---both observed and unobserved.
 Observational designs lack this guarantee and must either measure and adjust for potential confounders or rely on design-based strategies such as difference-in-differences, regression discontinuity, or instrumental variables that address confounding through alternative identifying assumptions.
 
-Closely related to confounding is \emph{selection bias}, which arises when the process determining who enters the study or who receives treatment is systematically related to potential outcomes.
+Closely related to confounding is \emph{selection bias}, which arises when the process that determines who enters the study or receives treatment is systematically related to potential outcomes.
 If only repositories already experiencing quality problems adopt a static analysis tool (hoping it will help), naive comparisons of adopters to non-adopters will conflate the tool's effect with the pre-existing quality differential.
-Selection can also manifest as differential attrition: if struggling projects are more likely to cease activity and drop out of a longitudinal study, the surviving sample becomes increasingly unrepresentative, and estimates based on this sample may be severely biased.
+Selection can also manifest as differential attrition: If struggling projects are more likely to cease activity and drop out of a longitudinal study, the surviving sample becomes increasingly unrepresentative, and estimates based on this sample may be severely biased.
 
 Even with perfect identification of causal effects, \emph{measurement error} in treatments or outcomes can attenuate or distort estimates.
 When treatment status is measured imprecisely---for example, inferring ``tool adoption'' from the presence of a configuration file that may not indicate actual sustained use---the resulting measurement error typically biases estimates toward zero, making true effects appear smaller than they are.
@@ -1119,9 +1119,9 @@ The answer lies not in a rigid hierarchy of methods but in thoughtful matching o
 The first principle is to \emph{match the design to the question and context}.
 Not every research question requires---or can support---the strongest possible causal design.
 For exploratory research aimed at generating hypotheses and identifying promising directions, descriptive and correlational studies remain entirely appropriate.
-For consequential decisions with significant resource implications---should an organization mandate a particular tool? should a platform change its policies?---stronger causal evidence is warranted to justify the costs and risks of action.
-The practical question is what designs are feasible given the specific setting: Is randomization possible, or would it be unethical or impractical? Does the context provide a natural experiment through policy discontinuities or staggered adoption? What data are available, and with what quality?
-Researchers should choose the strongest design that remains credible in their specific context, rather than forcing an inappropriate method that offers theoretically stronger causal identification but rests on implausible assumptions.
+For consequential decisions with significant resource implications (e.g., Should an organization mandate a particular tool? Should a platform change its policies?), stronger causal evidence is warranted to justify the costs and risks of action.
+The practical question is: Which designs are feasible given the specific setting? Is randomization possible, or would it be unethical or impractical? Does the context provide a natural experiment through policy discontinuities or staggered adoption? What data are available, and what quality are they?
+Researchers should choose the strongest design that remains credible in their specific context, rather than forcing an inappropriate method that offers theoretically stronger causal identification but rests on implausible assumptions in the specific study setting.
 
 The second principle is \emph{transparency about assumptions and limitations}.
 Every causal claim, whether from an RCT or an observational study, rests on assumptions that cannot be definitively verified.
