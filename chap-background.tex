@@ -539,16 +539,28 @@ The sample analogue provides an unbiased estimator:
 where $n_1$ and $n_0$ are the numbers of treated and control units, respectively.
 Standard errors follow from the randomization distribution or, asymptotically, from the central limit theorem.
 
-\paragraph{Application in Software Engineering.}
-RCTs are increasingly common in computer science research software engineering through A/B testing~\cite{kohavi2020trustworthy}.
-Large technology companies run thousands of experiments annually, randomly assigning users to different interface designs, recommendation algorithms, or feature variants.
-Consider evaluating whether a new code review tool improves software quality.
-If the organization can randomly assign teams to use the new tool versus the existing workflow, the resulting comparison provides clear causal evidence.
-The randomization ensures that any differences in defect rates reflect the tool's effect rather than differences in team skill or project complexity.
+\paragraph{RCTs in Computer Science Research.}
+Randomized experiments have a rich tradition across computer science, though their prevalence varies by subfield.
+In human-computer interaction (HCI), controlled experiments comparing interface designs, interaction techniques, or visualization methods are standard practice; the field inherited experimental traditions from psychology and human factors engineering~\cite{DBLP:conf/chi/Vaithilingam0G22}.
+In computing education research, randomized trials routinely evaluate pedagogical interventions---comparing teaching methods, programming environments, or curricular structures---with studies randomly assigning students to different instructional conditions.
+In industry, A/B testing has become ubiquitous for user experience research~\cite{kohavi2020trustworthy}.
+Large technology companies run thousands of online experiments annually, randomly assigning users to different interface designs, recommendation algorithms, or feature variants, and measuring outcomes like engagement, conversion, or retention.
+These experiments provide clean causal evidence for product decisions because randomization eliminates the selection effects that plague observational comparisons.
 
-However, many software engineering questions resist randomization.
-We cannot randomly assign programming languages to projects, force developers to adopt tools they resist, or experimentally manipulate organizational culture.
-In these settings, quasi-experimental methods that approximate randomization become essential.
+\paragraph{Application in Software Engineering.}
+Within software engineering research, RCTs are less common but increasingly influential.
+A prominent recent example is the METR study by Becker et al., which conducted a randomized controlled trial with experienced open-source developers working on their own real-world projects~\cite{DBLP:journals/corr/abs-2507-09089}.
+The study found that AI tools did not significantly improve completion time for experienced developers---a result that diverged from earlier experiments showing large productivity gains.
+Such experiments provide clean causal evidence while maintaining relevance to real-world practice.
+
+While the appeal of RCTs in software engineering is clear, RCTs also face significant practical limitations in software engineering contexts.
+First, many important questions resist randomization and are impratical for an RCT design.
+It would be prohibitively expensive, unethical, or just plainly infeasible, to run an experiment to randomly assign programming languages to projects in production, assign developers to adopt tools they resist, or experimentally manipulate organizational culture.
+Second, practical constraints limit experiment duration and scale: Software projects unfold over months or years, but experiments typically run for days or weeks. 
+A tool that initially slows developers (as they learn it) but eventually accelerates them would show negative effects in a week-long experiment but positive effects over months.
+Finally, perhaps the most fundamental limitation of RCTs in software engineering is external validity~\cite{DBLP:journals/ese/KalliamvakouGBS16}.
+For example, laboratory experiments with student participants completing artificial tasks may not generalize to professional developers working on production systems under real-world pressures.
+Yet, these limitations do not diminish the value of RCTs when they are feasible and well-executed---they provide an important source of triangulation at one side of trade-offs: highest internal validity and limited external validity.
 
 \subsection{Difference-in-Differences}
 
@@ -560,7 +572,7 @@ The ``credibility revolution'' in economics, recognized by the 2021 Nobel Prize,
 
 \paragraph{Intuition.}
 The core insight of DiD is that we can control for unobserved confounders by exploiting \emph{changes over time}.
-Suppose we want to know whether adopting continuous integration (CI) improves code quality.
+For example, suppose we want to know whether adopting continuous integration (CI) improves code quality.
 Simply comparing projects with and without CI conflates the treatment effect with selection: Perhaps better-organized teams both adopt CI and write better code.
 The naive cross-sectional comparison captures this selection effect along with any true causal effect.
 
@@ -613,14 +625,9 @@ The coefficients $\tau_k$ for $k < 0$ serve as placebo tests: Significant pre-tr
 Post-treatment coefficients $\tau_k$ for $k \geq 0$ trace out the dynamic treatment effect.
 
 \paragraph{Application in Software Engineering.}
-DiD is well-suited for studying the effects of tool adoptions, policy changes, or platform updates in software development.
-Consider studying whether GitHub's introduction of code scanning alerts (a security feature) reduces vulnerabilities in repositories.
-Projects that enable code scanning form the treatment group; similar projects that do not enable it form the control group.
-By comparing changes in vulnerability counts before and after the feature's availability, we can estimate its effect while controlling for baseline differences between projects and secular trends in security practices.
-
-The parallel trends assumption requires that, absent code scanning, both groups would have experienced similar changes in vulnerabilities.
-This is plausible if the decision to enable scanning is unrelated to anticipated changes in security outcomes---a claim strengthened if pre-treatment trends are parallel.
-Threats arise if projects enable scanning precisely when they expect security problems, or if adopters differ systematically in ways that affect vulnerability trajectories.
+While currently still not common in software engineering research, DiD designs are potentially well-suited for a family of empirical software engineering problems on the effects of tool adoptions, policy changes, or platform updates in software development.
+Recent examples illustrate this potential: Fang et al.\ used a DiD design to estimate the causal effect of tweets on open-source project popularity and contributor growth~\cite{DBLP:conf/icse/FangLHV22}, and Chapter~\ref{chp:cursor} of this thesis applies DiD with staggered adoption to estimate the effects of Cursor AI on development velocity and software quality.
+These studies demonstrate that DiD is broadly applicable in software engineering contexts, where natural variation in adoption timing creates quasi-experimental conditions, to support causal claims to important software engineering problems.
 
 \subsection{Regression Discontinuity}
 
@@ -668,15 +675,17 @@ The fuzzy RDD extends the design to this setting by using the discontinuity in t
 This identifies a local average treatment effect for compliers at the threshold.
 
 \paragraph{Application in Software Engineering.}
-RDD applies whenever software systems or platforms use threshold-based rules for resource allocation, feature access, or automated decisions.
-Consider a platform that automatically archives repositories with fewer than 10 stars after one year of inactivity.
-Repositories just above and below this threshold are nearly identical in popularity, but those below face archival while those above remain active.
-Comparing long-term outcomes (contributor activity, survival, fork rates) for repositories near this cutoff could reveal the causal effect of archival policies on project health.
+To the best of our knowledge, a true RDD has not yet been applied in software engineering research.
+Some studies claim to use ``regression discontinuity'' but actually employ \emph{interrupted time series} (ITS) designs---a fundamentally different method that compares outcomes before and after an event in time, rather than comparing units just above and below a threshold on a continuous running variable.
+ITS exploits temporal discontinuities (e.g., before versus after a policy change), whereas RDD exploits cross-sectional discontinuities at a cutoff (e.g., projects just above versus just below a threshold).
+Conflating these methods obscures their distinct identifying assumptions and threatens the validity of causal claims.
 
-Another example involves code quality gates: If a continuous integration system blocks merges when code coverage falls below 80\%, comparing projects hovering just above and below this threshold reveals the effect of enforced quality standards on downstream outcomes like bug rates or refactoring costs.
-
-The key requirement is that the running variable (stars, coverage) cannot be precisely manipulated to game the threshold.
-If repository owners can easily inflate star counts or developers can write trivial tests to boost coverage, the design's validity is compromised.
+In principle, RDD could apply in software engineering whenever platforms use threshold-based rules for resource allocation, feature access, or automated decisions.
+A tantalizing near-miss occurred with GitHub Copilot's 2021 technical preview, which initially invited only a subset of developers to access the tool.
+If GitHub had used a clear, observable threshold for invitation---say, developers with more than 1,000 contributions receiving access while those just below did not---comparing productivity outcomes for developers just above and below this cutoff would constitute a valid RDD.
+In practice, however, GitHub's selection criteria were opaque and likely multidimensional, precluding a clean discontinuity design.
+This illustrates the fundamental challenge: Even when platforms implement access restrictions, the thresholds are rarely transparent, sharp, or based on a single running variable---requirements essential for RDD validity.
+Identifying genuine RDD opportunities in software engineering remains an open challenge for future research.
 
 \subsection{Instrumental Variables}
 
@@ -733,7 +742,8 @@ The LATE interpretation has important implications: The estimated effect may not
 Understanding who the compliers are is essential for interpreting IV results.
 
 \paragraph{Application in Software Engineering.}
-Finding valid instruments in software engineering is challenging but not impossible.
+To the best of our knowledge, IV designs have not yet been applied in software engineering research, likely because finding valid instruments is particularly challenging in this domain.
+Nonetheless, plausible opportunities exist.
 Consider estimating whether attending a coding bootcamp improves employment outcomes.
 Bootcamp attendance is endogenous: Motivated individuals both seek training and find jobs.
 An instrument might be the opening of a bootcamp campus in a city---this plausibly increases local attendance (relevance) but does not directly affect employment except through training (exclusion restriction).
