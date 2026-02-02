@@ -1,12 +1,12 @@
-The empirical studies presented in Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, and~\ref{chp:cursor} demonstrate that robust causal inference methods can expose systematic gaps between practitioner beliefs and empirical reality.
-In each case, conventional wisdom---that dependency pinning improves security, that artificial popularity signals provide sustainable promotional benefits, and that AI coding assistants unambiguously improve productivity---was challenged through rigorous causal analysis.
-These findings validate the central thesis that software engineering myths, when subjected to appropriate methodological scrutiny, often yield conclusions contrary to practitioners' expectations.
+The empirical studies presented in Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, and~\ref{chp:cursor} demonstrate how a pragmatic causal inference approach---one that makes theory and assumptions explicit, acknowledges methodological limitations honestly, and navigates alternative explanations thoughtfully---can build trustworthy evidence to challenge widely held software engineering beliefs.
+In each case, conventional wisdom---that dependency pinning improves security, that artificial popularity signals provide sustainable promotional benefits, and that AI coding assistants unambiguously improve productivity---was examined through causal analysis with transparently stated assumptions.
+These findings illustrate the central thesis: When software engineering myths are subjected to appropriate methodological scrutiny, with clear articulation of identifying assumptions and honest acknowledgment of scope conditions, we can build credible evidence that sometimes contradicts practitioners' expectations.
 
-Building on these contributions, this chapter outlines the proposed work that extends the thesis in three directions.
-First, I propose to strengthen the causal evidence in the fake GitHub stars study (Chapter~\ref{chp:fake-stars}) by applying panel generalized method of moments (GMM) analysis, addressing limitations in the current panel autoregression approach (Section~\ref{sec:proposed-gmm}).
-Second, I propose a systematic sensitivity analysis comparing difference-in-differences with alternative statistical approaches in the Cursor study (Chapter~\ref{chp:cursor}), demonstrating how the choice of analytical method affects conclusions and the importance of robust causal inference designs (Section~\ref{sec:proposed-sensitivity}).
-Third, I propose revisiting the longstanding debate on programming languages and defect proneness~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17, DBLP:journals/toplas/BergerHMVV19}, applying causal inference strategies to a question that has resisted consensus despite extensive prior research (Section~\ref{sec:proposed-language}).
-Together, these proposed contributions aim to provide both empirical insights and a methodological blueprint for future empirical software engineering research seeking to establish credible causal evidence.
+Building on these contributions, this chapter outlines proposed work that extends the thesis in three complementary directions---each designed to further demonstrate the value and practice of pragmatic causal inference.
+First, I propose to strengthen the causal evidence in the fake GitHub stars study (Chapter~\ref{chp:fake-stars}) by applying panel generalized method of moments (GMM) analysis, addressing potential endogeneity concerns in the current panel autoregression approach and illustrating how method selection should respond to specific threats to validity (Section~\ref{sec:proposed-gmm}).
+Second, I propose a systematic sensitivity analysis comparing difference-in-differences with alternative analytical approaches in the Cursor study (Chapter~\ref{chp:cursor}), demonstrating concretely how the choice of analytical method affects conclusions and why pragmatic causal inference yields more credible findings than descriptive or correlational alternatives (Section~\ref{sec:proposed-sensitivity}).
+Third, I propose revisiting the longstanding debate on programming languages and defect proneness~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17, DBLP:journals/toplas/BergerHMVV19}, applying the pragmatic causal inference framework to a contested question that has resisted consensus despite extensive prior research---thereby demonstrating the generalizability of this approach (Section~\ref{sec:proposed-language}).
+Together, these proposed contributions aim to provide both empirical insights and a methodological template for navigating the trade-offs inherent in causal inference, illustrating how to build trustworthy evidence incrementally through complementary designs with explicitly stated assumptions.
 
 \section{Strengthening Causal Evidence in the Fake Star Study}
 \label{sec:proposed-gmm}
@@ -80,7 +80,7 @@ This leaves open the question: \emph{Would the study have reached the same concl
 
 This question is not merely academic.
 If DiD and simpler methods yield similar conclusions, one might argue that the additional methodological complexity is unnecessary.
-Conversely, if DiD yields substantially different---and more credible---conclusions, this would demonstrate the practical importance of robust causal inference methods and motivate their broader adoption in the field.
+Conversely, if DiD yields substantially different---and more credible---conclusions, this would demonstrate the practical importance of pragmatic causal inference and motivate its broader adoption in the field.
 
 \subsection{Proposed Analysis: Systematic Methodological Comparison}
 
@@ -160,7 +160,7 @@ Based on preliminary intuitions and prior research on the limitations of correla
 
 If confirmed, these hypotheses would demonstrate that \emph{the choice of analytical method materially affects conclusions about AI tool effectiveness}.
 This finding would carry important implications for the interpretation of prior empirical studies on AI coding assistants, many of which rely on correlational evidence or simple before-after comparisons.
-More broadly, the proposed analysis would serve as a methodological case study illustrating why robust causal inference methods are necessary for credible empirical software engineering research.
+More broadly, the proposed analysis would serve as a methodological case study illustrating why pragmatic causal inference---with explicit assumptions, diagnostic tests, and honest acknowledgment of limitations---yields more credible findings than approaches that either ignore causality entirely or make implicit assumptions that cannot be examined.
 
 The expected contributions of this sensitivity analysis are threefold.
 First, it will provide a concrete demonstration of how different analytical approaches can lead to different conclusions on the same data, reinforcing the thesis argument that methodological rigor matters for myth-busting research.
@@ -286,7 +286,7 @@ Second, it will demonstrate how the causal inference methods developed throughou
 This demonstrates the generalizability of the methodological framework and provides a template for future research on contested software engineering questions.
 
 Third, the analysis will produce a concrete comparison between correlational and causal inference approaches on the same data, complementing the proposed sensitivity analysis on the Cursor study (Section~\ref{sec:proposed-sensitivity}).
-Together, these analyses will provide compelling evidence for the thesis argument that robust causal inference methods yield different---and more trustworthy---findings than descriptive or correlational approaches.
+Together, these analyses will provide compelling evidence for the thesis argument that pragmatic causal inference---with its emphasis on transparent assumptions and honest limitations---yields different and more trustworthy findings than descriptive or correlational approaches.
 
 Finally, regardless of whether the analysis finds that programming language causally affects defect proneness, the methodological contribution stands.
 If the analysis finds effects consistent with prior work~\cite{DBLP:conf/sigsoft/RayPFD14}, it would provide stronger warrants for the claimed relationships.
@@ -326,10 +326,10 @@ Finally, Phases 2 and 3 are designed to overlap, enabling efficient use of time 
 
 \section{Summary}
 
-This chapter has outlined three proposed contributions that extend the thesis in complementary directions.
-The GMM analysis for the fake stars study (Section~\ref{sec:proposed-gmm}) addresses endogeneity concerns in the current panel autoregression approach, strengthening the causal evidence for the finding that fake stars provide only transient promotional benefits.
-The systematic methodological comparison for the Cursor study (Section~\ref{sec:proposed-sensitivity}) demonstrates how the choice of analytical method affects conclusions, providing concrete evidence for the thesis argument that robust causal inference methods are necessary for credible empirical research.
-The programming language study (Section~\ref{sec:proposed-language}) applies the causal inference framework to a longstanding contested question, illustrating the generalizability of the approach and providing a template for future research.
+This chapter has outlined three proposed contributions that extend the thesis in complementary directions, each illustrating a different facet of pragmatic causal inference in software engineering research.
+The GMM analysis for the fake stars study (Section~\ref{sec:proposed-gmm}) addresses potential endogeneity concerns in the current panel autoregression approach, demonstrating how method selection should respond to specific threats to validity and how strengthening causal evidence involves iteratively addressing identified limitations.
+The systematic methodological comparison for the Cursor study (Section~\ref{sec:proposed-sensitivity}) provides concrete evidence that the choice of analytical method materially affects conclusions, illustrating why pragmatic causal inference---with its emphasis on explicit assumptions and diagnostic tests---yields more credible findings than descriptive or correlational approaches.
+The programming language study (Section~\ref{sec:proposed-language}) applies the pragmatic causal inference framework to a longstanding contested question, demonstrating the generalizability of the approach while honestly acknowledging the challenges and limitations inherent in any observational study of language effects.
 
-Together with the completed empirical studies, these proposed contributions demonstrate that \emph{the application of robust causal inference methods to software engineering myths exposes systematic gaps between practitioner beliefs and empirical reality}.
-By providing both empirical insights and methodological guidance, this thesis aims to contribute to the transformation of software engineering into a more evidence-based discipline.
+Together with the completed empirical studies, these proposed contributions demonstrate that \emph{a pragmatic causal inference approach---one that makes theory and assumptions explicit, acknowledges methodological limitations honestly, and navigates alternative explanations thoughtfully---can build trustworthy evidence to dispel software engineering myths and inform evidence-based practice}.
+By providing both empirical insights and methodological guidance that emphasizes transparency over perfection, this thesis aims to contribute to the transformation of software engineering into a more evidence-based discipline---not through claims of epistemological certainty, but through the honest accumulation of credible evidence across complementary designs.

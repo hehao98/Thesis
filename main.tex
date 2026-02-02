@@ -123,7 +123,7 @@
 \pagestyle{empty}
 
 \title{{\it Thesis Proposal}\\
-{\bf Dispelling Software Engineering Myths:\\A Pragamatic Causal Inference Approach
+{\bf Dispelling Software Engineering Myths:\\A Pragmatic Causal Inference Approach
 }}
 \author{Hao He}
 \date{Feburary 2026}
@@ -156,16 +156,18 @@ Narayan Ramasubbu
 \begin{abstract}
 Software engineering practice is filled with myths---beliefs derived from intuition, experience, and conventional wisdom---that lack an empirical foundation.
 Unfortunately, empirical software engineering research often fails to rigorously test these beliefs when it relies solely on descriptive, correlational, and qualitative evidence from software repository data and developer opinions.
-In this thesis, I propose that \emph{the application of robust causal inference methods to software engineering myths exposes systematic gaps between practitioner beliefs and empirical reality}.
+In this thesis, I argue that \emph{a pragmatic causal inference approach---one that makes theory and assumptions explicit, acknowledges methodological limitations honestly, and navigates alternative explanations thoughtfully---can build trustworthy evidence to dispel software engineering myths and inform evidence-based practice}.
 
-Across three empirical studies, I demonstrate that widely accepted software engineering practices, when subjected to rigorous causal analysis, yield outcomes contrary to practitioners' expectations. 
+Across three empirical studies, I demonstrate how this pragmatic causal inference approach reveals systematic gaps between practitioner beliefs and empirical reality. 
 First, using counterfactual analysis and simulations on npm dependency data, I challenge the myth that pinning dependency versions improves overall project security, revealing that it paradoxically increases attack exposure as long as upstream packages are not pinning their own dependencies. 
-Second, through a longitudinal analysis of GitHub starring patterns, I challenge the myth that fake GitHub stars provide sustainable promotional benefits, showing instead that these artificial signals become long-term liabilities. 
-Finally, using a difference-in-differences framework, I challenge the myth that AI coding tools unambiguously improve developer productivity, finding that the initial velocity gains from Cursor are offset by sustained technical debt accumulation that eventually erodes velocity.
-Collectively, these studies expose a systematic divergence between practitioner beliefs and empirical reality---a divergence revealed only through causal inference.
+Second, through a longitudinal analysis of GitHub starring patterns with panel regression models, I challenge the myth that fake GitHub stars provide sustainable promotional benefits, showing instead that these artificial signals become long-term liabilities. 
+Finally, using a difference-in-differences framework with staggered adoption, I challenge the myth that AI coding tools unambiguously improve developer productivity, finding that the initial velocity gains from Cursor are offset by sustained technical debt accumulation.
+In each study, I explicitly articulate the identifying assumptions, probe their plausibility through diagnostic tests, and discuss the scope conditions under which the findings hold.
+Collectively, these studies expose a systematic divergence between practitioner beliefs and empirical reality---a divergence revealed only through 
+rigorous causal inference methods.
 
-Building on these contributions, I propose to further explore whether robust causal inference methods yield \emph{different} findings than descriptive or correlational evidence alone, thereby demonstrating that robust causal inference methods indeed reduce the probability of Type I errors (false positives) in empirical software engineering studies.
-Consequently, this thesis would provide a methodological blueprint for the design and implementation of future empirical software engineering research.
+Building on these contributions, I propose to demonstrate that the choice of analytical method materially affects conclusions: Studies employing pragmatic causal inference designs yield more credible---and sometimes different---findings than those relying on descriptive or correlational evidence alone.
+Consequently, this thesis provides a methodological blueprint for future empirical software engineering research, illustrating how to balance rigor with practicality to generate actionable, trustworthy evidence.
 \end{abstract}
 
 %\begin{acknowledgments}
