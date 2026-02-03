@@ -48,22 +48,22 @@ When studies produce contested results, progress requires not endless reanalysis
 In this thesis, I argue that \emph{a pragmatic causal inference approach---one that makes theory and assumptions explicit, acknowledges methodological limitations honestly, and navigates alternative explanations thoughtfully---can build trustworthy evidence to dispel software engineering myths and inform evidence-based practice.}
 This pragmatic stance recognizes that causal inference in observational settings is inherently imperfect: No study eliminates all confounding, no natural experiment is as clean as a randomized trial, and no finding generalizes to all contexts without qualification.
 Yet these limitations do not render causal inquiry futile.
-Rather, they demand intellectual honesty about what we can and cannot conclude, and careful calibration of confidence to the strength of the evidence.
+Rather, they demand intellectual honesty about what we can and cannot conclude using available data, and careful calibration of confidence to convey the strength of the evidence to the audience.
 
 This approach is particularly important for research challenging well-known software engineering myths.
 From a Bayesian perspective, if a study yields results contrary to practitioners' intuitions, it requires more compelling evidence to shift posterior beliefs than a study that merely confirms conventional wisdom.\footnote{This reflects the Bayesian epistemological principle often summarized as ``extraordinary claims require extraordinary evidence.'' When a claim has a low prior probability (i.e., it contradicts established beliefs or practitioner intuition), stronger evidence is needed to shift the posterior belief toward acceptance. Formally, if $P(H)$ is low, then $P(E|H)/P(E|\neg H)$---the likelihood ratio---must be correspondingly high for $P(H|E)$ to reach credible levels. For a rigorous treatment of Bayesian reasoning in scientific inference, see Howson and Urbach~\cite{howson2006scientific}.}
-The value of pragmatic causal inference lies in its capacity to provide such evidence---not through claims of epistemological certainty, but through the transparent articulation of assumptions, the honest acknowledgment of limitations, and the careful accumulation of consistent findings across complementary designs.
-The three empirical studies in this thesis (Chapter~\ref{chp:pinning}, \ref{chp:fake-stars}, \ref{chp:cursor}) exemplify this approach: Each challenges a widely held belief, each makes its identifying assumptions explicit, and each acknowledges the scope conditions under which its conclusions hold.
+The value of a pragmatic causal inference approach lies in its capacity to provide such evidence---not through claims of epistemological certainty, but through the transparent articulation of assumptions, the honest acknowledgment of limitations, and the careful accumulation of consistent findings across complementary designs.
+The three empirical studies in this thesis (Chapter~\ref{chp:pinning}, \ref{chp:fake-stars}, \ref{chp:cursor}) exemplify this approach: Each challenges a widely held belief, each makes its identifying assumptions explicit, and each acknowledges the scope conditions under which its conclusions will hold.
 
 \section{Thesis Statement}
 
 \begin{framed}
 Software engineering practice is characterized by \emph{myths}---widely held beliefs about best practices derived from intuition, experience, and conventional wisdom that have never been rigorously tested or, when tested, have produced inconclusive results.
-This thesis argues that \emph{a pragmatic causal inference approach---one that makes theory and assumptions explicit, acknowledges methodological limitations honestly, and navigates alternative explanations thoughtfully---can build trustworthy evidence to dispel these myths and inform evidence-based practice}.
+I argue that \emph{a pragmatic causal inference approach---one that makes theory and assumptions explicit, acknowledges methodological limitations honestly, and navigates alternative explanations thoughtfully---can build trustworthy evidence to dispel these myths and inform evidence-based practice}.
 
 This thesis demonstrates the above argument through three empirical studies: (a) the impact of dependency pinning on supply chain security, (b) the impact of fake GitHub stars on repository promotion, and (c) the impact of Cursor AI on open-source projects.
-In each study, I employ causal inference methods appropriate to the research context, explicitly articulate identifying assumptions, assess their plausibility through diagnostic tests, and discuss the scope conditions under which findings hold.
-As proposed work, I aim to demonstrate that the choice of analytical method materially affects conclusions, showing how pragmatic causal inference designs yield different---and more credible---findings than descriptive or correlational approaches on the same data.
+In each study, I employ causal inference methods appropriate to the research context, explicitly articulate identifying assumptions, assess their plausibility through robustness tests, and discuss the scope conditions under which findings hold.
+As proposed work, I aim to demonstrate that the choice of analytical method materially affects conclusions, showing how pragmatic causal inference designs yield more credible---and sometimes different---findings than descriptive or correlational approaches on the same data.
 \end{framed}
 
 \section{Organization and Contributions}

@@ -149,8 +149,8 @@ While intuitive, this approach has fundamental limitations that render it insuff
 The most fundamental limitation is that regression can only adjust for \emph{observed} confounders.
 In practice, important confounders are often unmeasured or unmeasurable.
 Returning to our example, consider the confounders that plausibly affect both language choice and defect rates: Developer expertise, yes, but also team culture, project complexity, application domain, code review practices, testing discipline, deadline pressure, and organizational incentives.
-Can we measure all of these from repository data?
-Certainly not.
+Can we measure all of these from repository data in a convincing way?
+Probably not.
 
 The mathematical consequence is stark.
 Suppose the true model is:
@@ -603,7 +603,7 @@ Under this assumption, the DiD estimator identifies the ATT:
 When multiple entities are observed over multiple periods with treatment adoption occurring at different times, DiD extends to the panel setting~\cite{athey2022design}.
 The standard two-way fixed effects (TWFE) specification is:
 \begin{equation}
-\label{eq:base-did}
+\label{eq:chap2-base-did}
     Y_{it} = \alpha + \tau D_{it} + \mu_i + \lambda_t + \epsilon_{it}
 \end{equation}
 where $\mu_i$ are entity fixed effects (absorbing time-invariant characteristics), $\lambda_t$ are time fixed effects (absorbing common shocks), and $D_{it}$ indicates whether entity $i$ is treated at time $t$.
@@ -925,7 +925,7 @@ By specifying different lag structures and testing overidentifying restrictions,
 \paragraph{Formal Framework.}
 Consider a dynamic panel model:
 \begin{equation}
-\label{eq:dynamic-gmm}
+\label{eq:chap2-dynamic-gmm}
     Y_{it} = \rho Y_{i,t-1} + \beta D_{it} + X'_{it}\gamma + \mu_i + \lambda_t + \epsilon_{it}
 \end{equation}
 where $\rho$ captures persistence in the outcome, and $\beta$ is the treatment effect of interest.
@@ -987,7 +987,7 @@ Understanding these threats is essential both for designing rigorous studies and
 \subsection{Internal Validity}
 
 A study possesses high internal validity when we can confidently attribute observed outcome differences to the treatment rather than to confounding factors.
-The fundamental challenge is that we never observe the counterfactual---what would have happened to treated units had they not been treated---and must instead infer it from comparison groups under assumptions that may or may not hold.
+Again, the fundamental challenge is that we never observe the counterfactual and must instead infer it from comparison groups under assumptions that may or may not hold.
 
 The most pervasive threat to internal validity is \emph{confounding}, which occurs when an unmeasured variable affects both treatment assignment and outcomes, creating a spurious association that masquerades as a causal effect.
 Consider a study examining whether adopting a new development tool improves code quality.
@@ -1001,7 +1001,7 @@ Selection can also manifest as differential attrition: If struggling projects ar
 
 Even with perfect identification of causal effects, \emph{measurement error} in treatments or outcomes can attenuate or distort estimates.
 When treatment status is measured imprecisely---for example, inferring ``tool adoption'' from the presence of a configuration file that may not indicate actual sustained use---the resulting measurement error typically biases estimates toward zero, making true effects appear smaller than they are.
-When outcomes are measured with systematic error correlated with treatment status, bias can operate in either direction and is considerably harder to diagnose.
+When outcomes are measured with systematic error correlated with treatment status, bias can operate in either direction and is harder to diagnose.
 
 Finally, the Stable Unit Treatment Value Assumption (SUTVA) requires that one unit's treatment status does not affect another unit's outcomes---an assumption frequently violated in software engineering contexts.
 Developers share knowledge across teams, projects share dependencies through package ecosystems, and practices diffuse through professional networks and organizations.
@@ -1015,11 +1015,11 @@ External validity concerns this generalizability, and its threats are often unde
 
 The most fundamental external validity concern is \emph{population generalizability}: effects estimated on one population may not apply to others with different characteristics.
 Studies conducted on open-source GitHub repositories may not generalize to proprietary enterprise development, where organizational constraints, incentive structures, and development practices differ substantially.
-Effects observed among early adopters of a technology---who tend to be more technically sophisticated and intrinsically motivated---may not hold for the broader population of later adopters.
+Effects observed among early adopters of a technology---who tend to be more technically sophisticated and intrinsically motivated---may not hold for the broader population.
 Volunteer participants in controlled experiments may differ systematically from developers who would never consent to participate, limiting the applicability of experimental findings.
 
 \emph{Temporal generalizability} presents particular challenges in rapidly evolving technological domains.
-The productivity impact of early AI coding assistants, measured with 2023-era tools on 2023-era codebases, may bear little resemblance to the effects of more advanced tools deployed in the late 2020s.
+The productivity impact of early AI coding assistants, measured with 2023-era tools on 2023-era codebases, may bear little resemblance to the effects of more advanced tools deployed in the late 2020s with more capable models.
 Best practices validated through empirical research in one technological era may become obsolete---or even counterproductive---as the underlying technologies evolve.
 This suggests that empirical software engineering findings should be understood as historically situated rather than as timeless truths.
 
@@ -1048,10 +1048,10 @@ Because the identifying assumptions underlying causal inference are fundamentall
 
 For matching and propensity score studies, Rosenbaum bounds quantify how strong an unmeasured confounder would need to be to explain away the observed effect~\cite{rosenbaum2002observational}.
 If results remain robust to confounders implausibly stronger than any known variable, confidence in the findings increases; if a moderately strong confounder could reverse conclusions, appropriate caution is warranted.
-For difference-in-differences, researchers examine sensitivity to pre-trend specifications: event study plots visualizing pre-treatment coefficients help assess whether the parallel trends assumption is plausible, and researchers increasingly test whether conclusions survive alternative trend extrapolations.
+For difference-in-differences, researchers examine sensitivity to pre-trend specifications: Event study plots visualizing pre-treatment coefficients help assess whether the parallel trends assumption is plausible, and researchers increasingly test whether conclusions survive alternative trend extrapolations.
 
-A powerful approach to robustness is employing multiple estimators with different identifying assumptions.
-When two-way fixed effects, Callaway-Sant'Anna, and imputation estimators all yield consistent treatment effect estimates, the finding is unlikely to be an artifact of any single method's assumptions.
+A powerful approach to robustness is employing multiple approaches with different identifying assumptions.
+For example, when two-way fixed effects, Callaway-Sant'Anna, and imputation estimators all yield consistent treatment effect estimates, the finding is unlikely to be an artifact of any single method's assumptions.
 Conversely, divergent results across estimators signal that conclusions may depend on methodological choices and warrant careful investigation.
 
 Placebo tests provide another diagnostic tool, examining whether effects appear where they should not.
@@ -1059,7 +1059,7 @@ If treatment effects appear \emph{before} treatment occurs, this suggests confou
 If treatment affects outcomes it theoretically should not influence---such as pre-determined characteristics fixed before treatment assignment---something is amiss with the research design.
 Passing placebo tests does not prove validity, but failing them is highly informative about potential threats.
 
-Ultimately, the credibility of causal claims rests not on asserting that assumptions are satisfied---a claim that can never be definitively verified---but on transparently examining their plausibility, demonstrating robustness to reasonable violations, and acknowledging the limitations that remain.
+Ultimately, the credibility of causal claims rests not on asserting that assumptions are satisfied---a claim that can never be definitively verified---but on transparently examining their plausibility, demonstrating robustness to reasonable alternatives, and acknowledging the limitations that still remain in the current research design.
 
 \section{A Pragmatic Approach to Causal Inference in Empirical Software Engineering}
 \label{sec:pragmatic}
@@ -1171,5 +1171,5 @@ Yet together, these studies suggest that the tool probably provides genuine bene
 This is useful guidance for organizational decision-making---not certainty, but evidence that substantially improves upon intuition alone.
 
 The goal of causal inference in software engineering is not to achieve epistemological perfection---an unattainable standard in any empirical science---but to provide better evidence than we would have otherwise.
-By employing the most rigorous designs feasible in each context, maintaining transparency about assumptions and limitations, conducting systematic sensitivity analyses, and triangulating across complementary studies, researchers can contribute genuine knowledge to a field where randomized experiments remain rare and observational data inevitably imperfect.
+By employing the most rigorous designs feasible in each context, maintaining transparency about assumptions and limitations, conducting systematic sensitivity analyses, and triangulating across complementary studies, researchers can contribute genuine knowledge to a field where randomized experiments remain rare and observational data are inevitably imperfect.
 The credibility of causal claims ultimately rests not on claiming that assumptions are satisfied, but on transparently examining their plausibility, demonstrating robustness to reasonable violations, and honestly communicating what the evidence can---and cannot---tell us about the phenomena under investigation.

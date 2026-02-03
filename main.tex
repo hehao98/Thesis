@@ -158,16 +158,16 @@ Software engineering practice is filled with myths---beliefs derived from intuit
 Unfortunately, empirical software engineering research often fails to rigorously test these beliefs when it relies solely on descriptive, correlational, and qualitative evidence from software repository data and developer opinions.
 In this thesis, I argue that \emph{a pragmatic causal inference approach---one that makes theory and assumptions explicit, acknowledges methodological limitations honestly, and navigates alternative explanations thoughtfully---can build trustworthy evidence to dispel software engineering myths and inform evidence-based practice}.
 
-Across three empirical studies, I demonstrate how this pragmatic causal inference approach reveals systematic gaps between practitioner beliefs and empirical reality. 
+Across three empirical studies, I demonstrate how this approach reveals systematic gaps between practitioner beliefs and empirical reality. 
 First, using counterfactual analysis and simulations on npm dependency data, I challenge the myth that pinning dependency versions improves overall project security, revealing that it paradoxically increases attack exposure as long as upstream packages are not pinning their own dependencies. 
 Second, through a longitudinal analysis of GitHub starring patterns with panel regression models, I challenge the myth that fake GitHub stars provide sustainable promotional benefits, showing instead that these artificial signals become long-term liabilities. 
 Finally, using a difference-in-differences framework with staggered adoption, I challenge the myth that AI coding tools unambiguously improve developer productivity, finding that the initial velocity gains from Cursor are offset by sustained technical debt accumulation.
-In each study, I explicitly articulate the identifying assumptions, probe their plausibility through diagnostic tests, and discuss the scope conditions under which the findings hold.
-Collectively, these studies expose a systematic divergence between practitioner beliefs and empirical reality---a divergence revealed only through 
-rigorous causal inference methods.
+In each study, I articulate the theory and identifying assumptions, discuss the conditions under which the findings hold, and carefully rule out alternative explanations.
+Collectively, these studies expose a systematic divergence between practitioner beliefs and empirical reality---a divergence revealed only through rigorous and pragmatic causal inference designs.
 
-Building on these contributions, I propose to demonstrate that the choice of analytical method materially affects conclusions: Studies employing pragmatic causal inference designs yield more credible---and sometimes different---findings than those relying on descriptive or correlational evidence alone.
-Consequently, this thesis provides a methodological blueprint for future empirical software engineering research, illustrating how to balance rigor with practicality to generate actionable, trustworthy evidence.
+Building on these contributions, I propose to demonstrate that the choice of analytical method materially affects conclusions.
+Importantly, I want to show that studies employing pragmatic causal inference designs yield more credible---and sometimes different---findings than those relying on descriptive or correlational evidence alone.
+Consequently, this thesis will provide a methodological blueprint for future empirical software engineering research, illustrating how to balance rigor with practicality to generate actionable, trustworthy evidence.
 \end{abstract}
 
 %\begin{acknowledgments}
@@ -194,17 +194,17 @@ Consequently, this thesis provides a methodological blueprint for future empiric
 \chapter{Empirical Study I: The Impact of Dependency Pinning on Supply Chain Security}
 \label{chp:pinning}
 
-%\include{main-pinning}
+\include{main-pinning}
 
 \chapter{Empirical Study II: The Impact of Fake GitHub Stars on Repository Promotion}
 \label{chp:fake-stars}
 
-%\include{main-fake-stars}
+\include{main-fake-stars}
 
 \chapter{Empirical Study III: The Impact of Cursor AI on Open-Source Projects}
 \label{chp:cursor}
 
-%\include{main-cursor}
+\include{main-cursor}
 
 \chapter{Proposed Work}
 \label{chp:proposed-work}
