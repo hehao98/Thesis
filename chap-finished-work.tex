@@ -20,7 +20,7 @@ Neither approach provides the quantitative, causal evidence necessary to resolve
 \subsection{Method}
 
 To move beyond prior correlational and qualitative evidence, this study employs a \emph{counterfactual analysis} approach~\cite{morgan2015counterfactuals}---estimating the causal effect of pinning by comparing observed outcomes with simulated ``what-if'' scenarios where each project pins all its direct dependencies.
-This design directly embodies the pragmatic causal inference philosophy advocated in this thesis: it makes identifying assumptions explicit, acknowledges limitations honestly, and provides quantitative evidence where previously only opinions existed.
+This design directly embodies the pragmatic causal inference philosophy advocated in this thesis: It makes identifying assumptions explicit, acknowledges limitations honestly, and provides quantitative evidence where previously only opinions existed.
 
 \paragraph{Data Collection}
 The study curates a balanced dataset of 10,000 npm packages and 10,000 GitHub repositories using npm, ensuring representation of both libraries and applications.
@@ -53,7 +53,7 @@ This specification allows the data to reveal whether pinning's impact differs fo
 \paragraph{Identifying Assumptions and Limitations}
 The pragmatic approach requires explicit articulation of assumptions.
 This study assumes: (1) the npm resolver's historical behavior can be accurately reconstructed via time-traveling resolution; (2) malicious attacks occur uniformly randomly among packages, making the count of floating dependencies a reasonable proxy for attack surface; (3) the simulation's conservative assumption of no manual developer intervention represents a meaningful baseline.
-Each assumption's plausibility is assessed: resolution succeeded for 83.6\% of packages and 87.7\% of repositories; attack uniformity aligns with empirical observations that attackers are generally opportunistic~\cite{DBLP:conf/dimva/OhmPS020}; the no-intervention assumption provides a conservative estimate of pinning's costs.
+Each assumption's plausibility is assessed: Resolution succeeded for 83.6\% of packages and 87.7\% of repositories; attack uniformity aligns with empirical observations that attackers are generally opportunistic~\cite{DBLP:conf/dimva/OhmPS020}; the no-intervention assumption provides a conservative estimate of pinning's costs.
 The study explicitly acknowledges that findings are specific to the npm ecosystem and may not generalize to ecosystems with different baseline practices (e.g., Maven's extensive pinning).
 
 \subsection{Key Findings}
@@ -153,7 +153,7 @@ However, these findings derive primarily from controlled experiments or benchmar
 
 This study provides the first large-scale empirical investigation of how LLM agent assistants impact project-level development velocity and software quality over time.
 The research design employs a \emph{difference-in-differences} (DiD) approach with staggered adoption~\cite{borusyak2024revisiting}---a state-of-the-art causal inference technique that exploits natural variation in when repositories adopted Cursor to identify causal effects.
-This design most directly embodies the thesis argument for pragmatic causal inference: it makes the parallel trends assumption explicit, assesses its plausibility through pre-trend tests, and strengthens identification through propensity score matching.
+This design most directly embodies the thesis argument for pragmatic causal inference: It makes the parallel trends assumption explicit, assesses its plausibility through pre-trend tests, and strengthens identification through propensity score matching.
 
 \paragraph{Treatment Group Identification}
 I identify Cursor-adopting repositories through configuration files in git history.
