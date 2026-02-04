@@ -1,0 +1,242 @@
+This chapter presents three empirical studies that exemplify the pragmatic causal inference approach advocated in this thesis.
+Each study challenges a widely held software engineering belief---what I have termed a \emph{software engineering myth}---by employing rigorous causal reasoning, making identifying assumptions explicit, and acknowledging methodological limitations honestly.
+Together, these studies demonstrate how careful empirical analysis can build trustworthy evidence to inform evidence-based software engineering practice, even when perfect experimental designs are infeasible.
+
+\section{The Impact of Dependency Pinning on Supply Chain Security}
+\label{sec:finished-pinning}
+
+\subsection{Overview}
+
+The first study addresses a contentious debate in software supply chain security: whether developers should \emph{pin} their dependencies to specific versions or allow \emph{floating} version constraints that automatically incorporate updates.
+This debate exemplifies the kind of software engineering myth that persists due to conflicting practitioner intuitions and the absence of rigorous quantitative evidence.
+
+Security practitioners increasingly advocate for dependency pinning as protection against malicious package updates---the rationale being that pinned dependencies prevent automatic installation of compromised versions.
+This recommendation has been codified in security scorecards and best practice guidelines, with the OpenSSF Scorecard project including ``pinned dependencies'' among its 18 security best practices~\cite{DBLP:journals/ieeesp/ZahanKHSW23}.
+Conversely, software engineering practitioners argue that pinning creates substantial maintenance burdens, accumulates technical debt through outdated dependencies, and paradoxically increases exposure to known security vulnerabilities by blocking automatic propagation of security patches~\cite{DBLP:journals/tse/JafariCAST22}.
+
+Prior research on this topic has been limited to collecting and synthesizing practitioner opinions~\cite{DBLP:journals/tosem/BogartKHT21, DBLP:journals/tse/JafariCAST22, DBLP:conf/sp/LadisaPMB23} or aggregating descriptive statistics from software repositories~\cite{DBLP:conf/msr/0001PSTB19, DBLP:conf/msr/PinckneyCGB23}.
+Neither approach provides the quantitative, causal evidence necessary to resolve the controversy or inform evidence-based decision-making.
+
+\subsection{Method}
+
+To move beyond prior correlational and qualitative evidence, this study employs a \emph{counterfactual analysis} approach~\cite{morgan2015counterfactuals}---estimating the causal effect of pinning by comparing observed outcomes with simulated ``what-if'' scenarios where each project pins all its direct dependencies.
+This design directly embodies the pragmatic causal inference philosophy advocated in this thesis: it makes identifying assumptions explicit, acknowledges limitations honestly, and provides quantitative evidence where previously only opinions existed.
+
+\paragraph{Data Collection}
+The study curates a balanced dataset of 10,000 npm packages and 10,000 GitHub repositories using npm, ensuring representation of both libraries and applications.
+Projects are selected based on popularity (top 5\% downloads for packages, top 1\% stars for repositories), active maintenance (commits within two years), and having production dependencies to analyze.
+This sampling strategy ensures findings apply to actively maintained projects that practitioners care about, while avoiding toy projects and obsolete codebases that would introduce noise.
+
+\paragraph{Simulation Setup}
+The key methodological innovation involves leveraging an undocumented time-traveling feature of the npm dependency resolver~\cite{DBLP:conf/msr/PinckneyCGB23} to reconstruct historical dependency graphs.
+For each project, I resolve dependency graphs at five time points spanning 12 months (September 2022 to September 2023), under two conditions: (1) the \emph{control} condition using actual version constraints from each project's \texttt{package.json}, and (2) the \emph{treatment} condition where all direct dependencies are pinned to specific versions.
+This creates a balanced panel dataset with repeated observations under both conditions.
+
+\paragraph{Outcome Metrics}
+Five metrics capture the security and maintenance trade-offs commonly debated:
+\begin{enumerate}[leftmargin=15pt]
+    \item \textsf{Number of floating dependencies}: The attack surface for malicious updates---packages where a compromised version would be automatically installed.
+    \item \textsf{Number of automatic updates}: Exposure to breaking changes, assuming such changes occur uniformly among releases.
+    \item \textsf{Number of security vulnerabilities}: Known vulnerabilities in the dependency graph based on GitHub Advisory entries.
+    \item \textsf{Number of outdated dependencies}: Direct dependencies with newer versions available, indicating maintenance burden.
+    \item \textsf{Number of bloated dependencies}: Packages with multiple versions simultaneously present, indicating dependency conflicts.
+\end{enumerate}
+
+\paragraph{Statistical Analysis}
+The study employs \emph{fixed-effects panel regression}~\cite{bruderl2015fixed} to estimate the causal impact of pinning while controlling for unobserved project-specific and time-specific heterogeneity.
+The model specification includes project-fixed effects ($\alpha$), time-fixed effects ($\beta$), and an interaction term with dependency graph size to test whether pinning's effects vary with project complexity:
+\begin{equation}
+\ln(M+1) \sim \text{\emph{pinning}} + \ln(size(G)) + \text{\emph{pinning}} \times \ln(size(G)) + \alpha + \beta
+\end{equation}
+This specification allows the data to reveal whether pinning's impact differs for projects with small versus large dependency graphs---a critical nuance that prior qualitative studies could not address.
+
+\paragraph{Identifying Assumptions and Limitations}
+The pragmatic approach requires explicit articulation of assumptions.
+This study assumes: (1) the npm resolver's historical behavior can be accurately reconstructed via time-traveling resolution; (2) malicious attacks occur uniformly randomly among packages, making the count of floating dependencies a reasonable proxy for attack surface; (3) the simulation's conservative assumption of no manual developer intervention represents a meaningful baseline.
+Each assumption's plausibility is assessed: resolution succeeded for 83.6\% of packages and 87.7\% of repositories; attack uniformity aligns with empirical observations that attackers are generally opportunistic~\cite{DBLP:conf/dimva/OhmPS020}; the no-intervention assumption provides a conservative estimate of pinning's costs.
+The study explicitly acknowledges that findings are specific to the npm ecosystem and may not generalize to ecosystems with different baseline practices (e.g., Maven's extensive pinning).
+
+\subsection{Key Findings}
+
+The results challenge the conventional wisdom that pinning provides meaningful security benefits.
+While pinning does reduce automatic updates (as expected), the study reveals a counter-intuitive finding: \emph{pinning direct dependencies can actually increase the attack surface for malicious package updates} in projects with large dependency graphs.
+This surprising result stems from how npm's dependency resolver handles version conflicts---pinning creates more opportunities for duplicate package versions, each representing an additional attack vector.
+For projects with 498 or more dependencies (affecting 26\% of GitHub repositories in the dataset), pinning becomes actively counterproductive for its primary security goal.
+
+Meanwhile, the expected costs of pinning are confirmed: projects that pin their dependencies experience significantly higher exposure to known security vulnerabilities, more outdated dependencies requiring manual updates, and increased dependency conflicts.
+These findings contradict security practitioner recommendations but align with the opinions of npm developers who have long viewed pinned dependencies as a ``smell'' indicating accumulated technical debt.
+
+The study also explored ecosystem-level interventions, demonstrating through simulation that coordinated pinning in carefully selected upstream packages could reduce ecosystem-wide risk of malicious updates by up to 75\%---far more effective than individual developers independently pinning their own dependencies.
+
+From a Bayesian perspective, findings that challenge established best practices require stronger evidence to be credible.
+The combination of large-scale data (20,000 projects), longitudinal observation (12 months), counterfactual simulation, and robust statistical modeling with fixed effects provides the kind of compelling evidence necessary to warrant updating beliefs about dependency management practices.
+
+\section{The Impact of Fake GitHub Stars on Repository Promotion}
+\label{sec:finished-fake-stars}
+
+\subsection{Overview}
+
+The second study examines a different type of software engineering myth: the belief that artificially inflating popularity signals---specifically GitHub stars---provides sustainable promotional benefits for open-source projects.
+This belief drives a thriving black market where repositories purchase fake stars for ``growth hacking,'' under the assumption that higher star counts attract genuine attention, adoption, and investment.
+
+GitHub stars serve as a widely used popularity signal when stakeholders evaluate, select, and adopt open-source projects~\cite{DBLP:journals/jss/BorgesV18, DBLP:journals/pacmhci/QiuLPSV19, DBLP:conf/sigsoft/VargasATBG20}.
+However, this reliance creates perverse incentives: if star counts influence decision-making, actors have motivation to manipulate them.
+Prior reports from gray literature document repositories buying stars for growth hacking, r\'{e}sum\'{e} fraud, and even malware distribution~\cite{stargazer-goblin}, but systematic empirical investigation of fake stars' prevalence, characteristics, and actual effectiveness has been lacking.
+
+\subsection{Method}
+
+This study presents the first systematic, global, and longitudinal measurement of fake GitHub stars, combining scalable anomaly detection with causal analysis of promotional effectiveness.
+The methodological approach exemplifies the transparency and honest acknowledgment of limitations advocated in this thesis---the detection tool makes explicit assumptions about what constitutes anomalous behavior, validates performance against known ground truth, and the causal analysis employs panel regression with fixed effects while explicitly noting that the approach cannot fully rule out all confounding factors.
+
+\paragraph{Detection Tool Design}
+I developed \SystemName, a scalable detection tool that identifies two signatures of anomalous starring behavior across the entire GitHub event archive (63.9 million users, 331 million repositories, 326 million stars from 2019--2024):
+
+\begin{itemize}[leftmargin=15pt]
+    \item \emph{Low activity signature}: Stars from accounts that become stale after minimal activity---specifically, accounts with only one starring event plus at most one additional event (e.g., fork) on the same day.
+    These likely represent throw-away bot accounts created by fake star merchants.
+    
+    \item \emph{Lockstep signature}: Clusters of accounts repeatedly starring repositories in coordinated time windows.
+    Formally, the tool identifies groups of $\geq$50 accounts and $\geq$10 repositories where each repository receives stars from $\geq$25 of these accounts within a 30-day window.
+    This pattern is unlikely to form naturally and is highly correlated with fraudulent activities in other social platforms~\cite{DBLP:conf/www/BeutelXGPF13}.
+\end{itemize}
+
+A postprocessing step identifies repositories with \emph{fake star campaigns}---those where fake stars constitute a substantial portion of total stars (at least one month with $>$50 fake stars comprising $>$50\% of that month's stars, and $>$10\% of all-time stars).
+This distinguishes repositories that likely purchased fake stars from legitimate repositories that may have been incidentally starred by fake accounts.
+
+\paragraph{Validation}
+The detection tool's assumptions require empirical validation.
+I assessed recall against the Stargazer Ghost Network dataset~\cite{stargazer-goblin}, a confirmed malware campaign using fake stars: \SystemName detected 81\% of the 847 repositories and 76\% of the 15,672 involved accounts.
+For precision, I compared deletion rates between detected repositories/accounts and random samples: 90.42\% of detected repositories and 57.07\% of detected accounts had been deleted by GitHub at the time of analysis, compared to baseline deletion rates of 5.03\% and 3.54\% respectively.
+This 16x elevation in deletion rates provides strong evidence that detections correspond to genuinely problematic activity.
+
+\paragraph{Causal Analysis of Promotional Effect}
+To test whether fake stars achieve their purported promotional benefits, I employ \emph{panel autoregression} models~\cite{hanck2021introduction} estimating the longitudinal effect of gaining fake stars on attracting real stars in subsequent months.
+For each repository $i$ in each month $t$, I collect: fake stars gained ($\textit{fake}_{i,t}$), cumulative fake stars ($\textit{all\_fake}_{i,t}$), real stars gained ($\textit{real}_{i,t}$), cumulative real stars ($\textit{all\_real}_{i,t}$), repository age, release status, and authentic development activity.
+
+The model specification uses both fixed-effect and random-effect estimators for robustness:
+\begin{align*}
+    \textit{real}_{i,t} \sim &\sum_{j=1}^k \textit{real}_{i, t-j} + \textit{all\_real}_{i, t - k - 1} + \sum_{j=1}^k \textit{fake}_{i, t-j} + \textit{all\_fake}_{i, t - k - 1} + \text{controls}
+\end{align*}
+
+\paragraph{Identifying Assumptions and Limitations}
+The panel regression approach controls for unobserved time-invariant heterogeneity through fixed effects and for temporal dependencies through autoregressive terms.
+However, the study explicitly acknowledges limitations: the model cannot fully establish causality (e.g., inexperienced maintainers might both buy fake stars and fail to attract real attention due to other factors); the time series are too short for formal Granger causality tests; and the detection tool may have both false positives (legitimate repositories incorrectly flagged) and false negatives (sophisticated fake star campaigns not detected).
+These limitations are honestly articulated, allowing readers to calibrate their confidence appropriately.
+
+\subsection{Key Findings}
+
+Applying \SystemName to all GitHub data from 2019 to 2024 identified 6.0 million suspected fake stars across 18,617 repositories with fake star campaigns.
+The measurement study reveals an alarming landscape: fake star campaigns surged dramatically in 2024, with up to 16.66\% of popular repositories showing evidence of fake star campaigns in peak months.
+The accounts and repositories involved exhibit highly trivial activity patterns, with 90\% of detected repositories having been deleted by GitHub at the time of analysis.
+
+Critically, the study finds that the majority of fake stars are used to promote short-lived malware repositories rather than legitimate projects seeking growth.
+These malicious repositories leverage fake stars to appear trustworthy before distributing cryptocurrency stealers, credential phishing tools, and other malware through seemingly legitimate open-source channels.
+
+Most relevant to the software engineering myth under investigation, the panel regression results directly contradict the ``fake it until you make it'' belief.
+While fake stars produce a modest short-term promotional effect---a 1\% increase in fake stars correlates with a 0.07\% increase in real stars in the following month---this effect is approximately five times smaller than the effect of genuine stars (0.36\% increase).
+More importantly, the cumulative effect of fake stars becomes \emph{negative} after two months: repositories with more historical fake stars receive fewer real stars in subsequent periods.
+Fake stars become a liability rather than an asset, perhaps because repositories relying on fake stars lack the authentic activity and quality indicators that sustain long-term attention.
+
+\section{The Impact of Cursor AI on Open-Source Projects}
+\label{sec:finished-cursor}
+
+\subsection{Overview}
+
+The third study addresses what is perhaps the most prominent software engineering myth of the current era: the belief that AI coding assistants, particularly modern LLM agent assistants like Cursor, produce unambiguous and sustained productivity improvements.
+This belief pervades industry discourse, with developers self-reporting ``multi-fold productivity increases'' and practitioners claiming transformative workflow impacts~\cite{cursor-reddit-survey, cursor-10x}.
+
+Yet substantial concerns persist regarding LLM-generated code quality and the long-term consequences of AI-heavy development workflows.
+Prior studies have documented that AI coding assistants can produce code with security vulnerabilities~\cite{DBLP:conf/sp/PearceA0DK22, DBLP:conf/ccs/PerryS0B23}, performance issues~\cite{DBLP:conf/issre/LiC0X0S24}, and increased complexity~\cite{DBLP:journals/tse/LiuTLZZ24}.
+However, these findings derive primarily from controlled experiments or benchmark analyses that may not generalize to real-world, longitudinal project outcomes.
+
+\subsection{Method}
+
+This study provides the first large-scale empirical investigation of how LLM agent assistants impact project-level development velocity and software quality over time.
+The research design employs a \emph{difference-in-differences} (DiD) approach with staggered adoption~\cite{borusyak2024revisiting}---a state-of-the-art causal inference technique that exploits natural variation in when repositories adopted Cursor to identify causal effects.
+This design most directly embodies the thesis argument for pragmatic causal inference: it makes the parallel trends assumption explicit, assesses its plausibility through pre-trend tests, and strengthens identification through propensity score matching.
+
+\paragraph{Treatment Group Identification}
+I identify Cursor-adopting repositories through configuration files in git history.
+Using the GitHub code search API with adaptive partitioning to circumvent result limits, I discovered repositories with \texttt{.cursorrules} files or \texttt{.cursor} folders.
+After filtering for non-fork repositories with $\geq$10 stars (a threshold achieving 97\% precision in identifying engineered projects~\cite{DBLP:journals/ese/MunaiahKCN17}), this yields \numtreated repositories with adoption dates between January 2024 and March 2025.
+
+\paragraph{Control Group Construction via Propensity Score Matching}
+A causal interpretation of DiD requires that treatment and control groups would follow similar outcome trajectories absent treatment (the parallel trends assumption).
+To strengthen this assumption's plausibility, I construct a matched control group using \emph{propensity score matching}~\cite{austin2011introduction}.
+
+The matching model captures \emph{dynamics} rather than static snapshots, recognizing that rapidly growing repositories may be more likely to adopt new tools.
+For each Cursor adoption cohort, I estimate propensity scores via logistic regression:
+\begin{equation}
+\log\frac{P(\text{treat}|...)}{1-P(\text{treat}|...)} = \alpha + \beta T_{i, t-1} + \sum_{j=1}^{6}\Gamma_j X_{i,t-j} + \Theta\sum_{j=7}^{\infty}X_{i,t-j} + \epsilon_{i}
+\end{equation}
+where $T_{i,t-1}$ captures repository maturity, $\sum_{j=1}^{6}\Gamma_j X_{i,t-j}$ captures month-by-month evolution over six months (activity levels, stars, forks, issues, pull requests), and $\Theta\sum_{j=7}^{\infty}X_{i,t-j}$ captures historical baselines.
+Matching additionally requires the same primary programming language.
+This yields a matched control group of 1,380 repositories with similar conditional treatment probabilities (AUC 0.83--0.91).
+
+\paragraph{Outcome Metrics}
+For each repository-month, I collect two velocity metrics (commits, lines added) and three quality metrics measured via SonarQube static analysis:
+\begin{itemize}[leftmargin=15pt]
+    \item \emph{Static analysis warnings}: Total reliability, maintainability, and security issues detected.
+    \item \emph{Duplicate line density}: Percentage of duplicated code in the codebase.
+    \item \emph{Code complexity}: Cognitive complexity~\cite{DBLP:conf/icse/Campbell18}, quantifying code understandability.
+\end{itemize}
+
+\paragraph{DiD Estimation}
+I employ the \citet{borusyak2024revisiting} imputation estimator, designed for staggered adoption settings where traditional two-way fixed effects may produce biased estimates.
+The estimator proceeds in two steps:
+\begin{enumerate}[leftmargin=20pt]
+    \item \emph{Impute counterfactual outcomes}: Fit a model using only untreated observations (pre-adoption for treated repositories, all observations for never-treated controls):
+    \begin{equation}
+    \hat{Y}_{it}(0) = \hat{\mu}_i + \hat{\lambda}_t + \hat{\Gamma}' Z_{it} + \epsilon_{it}
+    \end{equation}
+    where $\hat{\mu}_i$ and $\hat{\lambda}_t$ are repository-fixed and month-fixed effects, and $Z_{it}$ includes time-varying covariates.
+    
+    \item \emph{Estimate treatment effects}: For post-adoption observations, compare actual outcomes to counterfactual predictions, yielding average treatment effects on treated ($ATT$) and horizon-specific effects ($ATT_h$).
+\end{enumerate}
+
+The repository-fixed effects control all time-invariant confounders (team culture, domain, language), while month-fixed effects control all repository-invariant temporal factors (industry trends, platform changes, seasonal patterns).
+
+\paragraph{Testing Velocity-Quality Interactions}
+To investigate whether velocity and quality outcomes interact dynamically---potentially explaining why initial velocity gains might dissipate---I employ \emph{panel generalized method of moments} (GMM)~\cite{arellano1991some}.
+GMM uses lagged values as instrumental variables to identify causal relationships when variables may be endogenous:
+\begin{equation}
+Y_{it} = \hat\mu_i + \hat\lambda_t + \hat\rho Y_{i,t-1} + \hat\beta D_{it} + \hat\gamma X_{it} + \hat{\Gamma}' Z_{it} +\epsilon_{it}
+\end{equation}
+This allows testing whether technical debt accumulation ($X_{it}$) causally reduces future velocity ($Y_{it}$), and vice versa.
+
+\paragraph{Identifying Assumptions and Limitations}
+The study explicitly articulates threats to validity and scope conditions.
+The identification strategy relies on observable Cursor adoption through configuration files, which may not capture all usage---estimates thus represent intent-to-treat effects for repositories with deliberate, visible adoption.
+The parallel trends assumption, while strengthened by matching and assessed through pre-trend tests, remains fundamentally untestable.
+Potential contamination from alternative AI tools (e.g., GitHub Copilot) in both groups means estimates reflect Cursor's \emph{additional} impact relative to current practice, not absolute AI effects.
+Findings may not generalize to enterprise settings, other AI tools, or programming languages beyond the dataset's dominant TypeScript, Python, and JavaScript.
+Each limitation is honestly acknowledged, embodying the pragmatic stance that transparent uncertainty communication is preferable to false claims of certainty.
+
+\subsection{Key Findings}
+
+The findings reveal a nuanced picture that challenges both unbridled optimism and categorical pessimism about AI-assisted coding.
+Cursor adoption produces substantial but \emph{transient} velocity gains: projects experience 3-5x increases in lines added in the first month post-adoption, but these gains dissipate entirely after two months, with velocity returning to baseline levels.
+
+Concurrently, the study documents \emph{persistent} technical debt accumulation.
+Static analysis warnings increase by 30\% and code complexity increases by 41\% on average post-adoption, and these quality degradations do not diminish over the observation period.
+Panel GMM analysis reveals that this accumulated technical debt subsequently reduces future development velocity, creating a self-reinforcing cycle where initial productivity surges give way to maintenance burdens.
+
+Notably, the code complexity increase persists even after controlling for velocity dynamics, providing evidence that code generated with LLM agents may be inherently more complex than human-written code---a ``complexity debt'' that compounds over time.
+
+Perhaps most importantly, the study illustrates how pragmatic causal inference can reveal complex temporal dynamics that simpler methodological approaches would miss.
+The transient velocity gains followed by persistent quality degradation, and the feedback loop between technical debt and subsequent velocity, emerged only through longitudinal analysis with appropriate statistical modeling.
+Cross-sectional comparisons or short-term experiments would have produced misleading conclusions about AI coding assistant effectiveness.
+
+\section{Summary}
+
+These three empirical studies collectively demonstrate the value of pragmatic causal inference for building trustworthy evidence in software engineering.
+Each study challenges a widely held belief: that dependency pinning improves security, that fake popularity signals provide sustainable promotional benefits, and that AI coding assistants produce unambiguous productivity improvements.
+In each case, rigorous empirical analysis reveals a more complex reality than conventional wisdom suggests.
+
+The studies also illustrate the methodological principles advocated in this thesis.
+Each makes its identifying assumptions explicit, whether assumptions about how npm resolves dependencies, what constitutes anomalous starring behavior, or what parallel trends hold between adopters and non-adopters.
+Each acknowledges limitations honestly, discussing threats to validity and scope conditions under which findings apply.
+Each navigates alternative explanations thoughtfully, using fixed effects, matching, and robustness checks to rule out confounding factors.
+
+Together, these studies provide a template for how software engineering research can move beyond descriptive correlations and synthesized practitioner opinions toward the kind of credible causal evidence needed to inform evidence-based practice.
+The pragmatic approach recognizes that no observational study achieves the certainty of a randomized controlled trial, but maintains that carefully designed quasi-experiments with transparent assumptions can nonetheless build trustworthy evidence incrementally.
