@@ -309,12 +309,12 @@ Consider the naive estimator that compares mean outcomes between treated and con
 Expanding in terms of potential outcomes reveals:
 \begin{align}
     E[Y \mid D=1] - E[Y \mid D=0] &= E[Y(1) \mid D=1] - E[Y(0) \mid D=0] \nonumber\\
-    &= \underbrace{E[Y(1) \mid D=1] - E[Y(0) \mid D=1]}_{\text{ATT}} + \underbrace{E[Y(0) \mid D=1] - E[Y(0) \mid D=0]}_{\text{Selection Bias}}
+    &= \underbrace{E[Y(1) \mid D=1] - E[Y(0) \mid D=1]}_{\text{ATT}} \\&+ \underbrace{E[Y(0) \mid D=1] - E[Y(0) \mid D=0]}_{\text{Selection Bias}}
     \label{eq:selection-bias}
 \end{align}
 The first term is the ATT.
-The second is \emph{selection bias}: the difference in baseline potential outcomes between those who receive treatment and those who do not.
-When treatment is self-selected, these groups may differ systematically even absent any treatment effect---high-ability developers may adopt new tools precisely because they are high-ability, so comparing their outcomes with non-adopters conflates the tool's effect with pre-existing ability differences.
+The second is \emph{selection bias}: the difference in baseline potential outcomes between treated and untreated individuals.
+When treatment is self-selected, these groups may differ systematically even in the absence of a treatment effect — high-ability developers may adopt functional programming languages precisely because they are high-ability, so comparing their outcomes with non-adopters conflates the language's effect with pre-existing ability differences.
 Whether the naive comparison recovers a causal effect depends entirely on whether selection bias vanishes.
 We now apply this reasoning to two canonical settings.
 
@@ -329,8 +329,8 @@ Similarly, $E[Y(1) \mid D=1] = E[Y(1)]$, so the ATT equals the ATE, and the naiv
 \begin{equation}
     E[Y \mid D=1] - E[Y \mid D=0] = E[Y(1)] - E[Y(0)] = \text{ATE}
 \end{equation}
-Randomization alone suffices; no covariates, modeling assumptions, or functional form restrictions are needed.
-This is why RCTs are considered the gold standard for causal inference: identification follows from the design of the study rather than from the plausibility of modeling assumptions.
+Randomization alone suffices; no covariates, modeling assumptions, or functional-form restrictions are required.
+This is why RCTs are considered the gold standard for causal inference: Identification follows from the study design rather than from the plausibility of assumptions.
 
 A valid RCT additionally requires the \emph{Stable Unit Treatment Value Assumption (SUTVA)}---that unit $i$'s potential outcomes depend only on $i$'s own treatment status (no interference) and that treatment is well-defined (no hidden variations)---as well as \emph{compliance}: units must receive the treatment they are assigned.
 If subjects opt out or cross over, the realized treatment diverges from the random assignment, and additional assumptions (e.g., monotonicity in the instrumental variables sense) are needed to recover causal effects.
@@ -344,15 +344,13 @@ When randomization is infeasible---as is common in software engineering, where p
 \end{equation}
 where $X_i$ is a vector of observed covariates and $\varepsilon_i$ is the error term.
 The potential outcomes framework makes explicit the assumptions under which the OLS estimate $\hat{\tau}$ admits a causal interpretation.
-
-The key assumption is \emph{conditional ignorability} (also called unconfoundedness or selection on observables):
+Specifically, the key assumption is \emph{conditional ignorability} (also called unconfoundedness or selection on observables):
 \begin{equation}
     (Y(1), Y(0)) \perp D \mid X
     \label{eq:cond-ignorability}
 \end{equation}
 This asserts that, among units with the same observed characteristics $X$, treatment assignment is independent of potential outcomes---that is, treatment is as-if randomly assigned within strata defined by $X$.
 A complementary assumption is \emph{overlap} (positivity): $0 < P(D=1 \mid X=x) < 1$ for all $x$ in the support of $X$, ensuring both treated and untreated units exist at every covariate profile.
-
 Under these two conditions, the RCT logic applies within each stratum.
 Selection bias vanishes conditionally---$E[Y(0) \mid D=1, X] = E[Y(0) \mid D=0, X]$---so:
 \begin{equation}
@@ -369,7 +367,8 @@ In summary, for $\hat{\tau}$ to be causally interpretable, one must assume:
     \item \textbf{Correct functional form}: The linear, additive specification is a reasonable approximation to the true conditional expectation function.
 \end{enumerate}
 Unlike randomization, conditional ignorability is fundamentally untestable: we cannot verify from data alone that all confounders have been measured, since the confounders we might be missing are, by definition, unobserved.
-The potential outcomes framework makes these requirements explicit, forcing the analyst to articulate \emph{why} a particular regression warrants a causal interpretation rather than treating covariate adjustment as sufficient by itself.
+
+%The potential outcomes framework makes these requirements explicit, forcing the analyst to articulate \emph{why} a particular regression warrants a causal interpretation rather than treating covariate adjustment as sufficient by itself.
 
 \begin{comment}
 \paragraph{Why Simple Comparisons Fail.}
