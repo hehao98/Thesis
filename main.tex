@@ -126,7 +126,7 @@
 {\bf Dispelling Software Engineering Myths:\\A Pragmatic Causal Inference Approach
 }}
 \author{Hao He}
-\date{Feburary 2026}
+\date{March 09, 2026}
 \Year{2026}
 \trnumber{}
 
@@ -154,19 +154,17 @@ Narayan Ramasubbu
 \pagestyle{plain} % for toc, was empty
 
 \begin{abstract}
-Software engineering practice is filled with myths---beliefs derived from intuition, experience, and conventional wisdom---that lack an empirical foundation.
-Unfortunately, empirical software engineering research often fails to rigorously test these beliefs when it relies solely on descriptive, correlational, and qualitative evidence from software repository data and developer opinions.
-In this thesis, I argue that \emph{a pragmatic causal inference approach with rigorous causal reasoning---one that makes theory and assumptions explicit, acknowledges methodological limitations honestly, and navigates alternative explanations thoughtfully---can build trustworthy evidence to dispel software engineering myths and inform evidence-based practice}.
+Software engineering practice is filled with myths---beliefs derived from intuition, experience, and conventional wisdom---that lack empirical foundations.
+Unfortunately, empirical software engineering research often fails to rigorously test these beliefs when it relies on descriptive, correlational, and qualitative evidence without explicitly discussing the extent to which it can credibly support a causal theory of interest.
+In this thesis, I argue that \emph{empirical software engineering research needs an explicit framework and vocabulary for causal credibility assessments so that it can better dispel software engineering myths and inform evidence-based practice}.
 
-Across three empirical studies, I demonstrate how this approach reveals systematic gaps between practitioner beliefs and empirical reality. 
-First, using counterfactual analysis and simulations on npm dependency data, I challenge the myth that pinning dependency versions improves overall project security, revealing that it paradoxically increases attack exposure as long as upstream packages are not pinning their own dependencies. 
+Across three empirical studies, I demonstrate how this approach more credibly reveals systematic gaps between practitioner beliefs and empirical reality. 
+First, using counterfactual analysis and simulations on npm dependency data, I challenge the myth that pinning dependency versions improves project security, showing that it paradoxically increases attack exposure unless upstream packages pin their own dependencies. 
 Second, through a longitudinal analysis of GitHub starring patterns with panel regression models, I challenge the myth that fake GitHub stars provide sustainable promotional benefits, showing instead that these artificial signals become long-term liabilities. 
-Finally, using a difference-in-differences framework with staggered adoption, I challenge the myth that AI coding tools unambiguously improve developer productivity, finding that the initial velocity gains from Cursor are offset by sustained technical debt accumulation.
-In each study, I articulate the theory and identifying assumptions, discuss the conditions under which the findings hold, and carefully rule out alternative explanations.
-Collectively, these studies expose a systematic divergence between practitioner beliefs and empirical reality---a divergence revealed only through rigorous and pragmatic causal inference designs.
+Finally, using a difference-in-differences framework with staggered adoption, I challenge the myth that AI coding tools unambiguously improve developer productivity, finding that Cursor's initial velocity gains are offset by sustained accumulation of technical debt.
+In each study, I assess the credibility of causal claims through: (1) articulating the causal theory, (2) discussing the assumptions under which the findings carry a causal interpretation, (3) honestly acknowledging and mitigating limitations, and (4) carefully navigating alternative explanations.
 
-Building on these contributions, I propose to demonstrate that the choice of analytical method materially affects conclusions.
-Importantly, I want to show that studies employing pragmatic causal inference designs yield more credible---and sometimes different---findings than those relying on descriptive or correlational evidence alone.
+Building on these contributions, I propose to show that studies employing an explicit framework and vocabulary for assessing causal credibility yield more trustworthy findings than those that rely solely on descriptive or correlational evidence without explicit causal reasoning.
 Consequently, this thesis will provide a methodological blueprint for future empirical software engineering research, illustrating how to balance rigor with practicality to generate actionable, trustworthy evidence.
 \end{abstract}
 

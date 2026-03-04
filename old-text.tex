@@ -1,0 +1,477 @@
+\section{Identification Strategies}
+\label{sec:identification}
+
+This section presents research designs that, under their stated assumptions, provide credible causal identification.
+Each method is characterized by its identifying assumption and the alternative explanations it rules out.
+Unlike the control strategies discussed in Section~\ref{sec:control}, identification strategies provide a complete path from observed data to causal effects---if their assumptions hold, the resulting estimates would have a causal interpretation.
+
+\subsection{Randomized Controlled Trials}
+
+\paragraph{Historical Context.}
+The randomized controlled trial (RCT) emerged from agricultural research in the early 20th century.
+Ronald Fisher, working at the Rothamsted Experimental Station at that time, developed the theoretical foundations of randomization in his landmark 1935 book \emph{The Design of Experiments}~\cite{fisher1971design}.
+Fisher's key insight was that random assignment of treatments to experimental units provides a principled basis for statistical inference: It ensures that treatment and control groups are comparable in expectation across all characteristics, observed and unobserved, and it justifies the use of probability theory to quantify uncertainty.
+The method revolutionized medical research after Austin Bradford Hill applied it to the first modern clinical trial of streptomycin for tuberculosis in 1948, establishing the RCT as the ``gold standard'' for evaluating medical interventions~\cite{bothwell2016assessing}.
+
+\paragraph{Intuition.}
+The power of randomization lies in its simplicity: By flipping a coin to determine who receives treatment, we break the link between treatment assignment and all potential confounders.
+Before randomization, treated and control groups might differ systematically---perhaps more motivated patients seek treatment, or better-funded teams adopt new tools.
+These pre-existing differences confound any comparison of outcomes.
+Randomization eliminates this problem by ensuring that, on average, the only difference between groups is the treatment itself.
+Any difference in outcomes can therefore be attributed to the treatment rather than to selection effects.
+
+\paragraph{Formal Framework.}
+Let $D_i \in \{0, 1\}$ denote random treatment assignment for unit $i$.
+Randomization ensures that treatment is independent of potential outcomes:
+\begin{equation}
+    (Y_i(1), Y_i(0)) \perp D_i
+\end{equation}
+This is the strongest form of ignorability---it holds unconditionally, without requiring adjustment for covariates.
+Under this assumption, the ATE is identified by a simple difference in means:
+\begin{equation}
+    \text{ATE} = E[Y_i(1)] - E[Y_i(0)] = E[Y_i | D_i = 1] - E[Y_i | D_i = 0]
+\end{equation}
+The sample analogue provides an unbiased estimator:
+\begin{equation}
+    \widehat{\text{ATE}} = \frac{1}{n_1} \sum_{i: D_i = 1} Y_i - \frac{1}{n_0} \sum_{i: D_i = 0} Y_i
+\end{equation}
+where $n_1$ and $n_0$ are the numbers of treated and control units, respectively.
+Standard errors follow from the randomization distribution or, asymptotically, from the central limit theorem.
+
+\paragraph{RCTs in Computer Science Research.}
+Randomized experiments have a rich tradition across computer science, though their prevalence varies by subfield.
+In human-computer interaction (HCI) research, controlled experiments comparing interface designs, interaction techniques, or visualization methods are standard practice, as the field inherited experimental traditions from psychology and human factors engineering~\cite{DBLP:conf/chi/Vaithilingam0G22}.
+In computing education research, randomized trials routinely evaluate pedagogical interventions---comparing teaching methods, programming environments, or curricular structures---with studies randomly assigning students to different instructional conditions.
+In the IT industry, A/B testing has become ubiquitous for user experience research~\cite{kohavi2020trustworthy}.
+Large technology companies run thousands of online experiments annually, randomly assigning users to different interface designs, recommendation algorithms, or feature variants, and measuring outcomes like engagement, conversion, or retention.
+These experiments provide clear causal evidence for product decisions because randomization eliminates the selection effects that plague observational comparisons.
+
+\paragraph{Application in Software Engineering.}
+Within software engineering research, RCTs are less common but increasingly influential.
+A prominent recent example is the METR study by Becker et al., which conducted a randomized controlled trial with experienced open-source developers working on their own real-world projects~\cite{DBLP:journals/corr/abs-2507-09089}.
+The study found that AI tools did not significantly reduce completion time for experienced developers---a result that diverged from earlier experiments showing large productivity gains.
+Such experiments provide clear causal evidence while maintaining relevance to real-world practice.
+
+While the appeal of RCTs in software engineering is clear, they also face significant practical limitations in this context.
+First, many important questions are not amenable to randomization and are impractical for an RCT design.
+It would be prohibitively expensive, unethical, or simply infeasible to run an experiment randomly assigning programming languages to projects in production, assigning developers to adopt tools they resist, or experimentally manipulating organizational culture.
+Second, practical constraints limit the duration and scale of experiments: Software projects unfold over months or years, whereas experiments typically run for days or weeks. 
+A tool that initially slows developers (as they learn it) but eventually accelerates them would show negative effects in a week-long experiment, but positive effects over months.
+Finally, perhaps the most fundamental limitation of RCTs in software engineering is external validity~\cite{DBLP:journals/ese/KalliamvakouGBS16}.
+For example, laboratory experiments with student participants completing artificial tasks may not generalize to professional developers working on production systems under real-world pressures.
+Yet, these limitations do not diminish the value of RCTs when they are feasible and well-executed---they provide an important source of triangulation on one side of the trade-off: limited external validity in exchange for the highest internal validity.
+
+\subsection{Difference-in-Differences}
+\label{sec:chap2-did}
+
+\paragraph{Historical Context.}
+Difference-in-differences (DiD) has roots in 19th-century epidemiology---John Snow's comparison of cholera rates across London water companies implicitly used the logic of DiD---but its modern form crystallized in labor economics.
+The method gained prominence through Ashenfelter's 1978 study of job training programs~\cite{ashenfelter1978estimating} and achieved canonical status with Card and Krueger's 1994 study of minimum wage effects in New Jersey and Pennsylvania~\cite{card1993minimum}.
+This study compared employment changes in New Jersey fast-food restaurants (where the minimum wage increased) with those in neighboring Pennsylvania (where it did not), finding no negative employment effect and overturning decades of conventional economic wisdom.
+The ``credibility revolution'' in economics, recognized by the 2021 Nobel Prize, built substantially on the widespread adoption of DiD and related methods~\cite{cunningham2021causal}.
+
+\paragraph{Intuition.}
+The core insight of DiD is that we can control for unobserved confounders by exploiting \emph{changes over time}.
+For example, suppose we want to know whether adopting continuous integration (CI) improves code quality.
+Simply comparing projects with and without CI conflates the treatment effect with selection: Perhaps better-organized teams both adopt CI and write better code.
+The naive cross-sectional comparison captures this selection effect along with any true causal effect. 
+DiD addresses this by adding a temporal dimension: We observe projects before and after CI adoption and compare the \emph{change} in quality of these projects with that of similar projects that did not adopt CI over the same period.
+If both groups had followed parallel trajectories in the absence of treatment, then any differential change can be attributed to CI adoption.
+The method effectively ``differences out'' time-invariant confounders (team quality, project complexity) by focusing on within-unit changes, and ``differences out'' common time trends (industry-wide quality improvements) by comparing to a control group.
+
+\paragraph{Formal Framework.}
+Consider the canonical $2 \times 2$ case with two groups (treatment and control) and two periods (before and after).
+Let $Y_{g,t}$ denote the mean outcome for group $g \in \{0, 1\}$ at time $t \in \{0, 1\}$, where $g = 1$ indicates the treatment group and $t = 1$ indicates the post-treatment period.
+The DiD estimator is:
+\begin{equation}
+    \widehat{\tau}_{\text{DiD}} = (Y_{1,1} - Y_{1,0}) - (Y_{0,1} - Y_{0,0})
+\end{equation}
+The first difference $(Y_{1,1} - Y_{1,0})$ captures the change in the treatment group; the second difference $(Y_{0,1} - Y_{0,0})$ captures the counterfactual change that would have occurred in the absence of treatment.
+
+The identifying assumption is \emph{parallel trends}: In the absence of treatment, both groups would have experienced the same change in outcomes.
+Formally, letting $Y_{g,t}(0)$ denote potential outcomes under control:
+\begin{equation}
+    E[Y_{1,1}(0) - Y_{1,0}(0)] = E[Y_{0,1}(0) - Y_{0,0}(0)]
+\end{equation}
+Under this assumption, the DiD estimator identifies the ATT:
+\begin{equation}
+    \tau_{\text{ATT}} = E[Y_{1,1}(1) - Y_{1,1}(0)] = \widehat{\tau}_{\text{DiD}}
+\end{equation}
+
+\paragraph{Panel Data and Staggered Adoption.}
+When multiple entities are observed over multiple periods with treatment adoption occurring at different times, DiD extends to the panel setting~\cite{athey2022design}.
+The standard two-way fixed effects (TWFE) specification is:
+\begin{equation}
+\label{eq:chap2-base-did}
+    Y_{it} = \alpha + \tau D_{it} + \mu_i + \lambda_t + \epsilon_{it}
+\end{equation}
+where $\mu_i$ are entity fixed effects (absorbing time-invariant characteristics), $\lambda_t$ are time fixed effects (absorbing common shocks), and $D_{it}$ indicates whether entity $i$ is treated at time $t$.
+
+\paragraph{Event Studies.}
+To examine dynamic treatment effects and assess the parallel trends assumption, researchers estimate event study specifications:
+\begin{equation}
+\label{eq:panel-event}
+    Y_{it} = \alpha + \sum_{k \neq -1} \tau_k \cdot \mathbf{1}[K_{it} = k] + \mu_i + \lambda_t + \epsilon_{it}
+\end{equation}
+where $K_{it}$ denotes the number of periods relative to treatment adoption (negative for pre-treatment, positive for post-treatment).
+The coefficients $\tau_k$ for $k < 0$ serve as placebo tests: Significant pre-trends suggest that treatment and control groups were already diverging before treatment, violating parallel trends.
+Post-treatment coefficients $\tau_k$ for $k \geq 0$ trace out the dynamic treatment effect after adoption.
+
+\paragraph{Recent Advances.}
+Recent methodological advances have revealed that TWFE can produce biased estimates when treatment effects vary across units or over time~\cite{goodman2021difference, de2020two}.
+The problem arises because TWFE implicitly uses already-treated units as controls for newly-treated units, potentially introducing negative weights.
+Modern estimators address this through clean control comparisons~\cite{callaway2021difference}, imputation methods~\cite{borusyak2024revisiting}, or stacking approaches~\cite{baker2022much}.
+Best practice now involves reporting results from multiple estimators and conducting sensitivity analyses~\cite{roth2023s}.
+
+\paragraph{Application in Software Engineering.}
+While currently still not common in software engineering research, DiD designs are potentially well-suited for a family of empirical software engineering problems on the effects of tool adoptions, policy changes, or platform updates in software development.
+Recent examples illustrate this potential: Fang et al.\ used a DiD design to estimate the causal effect of tweets on open-source project popularity and contributor growth~\cite{DBLP:conf/icse/FangLHV22}; Casanueva et al.\ applied DiD to estimate how the COVID-19 pandemic disproportionately affected women's contributions to public code~\cite{casanueva2025impact}; and Chapter~\ref{chp:cursor} of this thesis applies DiD with staggered adoption to estimate the effects of Cursor AI on development velocity and software quality.
+These studies demonstrate that DiD is broadly applicable in software engineering contexts, where natural variation in adoption timing creates quasi-experimental conditions, to support causal claims to important software engineering problems.
+
+\subsection{Regression Discontinuity}
+
+\paragraph{Historical Context.}
+The regression discontinuity design (RDD) was invented by psychologists Donald Thistlethwaite and Donald Campbell in 1960 to evaluate the effect of National Merit Scholarships on career aspirations~\cite{thistlethwaite1960regression}.
+In their setting, students who were just above the scholarship cutoff received awards; those who were just below did not.
+By comparing outcomes for students on either side of this arbitrary threshold, the authors could estimate the scholarship's effect without the selection bias that would plague comparisons between scholarship recipients and non-recipients.
+The method languished in relative obscurity until economists rediscovered it in the 1990s, after which it became one of the most credible quasi-experimental designs available.
+Angrist and Lavy's 1999 study of class-size effects, exploiting a maximum class-size rule, exemplifies the modern application of RDD in the social sciences~\cite{angrist1999using}.
+
+\paragraph{Intuition.}
+The power of RDD derives from the arbitrariness of cutoffs.
+When treatment is assigned based on whether a continuous variable (the ``running variable'') exceeds a threshold, units just above and just below the cutoff are essentially identical---they differ only by an infinitesimal amount on the running variable.
+If the cutoff is set at 70 points, a student scoring 70.1 is virtually indistinguishable from one scoring 69.9 in all respects except their treatment status.
+Comparing outcomes across these nearly identical units approximates a local randomized experiment.
+
+The key requirement is that units cannot precisely manipulate their position relative to the cutoff.
+If students can ensure they score exactly above the threshold, those who do so may differ systematically from those who do not, reintroducing selection bias.
+But if scoring involves some randomness or imprecision, manipulation becomes impossible, and the design remains valid.
+
+\paragraph{Formal Framework.}
+Let $R_i$ denote the running variable for unit $i$, $c$ the cutoff, and $D_i = \mathbf{1}[R_i \geq c]$ the treatment indicator.
+The sharp RDD identifies the treatment effect at the cutoff as the discontinuity in the conditional expectation function:
+\begin{equation}
+    \tau_{\text{RDD}} = \lim_{r \downarrow c} E[Y_i | R_i = r] - \lim_{r \uparrow c} E[Y_i | R_i = r]
+\end{equation}
+
+The identifying assumption is \emph{continuity}: The conditional expectations of potential outcomes are continuous at the cutoff.
+Formally:
+\begin{equation}
+    \lim_{r \downarrow c} E[Y_i(d) | R_i = r] = \lim_{r \uparrow c} E[Y_i(d) | R_i = r] \quad \text{for } d \in \{0, 1\}
+\end{equation}
+This rules out any discontinuity in outcomes at $c$ except that caused by the treatment itself.
+
+Estimation typically employs local polynomial regression, fitting separate polynomials on each side of the cutoff and estimating the discontinuity as the difference in predicted values at $c$.
+Bandwidth selection---how much data around the cutoff to use---involves a bias-variance tradeoff: Narrower bandwidths reduce bias from model misspecification but increase variance.
+Optimal bandwidth selectors and robust confidence intervals are now standard~\cite{calonico2014robust}.
+
+\paragraph{Fuzzy RDD.}
+In many applications, crossing the threshold increases the \emph{probability} of treatment rather than determining it completely.
+The fuzzy RDD extends the design to this setting by using the discontinuity in treatment probability as an instrument:
+\begin{equation}
+    \tau_{\text{Fuzzy}} = \frac{\lim_{r \downarrow c} E[Y_i | R_i = r] - \lim_{r \uparrow c} E[Y_i | R_i = r]}{\lim_{r \downarrow c} E[D_i | R_i = r] - \lim_{r \uparrow c} E[D_i | R_i = r]}
+\end{equation}
+This identifies a local average treatment effect for compliers at the threshold.
+
+\paragraph{Application in Software Engineering.}
+To the best of our knowledge, a true RDD has not yet been applied in software engineering research.
+Some studies claim to use ``regression discontinuity'' but actually employ \emph{interrupted time series} (ITS) designs---a fundamentally different method that compares outcomes before and after an event in time, rather than comparing units just above and below a threshold on a continuous running variable.
+ITS exploits temporal discontinuities (e.g., before versus after a policy change), whereas RDD exploits cross-sectional discontinuities at a cutoff (e.g., projects just above versus just below a threshold).
+Conflating these methods obscures their distinct identifying assumptions and threatens the validity of causal claims.
+
+In principle, RDD could apply in software engineering whenever platforms use threshold-based rules for resource allocation, feature access, or automated decisions.
+A tantalizing near-miss occurred with GitHub Copilot's 2021 technical preview, which initially invited only a subset of developers to access the tool.
+If GitHub had used a clear, observable threshold for invitation---say, developers with more than 1,000 contributions receiving access while those just below did not---comparing productivity outcomes for developers just above and below this cutoff would constitute a valid RDD.
+In practice, however, GitHub's selection criteria were opaque and likely multidimensional, precluding a clean discontinuity design.
+This illustrates the fundamental challenge: Even when platforms implement access restrictions, the thresholds are rarely transparent, sharp, or based on a single running variable---requirements essential for RDD validity.
+The identification of genuine RDD opportunities in software engineering problems remains an open challenge for future research.
+
+\subsection{Instrumental Variables}
+
+\paragraph{Historical Context.}
+Instrumental variables estimation has deep roots in economics, originating with Philip Wright's 1928 study of supply and demand for butter and flaxseed~\cite{wright1928tariff, stock2003retrospectives}.
+Wright recognized that ordinary regression of quantity on price conflates supply and demand responses; weather shocks that affect supply but not demand provide an instrument for identifying the demand curve.
+The method was formalized by the Cowles Commission economists in the 1940s and became central to structural econometrics~\cite{stock2003retrospectives}.
+Its application to causal inference in program evaluation was systematized by Angrist and Imbens in their influential 1996 paper, which introduced the Local Average Treatment Effect (LATE) interpretation and earned them the 2021 Nobel Prize~\cite{angrist1996identification}.
+
+\paragraph{Intuition.}
+Instrumental variables address situations where treatment is endogenous---correlated with unobserved factors that also affect outcomes.
+The strategy is to find a source of variation in treatment that is ``exogenous''---unrelated to the confounders---and use only that variation for estimation.
+This exogenous variation is the ``instrument.''
+
+Consider the challenge of estimating whether completing a computer science degree increases earnings.
+Simply comparing graduates to non-graduates conflates the degree's effect with selection: Students who complete degrees may have higher ability, motivation, or family resources that would have led to higher earnings regardless.
+An instrument must affect degree completion but influence earnings only through its effect on completing the degree.
+Geographic proximity to a college might work: Students who grow up near colleges are more likely to attend (relevance), but proximity itself does not directly affect later earnings (exclusion restriction).
+By focusing on the earnings variation explained by proximity---variation that is plausibly unrelated to unobserved ability---we can isolate the degree's causal effect.
+
+\paragraph{Formal Framework.}
+Let $D_i$ denote the endogenous treatment, $Y_i$ the outcome, $Z_i$ the instrument, and $U_i$ unobserved confounders.
+The core problem is that $Cov(D_i, U_i) \neq 0$, so regressing $Y$ on $D$ yields biased estimates.
+A valid instrument satisfies three conditions:
+\begin{enumerate}[leftmargin=15pt]
+    \item \textbf{Relevance}: $Cov(Z_i, D_i) \neq 0$.
+    The instrument must affect treatment.
+    This condition is testable by examining the first-stage regression of $D$ on $Z$.
+    
+    \item \textbf{Independence (Exogeneity)}: $Cov(Z_i, U_i) = 0$.
+    The instrument must be uncorrelated with unobserved confounders.
+    This condition is fundamentally untestable but must be argued on substantive grounds.
+    
+    \item \textbf{Exclusion Restriction}: $Z_i$ affects $Y_i$ only through $D_i$.
+    There is no direct effect of the instrument on outcomes.
+    This condition is also untestable and must be justified by theory or institutional knowledge.
+\end{enumerate}
+
+Under these assumptions, the IV estimator identifies the causal effect:
+\begin{equation}
+    \beta_{\text{IV}} = \frac{Cov(Y_i, Z_i)}{Cov(D_i, Z_i)}
+\end{equation}
+This is the ratio of the reduced-form effect of $Z$ on $Y$ to the first-stage effect of $Z$ on $D$.
+In the two-stage least squares (2SLS) implementation, we first regress $D$ on $Z$ to obtain predicted values $\hat{D}$, then regress $Y$ on $\hat{D}$.
+The second-stage coefficient is the IV estimate.
+
+\paragraph{Local Average Treatment Effect.}
+When treatment effects are heterogeneous, IV does not identify the ATE.
+Angrist and Imbens showed that IV identifies the \emph{Local Average Treatment Effect} (LATE): The average effect for ``compliers''---units whose treatment status is changed by the instrument~\cite{angrist1996identification}.
+Units who would always take treatment regardless of the instrument (always-takers) and those who would never take treatment (never-takers) contribute no identifying variation.
+Defiers---who do the opposite of what the instrument encourages---are typically assumed not to exist (monotonicity assumption).
+
+The LATE interpretation has important implications: The estimated effect may not generalize to the full population if compliers differ systematically from always-takers and never-takers.
+Understanding who the compliers are is essential for interpreting IV results.
+
+\paragraph{Application in Software Engineering.}
+To the best of our knowledge, IV designs have not yet been applied in software engineering research, likely because finding valid instruments is particularly challenging in this domain.
+Nonetheless, plausible opportunities exist.
+Consider estimating whether attending a coding bootcamp improves employment outcomes.
+Bootcamp attendance is endogenous: Motivated individuals both seek training and find jobs.
+An instrument might be the opening of a bootcamp campus in a city---this plausibly increases local attendance (relevance) but does not directly affect employment except through training (exclusion restriction).
+
+Another example involves platform features.
+To estimate whether enabling two-factor authentication reduces account compromises, one might use the timing of reminder emails as an instrument.
+Receiving a reminder increases the probability of enabling 2FA (relevance), and the timing of automated reminders is plausibly random with respect to individual security outcomes (independence).
+The exclusion restriction requires that reminders affect security only through their effect on 2FA adoption, not through other channels like increased security awareness.
+
+The fundamental difficulty with IV is justifying the exclusion restriction: How do we know the instrument affects outcomes only through treatment?
+In software engineering contexts, instruments often have plausible alternative pathways.
+A new bootcamp in a city may affect local labor markets beyond training; reminder emails may increase general security awareness.
+Credible IV analyses require transparent argument about why these alternative channels are negligible and, where possible, empirical tests of the exclusion restriction's implications.
+
+
+\section{Control Strategies}
+\label{sec:control}
+
+Unlike identification strategies, control strategies address specific sources of confounding without providing complete causal identification.
+They are valuable tools but should be combined with substantive arguments about remaining threats.
+The distinction is important: Identification strategies (RCTs, DiD, RDD, IV) provide a complete logical path from data to causal effects under their stated assumptions; control strategies reduce confounding but leave open the possibility that unmeasured confounders or other threats remain.
+
+\subsection{Matching and Propensity Scores}
+
+\paragraph{Historical Context.}
+Matching---the idea of comparing treated units to similar untreated units---has ancient roots in experimental design, but its modern statistical formalization emerged in the 1970s and 1980s.
+Donald Rubin's 1973 paper on matching in observational studies provided theoretical foundations, and his collaboration with Paul Rosenbaum in 1983 introduced the propensity score, which revolutionized matching methods~\cite{rosenbaum1983central}.
+The propensity score reduced the ``curse of dimensionality'' in matching: Instead of finding exact matches on dozens of covariates (typically impossible), researchers could match on a single scalar summary.
+This innovation made matching practical for studies with many confounders and propelled its widespread adoption in epidemiology, economics, and the social sciences.
+
+\paragraph{Intuition.}
+The fundamental challenge in observational studies is that treated and control groups differ systematically.
+If we simply compare outcomes between GitHub repositories that adopted continuous integration (CI) and those that did not, any difference might reflect CI's effect or might reflect pre-existing differences between adopters and non-adopters.
+Perhaps repositories with more active maintainers both adopt CI and have better outcomes, regardless of CI.
+
+Matching addresses this by constructing a comparison group that ``looks like'' the treatment group on observed characteristics.
+For each treated repository, we find untreated repositories with similar characteristics---similar size, age, programming language, contributor count---and compare outcomes within these matched pairs.
+If matching succeeds in balancing all confounders, the matched comparison approximates what a randomized experiment would have produced.
+
+The propensity score provides an elegant way to accomplish this.
+Rather than matching on each covariate separately, we model the probability of treatment given covariates and match on this single number.
+Rosenbaum and Rubin proved that if matching on all covariates would eliminate confounding, then matching on the propensity score does too.
+Intuitively, units with the same propensity score are equally likely to be treated based on observed characteristics, so treatment assignment among them is ``as if random'' with respect to those characteristics.
+
+\paragraph{Formal Framework.}
+Let $X_i$ denote a vector of pre-treatment covariates for unit $i$, $D_i \in \{0,1\}$ the treatment indicator, and $Y_i$ the outcome.
+The propensity score is defined as:
+\begin{equation}
+    e(X_i) = P(D_i = 1 \mid X_i)
+\end{equation}
+In practice, the propensity score is estimated via logistic regression or machine learning methods.
+Rosenbaum and Rubin's balancing theorem states that if treatment assignment is ignorable given $X$---that is, $(Y(1), Y(0)) \perp D \mid X$---then it is also ignorable given the propensity score:
+\begin{equation}
+    (Y(1), Y(0)) \perp D \mid e(X)
+\end{equation}
+
+Several matching methods use propensity scores:
+\begin{itemize}[leftmargin=15pt]
+    \item \textbf{Nearest-neighbor matching}: Each treated unit is matched to the control unit(s) with the closest propensity score.
+    \item \textbf{Caliper matching}: Matches are only accepted if the propensity score difference is below a threshold.
+    \item \textbf{Stratification}: Units are grouped into strata based on propensity score quantiles; effects are estimated within each stratum and pooled.
+    \item \textbf{Inverse probability weighting (IPW)}: Rather than matching, each unit is weighted by the inverse of its probability of receiving the treatment it actually received.
+\end{itemize}
+
+After matching, covariate balance is assessed by comparing means (or distributions) of covariates between matched treatment and control groups.
+Standardized mean differences below 0.1 are often considered acceptable.
+The treatment effect is then estimated as the difference in mean outcomes between matched groups.
+
+
+\paragraph{Application in Software Engineering.}
+Matching is well-suited for evaluating the effects of tool adoptions, process changes, or organizational decisions when randomization is infeasible.
+Consider studying whether adopting a static analysis tool reduces bug rates.
+Repositories that adopt static analysis may differ systematically from those that do not---perhaps they are larger, more active, maintained by more experienced teams, and place greater emphasis on quality assurance than the average repository.
+These differences would confound any naive comparison.
+
+A matching study would proceed as follows.
+First, the researcher would identify treated repositories (those that adopted static analysis) and potential controls (those that did not).
+Second, the researcher would estimate propensity scores using pre-treatment characteristics: repository age, programming language, number of contributors, prior commit frequency, prior bug rates, and any other available confounders.
+Third, the researcher would match each treated repository to one or more control repositories with similar propensity scores.
+Fourth, the researcher would verify that the matching achieved covariate balance.
+Finally, the researcher would compare post-adoption bug rates between matched treatment and control groups.
+
+\paragraph{Limitations.}
+The critical limitation of matching is that it only adjusts for \emph{observed} covariates and rests on the assumption that, conditional on the matched covariates, treatment assignment is as good as random.
+This is a strong assumption---if important confounders are unmeasured, matching does not eliminate their influence, and estimates remain biased.
+No amount of statistical sophistication can adjust for variables you have not yet measured.
+
+In software engineering research, this limitation is particularly relevant.
+Repository data captures code and process metrics but often misses crucial factors such as developer skill, organizational support, team culture, project importance, and strategic decisions.
+If projects adopt a tool because they face unusual challenges (and would have had worse outcomes regardless), matching on observable characteristics will not remove this selection bias.
+If unobserved confounders threaten the validity of matching under the causal theory at hand, researchers should acknowledge this limitation, conduct sensitivity analyses, and interpret results as suggestive rather than definitive.
+Sensitivity analysis methods---particularly Rosenbaum bounds---may also help assess how robust conclusions are to unobserved confounders.
+
+\subsection{Fixed Effects and Panel Models}
+
+\paragraph{Historical Context.}
+Fixed effects estimation emerged from the econometrics of panel data---datasets tracking the same entities over multiple time periods.
+The method has roots in early twentieth-century work on agricultural experiments and economic indices, but its modern formalization came in the 1960s and 1970s with the work of economists like Mundlak and Balestra~\cite{mundlak1978pooling, balestra1966pooling}.
+The Hausman test provided a principled way to choose between fixed and random effects specifications~\cite{hausman1978specification}, and subsequent decades saw widespread adoption in labor economics, industrial organization, and policy evaluation.
+Panel methods became standard tools for controlling for unobserved heterogeneity in settings where randomization is impossible.
+
+\paragraph{Intuition.}
+Fixed effects exploit a simple but powerful idea: If we observe the same unit (person, project, organization) over time, we can control for all characteristics of that unit that do not change over time, even if we cannot directly measure them.
+Consider the challenge of estimating whether adopting TypeScript improves code quality.
+Repositories using TypeScript might have better quality because TypeScript's type system catches bugs, or because repositories with disciplined development practices both adopt TypeScript and write better code.
+Developer skill, organizational culture, and codebase complexity are difficult to measure but may confound comparisons.
+Fixed effects address this by focusing on \emph{within-unit} variation.
+Rather than comparing TypeScript repositories to JavaScript repositories, we compare each repository to itself over time: How did its code quality change when it transitioned from JavaScript to TypeScript?
+By using each unit as its own control, we eliminate all time-invariant differences between units.
+If a repository has especially skilled maintainers, this affects both its pre-TypeScript and post-TypeScript periods equally and cannot explain any change at the transition.
+The key insight is that many confounders are time-invariant or change slowly.
+Developer ability, project complexity, organizational resources---these factors may differ dramatically across projects but remain relatively stable within a project over the study period.
+Fixed effects automatically control for all such factors without requiring us to find a meaningful metric to measure them.
+
+\paragraph{Formal Framework.}
+Consider a panel dataset with $N$ entities observed over $T$ periods.
+Let $Y_{it}$ denote the outcome for entity $i$ at time $t$, $D_{it}$ the treatment indicator, and $X_{it}$ a vector of time-varying covariates.
+The fixed effects model is:
+\begin{equation}
+    Y_{it} = \alpha + \beta D_{it} + X'_{it}\gamma + \mu_i + \epsilon_{it}
+\end{equation}
+where $\mu_i$ represents the fixed effect for entity $i$---a unit-specific intercept capturing all time-invariant characteristics.
+Estimation proceeds by ``demeaning'' the data: subtracting each variable's entity-specific mean.
+Define $\bar{Y}_i = \frac{1}{T}\sum_t Y_{it}$ and similarly for other variables.
+The within-transformed model is:
+\begin{equation}
+    (Y_{it} - \bar{Y}_i) = \beta (D_{it} - \bar{D}_i) + (X_{it} - \bar{X}_i)'\gamma + (\epsilon_{it} - \bar{\epsilon}_i)
+\end{equation}
+The fixed effects $\mu_i$ cancel out, and ordinary least squares on the transformed data yields consistent estimates of $\beta$ and $\gamma$.
+What's more, time fixed effects can be added to control for common shocks affecting all units:
+\begin{equation}
+    Y_{it} = \alpha + \beta D_{it} + X'_{it}\gamma + \mu_i + \lambda_t + \epsilon_{it}
+\end{equation}
+This ``two-way fixed effects'' specification controls for both unit-specific and time-specific unobserved heterogeneity.
+It is the workhorse model for panel data analysis and underlies the standard difference-in-differences estimator introduced before in Section~\ref{sec:chap2-did}.
+
+\paragraph{Limitations.}
+Fixed effects control only for \emph{time-invariant} confounders.
+If treatment adoption correlates with time-varying unobservables---factors that change over time and affect both treatment and outcomes---then estimates remain biased.
+Consider a repository that adopts a new tool precisely when it receives a funding boost that also increases contributor activity.
+Fixed effects cannot disentangle the tool's effect from the funding's effect, because the funding-related improvement varies over time.
+A second limitation is that fixed effects provide no built-in falsification check.
+Unlike difference-in-differences, which allows testing parallel pre-trends, pure fixed effects estimation offers no clear diagnostic for whether the identifying assumption (no time-varying confounding) holds.
+This is why researchers often prefer DiD specifications that explicitly examine pre-treatment dynamics.
+Third, fixed effects discard between-unit variation, using only within-unit changes for identification.
+This can reduce statistical power, particularly if treatment status varies little within units.
+If most repositories either always have CI or never have CI, with few transitions, fixed effects estimation may be imprecise.
+
+\paragraph{Application in Software Engineering.}
+Fixed effects are appropriate when studying how outcomes change as repositories or developers adopt new practices, tools, or policies.
+Consider evaluating whether mandatory code review improves code quality.
+At some point, an organization mandates code review for all pull requests; we observe the same repositories before and after the mandate.
+A fixed-effects analysis would estimate the change in code quality associated with the mandate, controlling for repository fixed effects (which absorb stable differences between repositories) and time fixed effects (which absorb industry-wide trends in quality).
+The treatment effect is identified from within-repository changes at the time of the mandate.
+The identifying assumption is that no other time-varying factors coincided with the mandate.
+If the organization simultaneously improved its CI pipeline, hired senior engineers, or changed leadership, these confound the estimate.
+Researchers should examine whether the mandate was exogenous to other changes and, where possible, look for falsification tests---for example, whether effects appear before the mandate (which would suggest confounding) or whether unrelated outcomes change (which would suggest broader organizational shifts).
+
+\subsection{Generalized Method of Moments}
+
+\paragraph{Historical Context.}
+The generalized method of moments (GMM) was formalized by Lars Peter Hansen in his 1982 \emph{Econometrica} paper~\cite{hansen1982large}, work that contributed to his 2013 Nobel Prize in Economics.
+GMM unified earlier estimation approaches---method of moments, instrumental variables, maximum likelihood---within a single framework based on moment conditions.
+For panel data with dynamic relationships, the Arellano-Bond estimator (1991) applied GMM to handle lagged dependent variables and endogeneity~\cite{arellano1991some}.
+This approach became central to empirical work in corporate finance, growth economics, and any field where the central problem of interest can be formalized as: Do the current outcomes depend on past outcomes?
+
+\paragraph{Intuition.}
+Many phenomena exhibit dynamic dependence: Today's code quality depends on yesterday's code quality; this month's contributor activity depends on last month's activity.
+Standard regression methods struggle with such settings because the lagged dependent variable is correlated with the error term in fixed effects models, leading to biased estimates.
+
+GMM addresses this by using lagged values of the dependent variable as instrumental variables for the first-differenced model.
+The intuition is that once we difference the data to remove fixed effects, lagged levels from earlier periods are correlated with the differenced lagged dependent variable (relevance) but uncorrelated with the differenced error term if errors are serially uncorrelated (exogeneity).
+This provides valid instruments for consistent estimation.
+
+Beyond handling dynamics, GMM is useful when researchers suspect bidirectional causality or want to test specific causal orderings.
+Does productivity affect tool adoption, or does tool adoption affect productivity?
+By specifying different lag structures and testing overidentifying restrictions, researchers can probe which causal directions the data support.
+
+\paragraph{Formal Framework.}
+Consider a dynamic panel model:
+\begin{equation}
+\label{eq:chap2-dynamic-gmm}
+    Y_{it} = \rho Y_{i,t-1} + \beta D_{it} + X'_{it}\gamma + \mu_i + \lambda_t + \epsilon_{it}
+\end{equation}
+where $\rho$ captures persistence in the outcome, and $\beta$ is the treatment effect of interest.
+The fixed effects $\mu_i$ create a correlation between $Y_{i,t-1}$ and the composite error $(\mu_i + \epsilon_{it})$, biasing OLS estimates. The following first-differencing eliminates the fixed effects:
+\begin{equation}
+    \Delta Y_{it} = \rho \Delta Y_{i,t-1} + \beta \Delta D_{it} + \Delta X'_{it}\gamma + \Delta \lambda_t + \Delta \epsilon_{it}
+\end{equation}
+But now $\Delta Y_{i,t-1} = Y_{i,t-1} - Y_{i,t-2}$ is correlated with $\Delta \epsilon_{it} = \epsilon_{it} - \epsilon_{i,t-1}$ through the common term $\epsilon_{i,t-1}$.
+The Arellano-Bond approach uses lagged levels $Y_{i,t-2}, Y_{i,t-3}, \ldots$ as instruments for $\Delta Y_{i,t-1}$.
+Under the assumption that errors are serially uncorrelated (sequential exogeneity), these lagged levels are uncorrelated with $\Delta \epsilon_{it}$ but correlated with $\Delta Y_{i,t-1}$.
+The moment conditions are:
+\begin{equation}
+    E[Y_{i,t-s} \cdot \Delta \epsilon_{it}] = 0 \quad \text{for } s \geq 2
+\end{equation}
+
+GMM estimation combines all available moment conditions and optimally weights them.
+The Sargan-Hansen test of overidentifying restrictions assesses whether the instruments are jointly valid.
+The Arellano-Bond test for serial correlation checks whether errors are indeed uncorrelated at the required lags.
+System GMM extends this by adding level equations alongside differenced equations, using lagged differences as instruments for levels.
+This can improve efficiency, particularly when the outcome is persistent and levels carry substantial information.
+
+\paragraph{Limitations.}
+GMM requires careful specification and diagnostic testing.
+Weak instruments---lagged values that have low correlation with differenced variables---lead to imprecise and potentially biased estimates.
+Too many instruments (a common problem with long panels) can cause overfitting and make the Sargan-Hansen test unreliable.
+The sequential exogeneity assumption---that past outcomes affect current outcomes only through the specified dynamic structure, not through omitted time-varying confounders---is fundamentally untestable.
+
+GMM is also less transparent than DiD or fixed effects.
+The instrumental variables logic is subtle, and results can be sensitive to the number of lags used as instruments, the weighting matrix, and whether system GMM or difference GMM is employed.
+Thus, researchers should report extensive sensitivity checks and diagnostics when using GMM models.
+
+\paragraph{Application in Software Engineering.}
+GMM is appropriate when studying dynamic relationships in software development---settings where current outcomes depend on past outcomes, and simple before-after comparisons may be misleading.
+Consider investigating whether adopting an AI coding assistant improves productivity.
+Productivity is persistent: A repository that was highly productive last month is likely to be productive this month.
+Failing to account for this persistence overstates the tool's effect if adoption coincided with an already-increasing productivity trend.
+
+A GMM analysis would model current productivity as depending on lagged productivity and treatment status:
+\begin{equation}
+    \text{Productivity}_{it} = \rho \cdot \text{Productivity}_{i,t-1} + \beta \cdot \text{AI\_Tool}_{it} + \mu_i + \lambda_t + \epsilon_{it}
+\end{equation}
+Using lagged productivity levels as instruments for differenced lagged productivity, GMM provides consistent estimates of both the persistence parameter $\rho$ and the treatment effect $\beta$.
+
+GMM can also help disentangle causal direction.
+Does using an AI tool increase productivity, or do more productive developers adopt AI tools?
+By testing whether lagged productivity predicts current tool use (and vice versa), and by examining whether effects appear before or after adoption, researchers can probe which causal story the data best support.
+While GMM cannot definitively establish causation, it provides more rigorous evidence than simple correlational analyses and can rule out certain causal orderings.
+
+In this thesis, GMM complements DiD by examining dynamic mechanisms through which tool adoption affects long-term outcomes (Chapter~\ref{chp:cursor}).
+DiD estimates the overall effect of adoption; GMM decomposes this effect into immediate impacts versus persistent changes, helping distinguish genuine productivity gains from temporary adjustment effects.
