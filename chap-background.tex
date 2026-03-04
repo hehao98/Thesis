@@ -592,112 +592,85 @@ Passing such tests does not prove validity, but failing them is highly informati
 \section{A Pragmatic Approach to Causal Inference and Causal Credibility Assessments in Empirical SE Research}
 \label{sec:pragmatic}
 
-The preceding sections have presented causal inference with appropriate rigor, emphasizing the assumptions underlying each method and the threats that can undermine conclusions.
-This rigor is essential---but it can also be paralyzing.
-If every observational study suffers from potential confounding, if every natural experiment has debatable assumptions, and if even randomized experiments face external validity concerns, can we learn anything useful?
+The preceding sections developed the technical foundations: the potential outcomes framework for defining estimands and assumptions, graphical causal models for encoding and scrutinizing those assumptions, and a taxonomy of threats that can undermine any study.
+This section draws these threads together into the pragmatic approach advocated by this thesis.
+We first show how the four steps of causal credibility assessment articulated in the thesis statement (Chapter~\ref{chp:intro}) map onto the concepts introduced in this chapter, illustrating each step with the programming language and defect proneness example.
+We then discuss two broader considerations---the internal--external validity trade-off and the hierarchy of evidence---that guide researchers in situating their contributions within the landscape of causal evidence.
 
-This section argues that we can, provided we approach causal inference pragmatically.
-The goal is not epistemological perfection but actionable evidence that improves upon intuition and correlational analysis.
-Software engineering researchers must navigate trade-offs thoughtfully, choosing appropriate methods for their contexts and communicating uncertainty honestly.
+\subsection{Causal Credibility Assessments in Four Steps}
 
-\subsection{The Internal-External Validity Trade-off}
+The thesis statement argues that empirical software engineering research needs an explicit framework for \emph{causal credibility assessments}: A structured process for articulating why a study's findings should (or should not) be interpreted causally.
+We propose four steps, each grounded in the formal tools introduced earlier.
 
-The most fundamental trade-off in empirical research is between internal validity (did we correctly identify the causal effect in our study?) and external validity (does the effect generalize to settings we care about?).
-These two goals are often in tension, and no study achieves perfection on both.
+\paragraph{Step 1: Make the causal theory explicit as a DAG.}
+Before fitting any model, the researcher should encode the assumed data-generating process as a directed acyclic graph.
+As discussed in Section~\ref{sec:formalism}, a DAG makes every causal assumption visible: Each arrow is a substantive claim; each absent arrow asserts the absence of a direct effect.
+This step forces the researcher to confront questions that regression specifications leave implicit: What are the confounders?
+Which variables are mediators that should not be conditioned on?
+What alternative structures could generate the same observed associations?
 
-Consider a randomized controlled trial evaluating an AI coding assistant.
-If we recruit volunteer participants, run the study in a controlled environment, and measure carefully defined tasks, we may achieve excellent internal validity---we know the tool caused the observed productivity difference.
-But the participants may not represent typical developers; the tasks may not reflect real work; the environment may not capture the pressures and interruptions of actual practice.
-The clean causal estimate may not generalize to contexts that matter.
+For the language--defect problem, Figure~\ref{fig:pl-dag} encodes the theory that Language affects Defect Proneness through Tooling/Type Safety, while Domain, Team Skill, Org Culture, and Codebase Age confound the relationship.
+Committing to this DAG---and presenting it to reviewers---opens the assumptions to scrutiny in a way that a regression table alone cannot.
 
-Conversely, a large-scale observational study of AI tool adoption across thousands of GitHub repositories captures real-world variation and naturally represents diverse contexts.
-But without randomization, we cannot be certain that observed productivity differences reflect the tool's effect rather than selection---perhaps more capable developers adopted the tool first because they are also more tech-savvy.
-The estimate may be externally valid (it reflects what happens in the real world), but internally questionable (we do not know if the tool caused it).
+\paragraph{Step 2: Define the causal estimand and specify the identifying assumptions.}
+With the DAG in hand, the researcher defines the causal quantity of interest using the potential outcomes framework (Section~\ref{sec:formalism}).
+In the language--defect setting, the estimand might be the ATE of adopting a statically-typed language on defect density.
+The back-door criterion applied to Figure~\ref{fig:pl-dag} identifies the adjustment set $\{$Domain, Team Skill, Org Culture, Codebase Age$\}$ and thereby operationalizes the conditional ignorability assumption (Equation~\eqref{eq:cond-ignorability}): Within strata defined by these four variables, language choice is assumed to be as-if random.
 
-This trade-off is not a flaw to be fixed but a reality to be navigated.
-The goal is not to find the one perfect study but to build knowledge through multiple studies with different strengths, whose convergent findings provide confidence that transcends any single study's limitations.
+This step also determines the statistical method.
+If the researcher has access to panel data where developers or repositories use multiple languages over time, developer and repository fixed effects can absorb time-invariant confounders.
+If the setting features staggered language migration events, a difference-in-differences design can exploit within-project variation.
+Each method rests on specific assumptions---parallel trends, no anticipation, exogenous timing---that should be stated explicitly and connected back to the DAG.
+
+\paragraph{Step 3: Honestly acknowledge and mitigate limitations.}
+No observational study achieves perfect identification.
+The threats catalogued in Section~\ref{sec:threats}---confounding from unmeasured variables, selection bias, measurement error, SUTVA violations---apply to every study, and the researcher's task is to assess their severity honestly rather than assume them away.
+
+In the language--defect example, key limitations include: conditional ignorability may be violated if developer motivation or risk tolerance (absent from the DAG) drives both language choice and code quality; the treatment ``programming language'' is measured imprecisely in polyglot repositories; and the outcome ``defect proneness'' proxied by bug-fix commits is noisy and potentially correlated with language-specific commit conventions.
+Acknowledging these limitations does not weaken the contribution---it strengthens it by demonstrating that the researcher understands the evidence they are providing and the conditions under which their conclusions hold.
+Where possible, limitations should be mitigated: sensitivity analysis can bound the impact of omitted confounders (Section~\ref{sec:threats}), and triangulating across multiple outcome measures can guard against construct-dependent conclusions.
+
+\paragraph{Step 4: Navigate alternative explanations.}
+The final step connects directly to the ``alternative DAGs'' discussion in Section~\ref{sec:formalism}.
+The researcher should consider rival causal structures that could also explain the observed findings and assess whether the data can discriminate among them.
+
+For instance, a critic of the language--defect study might propose an alternative DAG in which Language has no causal effect and the entire association is driven by Team Skill and Org Culture.
+Under this alternative, even perfect adjustment for the confounders in Figure~\ref{fig:pl-dag} would yield a null effect, so a non-null estimate after adjustment would count against the alternative.
+Another critic might add an unmeasured confounder---developer motivation---that opens a new back-door path.
+In this case, the researcher cannot rule out the alternative from data alone, but can report how strong the confounding from motivation would need to be to explain away the estimated effect (e.g., via $E$-values~\cite{vanderweele2017sensitivity} or Rosenbaum bounds~\cite{rosenbaum2002observational}).
+The goal is not to eliminate all alternative explanations---an impossible standard---but to engage with the most plausible ones transparently and show that the findings are robust to reasonable alternatives.
+
+\subsection{Navigating the Internal--External Validity Trade-off}
+
+Even after a careful credibility assessment, every study faces a fundamental tension between internal validity (did we correctly estimate the causal effect?) and external validity (does the effect generalize?).
+
+In the language--defect setting, a randomized experiment---assigning developers to implement the same task in different languages---would achieve strong internal validity: Random assignment eliminates confounding by construction.
+But the controlled setting may not reflect real-world practice: The tasks may be too small, the developers unrepresentative, and the absence of long-term maintenance dynamics may limit relevance.
+Conversely, a large-scale observational study of GitHub repositories captures real-world variation and diverse contexts but cannot guarantee that the estimated language effect is not driven by unobserved selection.
+
+This tension is not a flaw to be resolved but a reality to be navigated.
+No single study achieves perfection on both dimensions.
+The pragmatic response is to pursue \emph{triangulation}: accumulating evidence across complementary designs whose strengths compensate for each other's weaknesses.
+When a controlled experiment, a quasi-experimental design exploiting language migration, and an observational study with careful covariate adjustment all point in the same direction, confidence in the finding grows beyond what any single design could provide.
+When they diverge, the discrepancy itself is informative---perhaps effects vary with context in ways that merit investigation.
 
 \subsection{A Hierarchy of Evidence}
 
-Rather than treating causal inference as all-or-nothing, it is useful to think of a spectrum of evidence quality.
-Different research questions warrant different standards, and different contexts permit different designs.
-At the top of the hierarchy sit randomized experiments with representative samples.
-These studies provide strong internal validity and external validity when samples are representative.
-Below this are natural experiments and quasi-experimental designs: regression discontinuity, instrumental variables, and well-executed difference-in-differences studies.
-These achieve internal validity under specific assumptions that may be partially testable (e.g., parallel pre-trends, no manipulation at thresholds).
-External validity depends on how representative the setting is.
-Next come observational studies with careful control strategies: matching, propensity scores, fixed effects, and theory-driven covariate adjustment.
-These reduce confounding but cannot eliminate it; internal validity depends on untestable assumptions about unobserved confounders.
-At the bottom are descriptive and correlational studies, which document patterns but make no causal claims.
-These are valuable for exploration, hypothesis generation, and understanding prevalence, but they cannot answer ``what if'' questions about interventions.
+A useful organizing principle is to think of evidence quality as a spectrum rather than a binary.
+At the top sit randomized experiments with representative samples, which provide strong internal and external validity simultaneously.
+Below these are quasi-experimental designs---regression discontinuity, instrumental variables, well-executed difference-in-differences---that achieve internal validity under assumptions that can be partially tested (e.g., parallel pre-trends, no manipulation at thresholds).
+Next come observational studies with careful control strategies---matching, propensity scores, fixed effects---that reduce confounding but rely on untestable assumptions about unobserved confounders.
+At the bottom are descriptive and correlational studies, which document patterns and generate hypotheses but cannot answer ``what if'' questions about interventions.
 
-\paragraph{What the Hierarchy Does Not Mean.}
-The hierarchy does not imply that lower-tier studies are worthless or that only randomized experiments deserve publication.
-A thoughtful observational study of real-world tool adoption may provide more useful guidance than a randomized experiment on a contrived task with unrepresentative participants.
-The hierarchy is about the strength of \emph{causal} evidence, not overall scientific value.
-The hierarchy is also not about methodological purity.
-A DiD study with obviously violated parallel trends is worse than a careful descriptive study that does not overclaim.
-Execution quality matters as much as design choice.
+This hierarchy describes the strength of \emph{causal} evidence, not overall scientific value.
+A thoughtful observational study of real-world language adoption may provide more useful guidance than a randomized experiment on a contrived task with unrepresentative participants.
+Execution quality matters as much as design choice: A DiD study with obviously violated parallel trends is weaker evidence than a careful descriptive study that does not overclaim.
+The hierarchy also does not imply that researchers should always reach for the top tier.
+Not every question requires---or can support---the strongest possible design.
+Exploratory research aimed at hypothesis generation benefits from descriptive analysis; consequential decisions with large resource implications warrant stronger evidence.
+The pragmatic researcher chooses the strongest design that remains \emph{credible} in the specific context, rather than forcing a theoretically superior method whose assumptions are implausible in the study setting.
 
-\subsection{Principles for Pragmatic Practice}
-
-Given these trade-offs, how should software engineering researchers approach causal inference in practice?
-The answer lies not in a rigid hierarchy of methods but in thoughtful matching of research designs to research questions, contexts, and available resources.
-
-The first principle is to \emph{match the design to the question and context}.
-Not every research question requires---or can support---the strongest possible causal design.
-For exploratory research aimed at generating hypotheses and identifying promising directions, descriptive and correlational studies remain entirely appropriate.
-For consequential decisions with significant resource implications (e.g., Should an organization mandate a particular tool? Should a platform change its policies?), stronger causal evidence is warranted to justify the costs and risks of action.
-The practical question is: Which designs are feasible given the specific setting? Is randomization possible, or would it be unethical or impractical? Does the context provide a natural experiment through policy discontinuities or staggered adoption? What data are available, and what quality are they?
-Researchers should choose the strongest design that remains credible in their specific context, rather than forcing an inappropriate method that offers theoretically stronger causal identification but rests on implausible assumptions in the specific study setting.
-
-The second principle is \emph{transparency about assumptions and limitations}.
-Every causal claim, whether from an RCT or an observational study, rests on assumptions that cannot be definitively verified.
-Rigorous research practice demands that these assumptions be stated explicitly, their plausibility discussed in the specific research context, and potential violations acknowledged forthrightly.
-Transparency about limitations does not weaken a research contribution; rather, it strengthens it by demonstrating that the authors understand the nature of the evidence they are providing and the conditions under which their conclusions hold.
-
-Third, because identifying assumptions are fundamentally untestable, researchers should \emph{conduct systematic sensitivity analysis} exploring how conclusions would change if assumptions were violated.
-For matching studies, Rosenbaum bounds quantify the strength of unmeasured confounding required to overturn findings.
-For difference-in-differences, researchers should examine robustness to alternative pre-trend specifications and conduct event study analyses.
-Applying multiple estimators with different identifying assumptions---and reporting whether they yield consistent conclusions---provides additional evidence about the robustness of findings.
-When conclusions survive these diagnostic checks, confidence in their validity grows; when they prove fragile, appropriate caution and qualification are warranted.
-
-Fourth, researchers should \emph{embrace triangulation} as a strategy for building cumulative knowledge.
-No single study, however well-designed and carefully executed, provides definitive evidence about causal relationships.
-Scientific knowledge accumulates through replication across different contexts, methods, and research teams.
-When randomized experiments, quasi-experimental observational studies, and qualitative research all point in the same direction, our collective confidence in the underlying causal relationship grows substantially.
-When different approaches yield divergent conclusions, the discrepancy itself is informative: perhaps effects are genuinely context-dependent, varying across populations or settings in ways that merit investigation; or perhaps some studies contain unrecognized biases that others avoid.
-Either way, the apparent contradiction advances understanding more than any single study could.
-
-Fifth, researchers should \emph{report effect heterogeneity} rather than focusing exclusively on average treatment effects.
-Population averages often conceal substantial variation across subgroups that is more actionable than the overall mean.
-A tool that improves productivity by 10\% on average might help novices by 30\% while actually slowing experienced developers by 10\%---information far more useful to practitioners than the aggregate figure alone.
-Examining how effects vary across observable characteristics---developer experience, project type, programming language, organizational context---provides insights that help readers assess whether findings are likely to generalize to their own situations.
-
-Finally, researchers should \emph{communicate uncertainty honestly}.
-Statistical significance is neither equivalent to practical importance nor a guarantee of correctness.
-Reporting confidence intervals conveys the precision of estimates; discussing effect magnitudes in substantively meaningful terms helps readers evaluate practical relevance; acknowledging when evidence is suggestive rather than definitive maintains scientific integrity.
-Overclaiming---presenting tentative findings as established facts---undermines the credibility of individual researchers and the field as a whole.
-Appropriate epistemic humility, by contrast, builds trust and enables research to inform practice even when certainty remains elusive.
-
-\subsection{The Value of Imperfect Evidence}
-
-Given the stringent assumptions underlying causal inference and the many threats to validity that observational studies face, it might be tempting to conclude that without a perfect randomized experiment, we cannot learn anything meaningful about causation.
-This conclusion, while superficially rigorous, is ultimately too pessimistic to serve as a guide for research practice.
-Imperfect evidence, accumulated thoughtfully across multiple studies and methods, can guide decisions far better than no evidence at all or purely intuitive reasoning based on anecdote and conventional wisdom.
-
-Consider a practical decision: Should a software organization adopt a new static analysis tool?
-A correlational study finds that repositories currently using the tool exhibit 20\% fewer bugs than those that do not.
-This association, while suggestive, is not causal evidence---perhaps better-organized teams both adopt sophisticated tooling and write higher-quality code, with no genuine effect of the tool itself.
-But suppose a difference-in-differences study exploiting staggered adoption finds that bug rates drop by 15\% after repositories adopt the tool, with no evidence of differential pre-trends.
-A propensity score matching study comparing adopters to similar non-adopters finds a 12\% reduction.
-Qualitative interviews with developers reveal that the tool catches common coding mistakes that previously slipped through review.
-
-No single study in this portfolio is methodologically definitive.
-The DiD study might suffer from time-varying confounders; the matching study cannot account for unobserved selection; the interviews provide mechanism but not magnitude.
-Yet together, these studies suggest that the tool probably provides genuine benefits, though the effect size might be smaller than naive correlations suggest and likely varies across contexts and development practices.
-This is useful guidance for organizational decision-making---not certainty, but evidence that substantially improves upon intuition alone.
-
-The goal of causal inference in software engineering is not to achieve epistemological perfection---an unattainable standard in any empirical science---but to provide better evidence than we would have otherwise.
-By employing the most rigorous designs feasible in each context, maintaining transparency about assumptions and limitations, conducting systematic sensitivity analyses, and triangulating across complementary studies, researchers can contribute genuine knowledge to a field where randomized experiments remain rare and observational data are inevitably imperfect.
-The credibility of causal claims ultimately rests not on claiming that assumptions are satisfied, but on transparently examining their plausibility, demonstrating robustness to reasonable violations, and honestly communicating what the evidence can---and cannot---tell us about the phenomena under investigation.
+This pragmatic stance recognizes that causal inference in observational settings is inherently imperfect.
+No study eliminates all confounding, no natural experiment is as clean as a randomized trial, and no finding generalizes to all contexts without qualification.
+Yet these limitations do not render causal inquiry futile.
+Imperfect evidence, accumulated thoughtfully across multiple studies and methods, guides decisions far better than intuition and conventional wisdom alone---and the four-step credibility assessment ensures that the strength and limitations of each piece of evidence are communicated honestly.
