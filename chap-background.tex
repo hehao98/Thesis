@@ -496,86 +496,98 @@ Together, they provide the theoretical foundation upon which the specific method
 \section{Threats to Causal Validity and Its Mitigations}
 \label{sec:threats}
 
-Every causal design, no matter how carefully constructed, faces threats that could undermine its conclusions.
-The literature on research methodology distinguishes three fundamental types of validity: internal validity, which concerns whether the estimated effect reflects the true causal relationship within the study sample; external validity, which concerns whether findings generalize beyond the specific study context; and construct validity, which concerns whether the measured variables actually capture the theoretical constructs of interest.
-Understanding these threats is essential both for designing rigorous studies and for critically evaluating the research of others.
+The previous sections established two complementary frameworks for defining causal effects and articulating the assumptions under which they are identified.
+In practice, every study---whether experimental or observational---faces threats that can undermine its conclusions.
+The literature distinguishes three types of validity: \emph{internal validity} (does the estimated effect reflect the true causal relationship within the study?), \emph{external validity} (does it generalize beyond the study?), and \emph{construct validity} (do the measured variables capture the theoretical constructs of interest?).
+We illustrate each through the programming language and defect proneness example and the DAG in Figure~\ref{fig:pl-dag}.
 
 \subsection{Internal Validity}
 
-A study possesses high internal validity when we can confidently attribute observed outcome differences to the treatment rather than to confounding factors.
-Again, the fundamental challenge is that we never observe the counterfactual and must instead infer it from comparison groups under assumptions that may or may not hold.
+Internal validity asks whether observed outcome differences can be attributed to the treatment rather than to artifacts of the research design.
+Four threats are most common.
 
-The most pervasive threat to internal validity is \emph{confounding}, which occurs when an unmeasured variable affects both treatment assignment and outcomes, creating a spurious association that masquerades as a causal effect.
-Consider a study examining whether adopting a new development tool improves code quality.
-If repositories with more experienced maintainers are both more likely to adopt innovative tools and more likely to produce high-quality code regardless of the tool, the observed association between tool adoption and quality may reflect maintainer expertise rather than the tool's genuine effect.
-Randomized experiments eliminate confounding by construction, since random assignment ensures that treatment and control groups are, in expectation, identical on all characteristics---both observed and unobserved.
-Observational designs lack this guarantee and must either measure and adjust for potential confounders or rely on design-based strategies such as difference-in-differences, regression discontinuity, or instrumental variables that address confounding through alternative identifying assumptions.
+\paragraph{Confounding.}
+Confounding occurs when an unmeasured variable affects both treatment and outcome, inducing a spurious association.
+In the DAG of Figure~\ref{fig:pl-dag}, every back-door path represents a potential source of confounding.
+If a study regresses Defect Proneness on Language but omits Team Skill, the estimate will absorb the back-door path Language $\leftarrow$ Team Skill $\to$ Defect Proneness: Teams with stronger engineering skills tend to adopt languages with stronger type systems \emph{and} to produce fewer defects, regardless of language.
+The conditional ignorability assumption (Equation~\eqref{eq:cond-ignorability}) holds only if all such confounders are measured and adjusted for---a strong requirement given that variables like Org Culture and developer motivation are difficult to observe in repository mining data.
 
-Closely related to confounding is \emph{selection bias}, which arises when the process that determines who enters the study or receives treatment is systematically related to potential outcomes.
-If only repositories already experiencing quality problems adopt a static analysis tool (hoping it will help), naive comparisons of adopters to non-adopters will conflate the tool's effect with the pre-existing quality differential.
-Selection can also manifest as differential attrition: If struggling projects are more likely to cease activity and drop out of a longitudinal study, the surviving sample becomes increasingly unrepresentative, and estimates based on this sample may be severely biased.
+\paragraph{Selection Bias.}
+Selection bias arises when the process determining which units enter the study or receive treatment is related to potential outcomes.
+In the language--defect setting, the most salient form is \emph{self-selection into treatment}: Projects are not randomly assigned to programming languages; teams choose languages based on factors (expertise, risk tolerance, domain norms) that independently affect defect rates.
+If teams expecting to work on safety-critical components select statically-typed languages precisely because those components demand higher reliability, the resulting sample systematically conflates language effects with project requirements.
+Selection can also manifest as \emph{differential attrition}: If projects written in niche languages are more likely to become inactive and drop out of a longitudinal dataset, the surviving sample is no longer representative, and estimates based on it may be biased.
 
-Even with perfect identification of causal effects, \emph{measurement error} in treatments or outcomes can attenuate or distort estimates.
-When treatment status is measured imprecisely---for example, inferring ``tool adoption'' from the presence of a configuration file that may not indicate actual sustained use---the resulting measurement error typically biases estimates toward zero, making true effects appear smaller than they are.
-When outcomes are measured with systematic error correlated with treatment status, bias can operate in either direction and is harder to diagnose.
+\paragraph{Measurement Error.}
+Even with perfect identification, imprecise measurement of treatment or outcome can distort estimates.
+In repository mining studies, ``programming language'' is operationalized using metadata such as the dominant language by lines of code~\cite{DBLP:conf/sigsoft/RayPFD14}, but many repositories are polyglot---a project classified as ``Python'' may contain substantial C extensions, and the classification can change over time.
+Misclassifying a polyglot project's language introduces measurement error in the treatment variable, which typically attenuates estimates toward zero, making genuine effects appear smaller than they are.
+The outcome, ``defect proneness,'' is typically proxied by bug-fix commits identified through commit message heuristics~\cite{DBLP:conf/sigsoft/RayPFD14}, which are known to be noisy: Not all bug-fix commits fix actual defects, and not all defects are recorded as bug-fix commits.
+When measurement error in the outcome is correlated with treatment---for instance, if projects in different languages follow different commit conventions---bias can operate in either direction.
 
-Finally, the Stable Unit Treatment Value Assumption (SUTVA) requires that one unit's treatment status does not affect another unit's outcomes---an assumption frequently violated in software engineering contexts.
-Developers share knowledge across teams, projects share dependencies through package ecosystems, and practices diffuse through professional networks and organizations.
-If adopting a tool in one repository indirectly improves code quality in related repositories through shared learning or code reuse, simple treatment-control comparisons will underestimate the tool's total effect by ignoring these spillovers.
-Alternatively, if control units are ``contaminated'' by exposure to treatment effects (perhaps through documentation or community discussions), the estimated treatment effect will be biased toward zero.
+\paragraph{SUTVA Violations.}
+The Stable Unit Treatment Value Assumption requires that one unit's treatment does not affect another unit's outcome and that there is a single, well-defined version of treatment.
+Both components are questionable in the language--defect setting.
+Projects share code through dependencies: A library written in Haskell may be called from a Python project, so the Haskell project's language choice indirectly affects the Python project's defect exposure---violating no-interference.
+Likewise, ``using Language $X$'' is not a single treatment: One team may use TypeScript with strict compiler flags and comprehensive type annotations, while another uses it with permissive settings and frequent \texttt{any} casts.
+These hidden treatment variations mean $Y_i(1)$ is not well-defined without further specifying the version of treatment.
 
 \subsection{External Validity}
 
-A study can achieve perfect internal validity---correctly identifying the causal effect within its specific sample---yet provide limited guidance for other populations, settings, or time periods.
-External validity concerns this generalizability, and its threats are often underappreciated in fields that prioritize identification over representativeness.
+A study may correctly identify the causal effect within its sample yet offer limited guidance for other populations, settings, or time periods.
 
-The most fundamental external validity concern is \emph{population generalizability}: effects estimated on one population may not apply to others with different characteristics.
-Studies conducted on open-source GitHub repositories may not generalize to proprietary enterprise development, where organizational constraints, incentive structures, and development practices differ substantially.
-Effects observed among early adopters of a technology---who tend to be more technically sophisticated and intrinsically motivated---may not hold for the broader population.
-Volunteer participants in controlled experiments may differ systematically from developers who would never consent to participate, limiting the applicability of experimental findings.
+\paragraph{Population Generalizability.}
+The language--defect studies~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/toplas/BergerHMVV19} draw their data from public GitHub repositories.
+Open-source projects differ from proprietary enterprise development in team structure, incentive mechanisms, code review practices, and deployment pipelines.
+An effect of static typing estimated on open-source web projects may not apply to embedded systems teams working under different constraints.
+More broadly, GitHub's population skews toward certain languages, project types, and developer demographics; findings from this population need not generalize to the broader software engineering landscape.
 
-\emph{Temporal generalizability} presents particular challenges in rapidly evolving technological domains.
-The productivity impact of early AI coding assistants, measured with 2023-era tools on 2023-era codebases, may bear little resemblance to the effects of more advanced tools deployed in the late 2020s with more capable models.
-Best practices validated through empirical research in one technological era may become obsolete---or even counterproductive---as the underlying technologies evolve.
-This suggests that empirical software engineering findings should be understood as historically situated rather than as timeless truths.
+\paragraph{Temporal Generalizability.}
+Languages evolve.
+TypeScript in 2015---when the type system was less expressive and tooling was immature---is a different treatment from TypeScript in 2025.
+An estimate of the language effect obtained on data from one era may not hold in another, because the tooling, type system capabilities, and ecosystem maturity that mediate the effect (the Tooling/Type Safety node in Figure~\ref{fig:pl-dag}) have changed.
+This suggests that empirical findings about programming languages should be understood as historically situated rather than as timeless truths.
 
-Beyond population and temporal concerns, causal effects often exhibit substantial \emph{context dependence}, varying with organizational culture, developer expertise, project characteristics, programming language, or other factors in ways that limit straightforward transferability.
-A tool that accelerates novice developers may impose coordination overhead that slows experts; a practice that enhances productivity in small, co-located teams may create bottlenecks at enterprise scale.
-Recognizing this heterogeneity, researchers increasingly report not just average treatment effects but also how effects vary across observable subgroups, since understanding who benefits and who does not is often more actionable than knowing only the population average.
+\paragraph{Effect Heterogeneity.}
+Even within a single time period and population, causal effects may vary across subgroups.
+Static typing may reduce defects more in large, multi-developer projects---where interfaces and contracts matter most---than in small scripts maintained by a single developer.
+The ATE across all projects may mask this variation.
+Reporting how effects differ across project size, domain, and team composition is often more actionable than reporting the population average alone.
 
 \subsection{Construct Validity}
 
-Beyond the question of whether we have correctly identified a causal effect (internal validity) and whether it generalizes (external validity), construct validity asks whether the variables we measure actually capture the theoretical constructs we care about.
-This challenge is particularly acute in software engineering, where many concepts of interest---productivity, code quality, technical debt, developer experience---are multidimensional abstractions that resist direct measurement.
+Construct validity asks whether the variables we measure actually capture the theoretical constructs we intend.
+This threat is acute in the language--defect setting because both the treatment and the outcome are multidimensional abstractions.
 
-The operationalization of treatments shapes what effects we estimate.
-``Adopting continuous integration'' might be operationalized as setting up a CI system, actually running automated tests on every commit, or promptly responding to test failures---each capturing different aspects of the underlying practice.
-Similarly, ``code quality'' might be measured through defect density, code review feedback, static analysis warnings, or maintainability indices, each reflecting different quality dimensions and potentially yielding different conclusions about treatment effects.
+\paragraph{Treatment Operationalization.}
+What does it mean for a project to ``use'' a programming language?
+The original study~\cite{DBLP:conf/sigsoft/RayPFD14} classified each repository by its dominant language, but this obscures within-project language diversity.
+A repository classified as ``Java'' may contain JavaScript front-end code, shell scripts, and SQL queries, each with different defect profiles.
+The reproduction study~\cite{DBLP:journals/toplas/BergerHMVV19} demonstrated that reclassifying polyglot repositories substantially changed the estimated effects---evidence that the treatment construct was not robust to operationalization choices.
+An alternative operationalization at the file or commit level would define a different treatment, estimate a different causal effect, and require a different adjustment set.
 
-Even well-defined metrics may suffer from measurement imprecision.
-Commit counts, used as a productivity proxy, conflate substantive work with commit granularity conventions that vary across developers and projects.
-Issue counts conflate bugs with feature requests, user-reported problems with automated detections, and genuine defects with documentation gaps.
-Lines of code added confounds productive output with code bloat.
-These measurement limitations do not invalidate empirical research, but they counsel humility about the precision of our conclusions and underscore the value of triangulating across multiple operationalizations.
+\paragraph{Outcome Operationalization.}
+``Defect proneness'' can be measured in many ways: Bug-fix commit density, static analysis warnings, CVE counts, issue reports labeled as bugs, or field failure rates.
+Each captures a different facet of software quality, and they need not agree.
+A language might reduce shallow bugs caught by static analysis while having no effect on architectural defects surfaced only in production.
+Triangulating across multiple outcome measures guards against construct-dependent conclusions; if an effect appears consistently regardless of how defects are measured, confidence in the finding grows.
 
 \subsection{Sensitivity Analysis and Robustness}
 
-Because the identifying assumptions underlying causal inference are fundamentally untestable---we cannot directly verify that parallel trends would have held or that an instrument satisfies the exclusion restriction---rigorous research practice demands sensitivity analysis that explores how conclusions would change if assumptions were violated.
+Because the identifying assumptions discussed above are fundamentally untestable, rigorous practice demands \emph{sensitivity analysis}: Systematic exploration of how conclusions change if assumptions are violated.
 
-For matching and propensity score studies, Rosenbaum bounds quantify how strong an unmeasured confounder would need to be to explain away the observed effect~\cite{rosenbaum2002observational}.
-If results remain robust to confounders implausibly stronger than any known variable, confidence in the findings increases; if a moderately strong confounder could reverse conclusions, appropriate caution is warranted.
-For difference-in-differences, researchers examine sensitivity to pre-trend specifications: Event study plots visualizing pre-treatment coefficients help assess whether the parallel trends assumption is plausible, and researchers increasingly test whether conclusions survive alternative trend extrapolations.
+For observational studies relying on conditional ignorability, Rosenbaum bounds~\cite{rosenbaum2002observational} quantify how strong an unmeasured confounder would need to be to explain away the estimated effect.
+In the language--defect setting, a researcher could ask: How strongly would an omitted variable (e.g., developer motivation) need to be associated with both language choice and defect rates to reduce the estimated language effect to zero?
+If the required confounding strength exceeds that of any known variable in the study, the finding gains credibility; if a moderately strong confounder could reverse the conclusion, appropriate caution is warranted.
+$E$-values~\cite{vanderweele2017sensitivity} and coefficient stability tests~\cite{oster2019unobservable} provide complementary assessments of the same question.
 
-A powerful approach to robustness is employing multiple approaches with different identifying assumptions.
-For example, when two-way fixed effects, Callaway-Sant'Anna, and imputation estimators all yield consistent treatment effect estimates, the finding is unlikely to be an artifact of any single method's assumptions.
-Conversely, divergent results across estimators signal that conclusions may depend on methodological choices and warrant careful investigation.
+A second strategy is applying \emph{multiple estimators} with different identifying assumptions.
+If developer fixed effects (which control for time-invariant developer characteristics), propensity score matching (which balances observable covariates), and difference-in-differences on language migration events (which exploits within-project variation) all yield consistent estimates of the language effect, the convergence provides evidence that the finding is not an artifact of any single method's assumptions.
+Divergent results, conversely, signal that conclusions depend on methodological choices and warrant investigation.
 
-Placebo tests provide another diagnostic tool, examining whether effects appear where they should not.
-If treatment effects appear \emph{before} treatment occurs, this suggests confounding rather than causation.
-If treatment affects outcomes it theoretically should not influence---such as pre-determined characteristics fixed before treatment assignment---something is amiss with the research design.
-Passing placebo tests does not prove validity, but failing them is highly informative about potential threats.
-
-Ultimately, the credibility of causal claims rests not on asserting that assumptions are satisfied---a claim that can never be definitively verified---but on transparently examining their plausibility, demonstrating robustness to reasonable alternatives, and acknowledging the limitations that still remain in the current research design.
+Finally, \emph{placebo tests} check whether effects appear where they should not.
+In a difference-in-differences study of JavaScript-to-TypeScript migration, if defect rates appear to drop \emph{before} migration occurs, the result suggests confounding rather than causation---perhaps the team improved its practices before undertaking the migration.
+Passing such tests does not prove validity, but failing them is highly informative about specific threats to the research design.
 
 \section{A Pragmatic Approach to Causal Inference and Causal Credibility Assessments in Empirical SE Research}
 \label{sec:pragmatic}
