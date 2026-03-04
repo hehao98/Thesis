@@ -369,6 +369,56 @@ In summary, for $\hat{\tau}$ to be causally interpretable, one must assume:
 Unlike randomization, conditional ignorability is fundamentally untestable: We cannot, from data alone, verify that all confounders have been measured, since the confounders we might be missing are, by definition, unobserved.
 Nevertheless, a researcher can still argue for the plausibility of conditional ignorability by encoding the assumed data-generating process as a causal DAG and showing that the covariates in $X$ satisfy the back-door criterion~\cite{pearl2009causality}, and can further probe its robustness through sensitivity analysis techniques such as Rosenbaum bounds~\cite{rosenbaum2002observational}, $E$-values~\cite{vanderweele2017sensitivity}, or coefficient stability tests~\cite{oster2019unobservable}.
 
+\paragraph{Summary of Common Methods.}
+The potential outcomes framework provides a unified language for comparing the estimands and identification assumptions of different causal inference methods.
+Table~\ref{tab:methods-summary} summarizes the methods most frequently encountered in applied research, including the two discussed above and several quasi-experimental designs that appear in later chapters.
+Each method targets a specific causal estimand---not all methods estimate the same quantity---and each rests on distinct assumptions whose plausibility must be argued on substantive grounds.
+For instance, difference-in-differences identifies the ATT under a parallel-trends assumption, instrumental variables recover a \emph{Local Average Treatment Effect} (LATE) that applies only to units whose treatment status is shifted by the instrument, and regression discontinuity identifies a LATE at the threshold of a running variable.
+The choice of method should be guided by the research setting and the type of identifying variation available, not by convention or convenience.
+
+\begin{table}[t]
+\centering
+\caption{Common causal inference methods, their target estimands, and key identification assumptions under the potential outcomes framework.
+ATE = Average Treatment Effect; ATT = Average Treatment Effect on the Treated; LATE = Local Average Treatment Effect (the effect for units at the margin of treatment change).}
+\label{tab:methods-summary}
+\small
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{} p{3.8cm} p{2.2cm} p{8.2cm} @{}}
+\toprule
+\textbf{Method} & \textbf{Estimand} & \textbf{Key Identification Assumptions} \\
+\midrule
+Randomized Controlled Trial
+  & ATE
+  & Random assignment: $(Y(1), Y(0)) \perp D$; SUTVA; full compliance with assigned treatment \\
+\addlinespace
+Selection on Observables \newline {\scriptsize (Regression, Matching, IPW)}
+  & ATE or ATT
+  & Conditional ignorability: $(Y(1), Y(0)) \perp D \mid X$; overlap (positivity); correct functional form for parametric estimators \\
+\addlinespace
+Difference-in-Differences
+  & ATT
+  & Parallel trends: absent treatment, treated and control groups would have followed the same outcome trajectory; no anticipation; SUTVA \\
+\addlinespace
+Instrumental Variables
+  & LATE
+  & Relevance: instrument $Z$ affects treatment; exclusion restriction: $Z$ affects outcome only through treatment; independence: $(Y(1),Y(0)) \perp Z$; monotonicity (no defiers) \\
+\addlinespace
+Regression Discontinuity
+  & LATE {\scriptsize (at cutoff)}
+  & Continuity of potential outcomes at the threshold; no precise manipulation of the running variable; no compound treatments at the cutoff \\
+\addlinespace
+Panel Fixed Effects
+  & ATE {\scriptsize (within-unit)}
+  & Strict exogeneity: conditional on unit fixed effects, treatment is uncorrelated with time-varying unobservables; no time-varying confounders \\
+\addlinespace
+Synthetic Control
+  & ATT {\scriptsize (treated unit)}
+  & The synthetic control tracks the treated unit's counterfactual trajectory; no interference across units; no anticipation of treatment \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
 \subsection{Graphical Causal Models}
 
 The potential outcomes framework defines the estimands of interest and specifies the assumptions---such as conditional ignorability---under which they are identified.
@@ -507,39 +557,58 @@ The thesis statement argues that empirical software engineering research require
 I propose four necessary steps, each grounded in the formal tools introduced earlier, for software engineering research.
 
 \paragraph{Step 1: Make the causal theory explicit as a DAG.}
-Before fitting any model, the researcher should encode the assumed data-generating process as a directed acyclic graph (~\ref{sec:formalism}) so that every causal assumption is visible: Each arrow is a substantive claim; each absent arrow asserts the absence of a direct effect.
+Before fitting any model, the researcher should encode the assumed data-generating process as a directed acyclic graph (Section~\ref{sec:formalism}) so that every causal assumption is visible: Each arrow is a substantive claim; each absent arrow asserts the absence of a direct effect.
 This step forces the researcher to confront questions that a regression specification or modeling approach leaves implicit: What potential confounders are there?
 Which variables are mediators that should not be conditioned on?
 What alternative DAG structures could generate the same observed associations?
 
-For the language--defect problem, Figure~\ref{fig:pl-dag} encodes the theory that Language affects Defect Proneness through Tooling/Type Safety, while Domain, Team Skill, Org Culture, and Codebase Age confound the relationship.
-Committing to this DAG---and presenting it to reviewers---opens the assumptions to scrutiny in a way that a regression table alone cannot.
+Crucially, the plausibility of a causal DAG rests on \emph{domain knowledge}~\cite{pearl2009causality}, and in software engineering that knowledge is largely embodied in the prior literature---especially descriptive and qualitative research.
+Surveys, case studies, ethnographies, and grounded-theory studies of development practice are what tell us \emph{which} factors shape language adoption, team behaviour, and defect introduction~\cite{DBLP:conf/icse/Devanbu0B16}; without this foundation, there is no principled basis for deciding which variables belong in the DAG and which edges connect them.
+A DAG whose structure cannot be traced back to substantive findings or well-documented domain expertise is little more than speculation dressed in formal notation.
+Prior descriptive and qualitative work therefore plays an indispensable role in causal inference: It supplies the substantive justification for the completeness of the graph and, by extension, for the validity of every downstream identification argument.
 
-\paragraph{Step 2: Define the causal estimand and specify the identifying assumptions.}
+For the language--defect problem, Figure~\ref{fig:pl-dag} encodes the theory that Language affects Defect Proneness through Tooling/Type Safety, while Domain, Team Skill, Org Culture, and Codebase Age confound the relationship.
+Each of these variables and edges should be grounded in prior evidence---for example, qualitative studies documenting how organisational culture shapes technology adoption, or descriptive analyses linking team experience to code quality~\cite{DBLP:journals/tse/Murphy-HillJSSP21,DBLP:journals/ese/ScholtesMS16}.
+Committing to this DAG---and presenting it to reviewers alongside the evidence that motivates its structure---opens the assumptions to scrutiny in a way that a regression table alone cannot.
+
+\paragraph{Step 2: Define the causal estimand, estimation method, and the identifying assumptions.}
 With the DAG in hand, the researcher defines the causal quantity of interest using the potential outcomes framework (Section~\ref{sec:formalism}).
 In the language-defect setting, the estimand might be the ATE of adopting a statically-typed language with respect to defect density.
 The back-door criterion applied to Figure~\ref{fig:pl-dag} identifies the adjustment set $\{$Domain, Team Skill, Org Culture, Codebase Age$\}$ and thereby operationalizes the conditional ignorability assumption (Equation~\eqref{eq:cond-ignorability}): Within strata defined by these four variables, language choice is assumed to be as-if random.
 
-This step also determines the statistical method.
-If the researcher has access to panel data where developers or repositories use multiple languages over time, developer and repository fixed effects can absorb time-invariant confounders.
-If the setting features staggered language migration events, a difference-in-differences design can exploit within-project variation.
-Each method rests on specific assumptions---parallel trends, no anticipation, exogenous timing---that should be stated explicitly and connected back to the DAG.
+This step also determines the statistical method, and here software engineering researchers benefit enormously from engaging with the econometrics and epidemiology literatures, where the science of causal identification from observational data has been developed and refined over decades~\cite{angrist1996identification,rosenbaum2002observational,pearl2009causality,cunningham2021causal,hansen2022econometrics}.
+These fields have produced a rich toolkit---difference-in-differences~\cite{card1993minimum,roth2023s}, instrumental variables~\cite{angrist1996identification}, regression discontinuity~\cite{thistlethwaite1960regression,calonico2014robust}, matching estimators~\cite{rosenbaum1983central,caliendo2008some}, marginal structural models---along with precise characterisations of the assumptions each method requires and the settings in which those assumptions are plausible.
+Importing these methods without understanding their epistemological foundations, however, risks misapplication; the assumptions are not interchangeable, and each method is designed for a specific data structure and a specific type of identifying variation.
+Software engineering researchers who invest in this methodological literature are far better equipped to choose an appropriate design, state its assumptions transparently, and anticipate the ways in which those assumptions might fail in their specific setting.
+
+For example, if the researcher has access to panel data where developers or repositories use multiple languages over time, developer and repository fixed effects can absorb time-invariant confounders---a strategy well understood in the panel-data econometrics literature~\cite{baltagi2008econometric}.
+If the setting features staggered language migration events, a difference-in-differences design can exploit within-project variation, but only under parallel-trends and no-anticipation assumptions whose plausibility must be argued on substantive grounds and, where possible, probed with pre-trend tests~\cite{roth2023s,marcus2021role}.
+Each method rests on specific assumptions that should be stated explicitly and connected back to the DAG, and the researcher should consult the methodological literature to understand when those assumptions are tenable and what diagnostics are available to assess them.
 
 \paragraph{Step 3: Honestly acknowledge and mitigate limitations.}
-No observational study achieves perfect identification.
-The threats catalogued in Section~\ref{sec:threats}---confounding from unmeasured variables, selection bias, measurement error, SUTVA violations---apply to every study, and the researcher's task is to assess their severity honestly rather than assume them away.
-In the language--defect example, key limitations may include: Conditional ignorability may be violated if developer motivation or risk tolerance (absent from the DAG) drives both language choice and code quality; the treatment ``programming language'' is measured imprecisely in polyglot repositories; and the outcome ``defect proneness'' proxied by bug-fix commits is noisy and potentially correlated with language-specific commit conventions.
-Where possible, limitations should be mitigated: Sensitivity analysis can bound the impact of omitted confounders (Section~\ref{sec:threats}), and triangulating across multiple outcome measures can guard against construct-dependent conclusions.
+As discussed in the introduction to this chapter and elaborated in Section~\ref{sec:tradeoff}, no single study---however well-designed---achieves perfect identification, and this limitation is especially acute in software engineering, where treatments are complex, multi-dimensional, and entangled with the sociotechnical context in which they occur.
+Compounding this challenge, data collection and metric definition in software engineering are themselves fraught with difficulty: Key constructs---defect proneness, productivity, code quality---lack universally accepted definitions~\cite{DBLP:journals/software/KitchenhamP96,DBLP:journals/queue/ForsgrenSMZHB21}, and the proxies available from mining software repositories (bug-fix commits, issue counts, static-analysis warnings) each capture only a narrow, noisy slice of the underlying concept~\cite{DBLP:journals/ese/KalliamvakouGBS16}, potentially introducing systematic measurement bias that interacts with the treatment under study.
+Confounding from unmeasured variables, selection bias, measurement errors, and SUTVA violations are ever-present, and the researcher's task is to assess their severity honestly rather than assume them away.
+In the language--defect example, key limitations may include: Conditional ignorability may be violated if developer motivation or risk tolerance (absent from the DAG) drives both language choice and code quality; the treatment ``programming language'' is measured imprecisely in polyglot repositories; and the outcome ``defect proneness''---itself hard to define and operationalize---is typically proxied by bug-fix commits, a measure that is noisy, incomplete (not all defects are surfaced as commits), and potentially correlated with language-specific commit conventions and project-level bug-tracking practices.
+Where possible, limitations should be mitigated: Sensitivity analysis can bound the impact of omitted confounders (e.g., via $E$-values~\cite{vanderweele2017sensitivity} or Rosenbaum bounds~\cite{rosenbaum2002observational}), and triangulating across multiple outcome measures can guard against construct-dependent conclusions.
 
 \paragraph{Step 4: Navigate alternative explanations.}
 The researcher should consider rival causal structures---alternative DAGs---that could also explain the observed findings and assess whether the data can discriminate among them.
-For instance, a critic of the language--defect study might propose an alternative DAG in which Language has no causal effect and the entire association is driven by Team Skill and Org Culture.
-Under this alternative, even perfect adjustment for the confounders in Figure~\ref{fig:pl-dag} would yield a null effect, so a non-null estimate after adjustment would count against the alternative.
-Another critic might add an unmeasured confounder---developer motivation---that opens a new back-door path.
-In this case, the researcher cannot rule out the alternative from data alone, but can report how strong the confounding from motivation would need to be to explain away the estimated effect (e.g., via $E$-values~\cite{vanderweele2017sensitivity} or Rosenbaum bounds~\cite{rosenbaum2002observational}).
-The goal is not to eliminate all alternative explanations---an impossible standard---but to engage with the most plausible ones transparently and show that the findings are robust to reasonable alternatives.
+Constructive engagement with alternatives means deriving \emph{testable implications} that differ across competing DAGs and checking them against the data.
+In the language--defect example, consider three plausible challenges:
+%
+\begin{enumerate}
+\item \emph{Alternative mechanism.} A critic might argue that the apparent benefit of statically-typed languages operates entirely through the maturity of the associated tooling ecosystem (linters, testing frameworks, package quality) rather than through the type system itself. This alternative implies a DAG in which Language $\to$ Ecosystem Quality $\to$ Defects, with no direct Language $\to$ Defects edge. The researcher can probe this by conditioning on proxies for ecosystem quality: If the estimated language effect survives this additional adjustment, the ecosystem-only explanation is weakened. If it vanishes, the finding is reinterpreted---still useful, but with a different causal story.
+
+\item \emph{Unmeasured confounding.} A critic might posit that developer motivation---unmeasured in the DAG---drives both language choice and code quality, so that the estimated effect is wholly or partly spurious. The researcher cannot rule this out from data alone but can respond in two ways. First, sensitivity analysis (e.g., $E$-values~\cite{vanderweele2017sensitivity} or Rosenbaum bounds~\cite{rosenbaum2002observational}) can quantify how strong the confounding from motivation would need to be to explain away the estimated effect; if the required strength is implausibly large, confidence in the finding is strengthened. Second, the researcher can design \emph{falsification tests}~\cite{oster2019unobservable}: If motivation were the true driver, one would expect to see similar ``effects'' for language features that should be irrelevant to defect proneness (e.g., syntax style); the absence of such spurious effects supports the causal interpretation.
+
+\item \emph{Reverse causality.} Defect-prone projects may preferentially migrate to languages perceived as safer, creating an association that runs opposite to the assumed causal direction. This alternative generates a distinctive temporal signature---language switches should follow spikes in defect rates---that the researcher can check in panel data, and whose absence would count against the reverse-causality story.
+\end{enumerate}
+%
+The goal is not to eliminate all alternative explanations---an impossible standard---but to engage with the most plausible ones transparently, derive predictions that distinguish them from the proposed causal story, and show that the findings are robust to reasonable alternatives.
 
 \subsection{Navigating the Internal--External Validity Trade-off}
+\label{sec:tradeoff}
 
 Even after careful credibility assessment, each study faces a fundamental tension between internal and external validity. 
 For example, in the language--defect setting, a randomized experiment---assigning developers to implement the same task in different languages---would achieve strong internal validity: Random assignment eliminates confounding by construction.
@@ -557,7 +626,7 @@ A useful organizing principle is to think of evidence quality as a spectrum rath
 At the top sit randomized experiments with representative samples, which provide strong internal validity but limited external validity.
 Below are quasi-experimental designs---regression discontinuity, instrumental variables, and well-executed difference-in-differences---that achieve internal validity under assumptions that can be partially tested (e.g., parallel pre-trends, no manipulation at thresholds).
 Next come observational studies with careful control strategies---matching, propensity scores, fixed effects---that reduce confounding but rely on untestable assumptions about unobserved confounders.
-At the bottom are descriptive and correlational studies, which document patterns and generate hypotheses but cannot answer ``what if'' questions about interventions.
+At the bottom are descriptive and correlational studies, which document patterns and generate hypotheses but cannot answer cauasl effects definitively.
 
 This hierarchy describes the strength of \emph{causal} evidence, not overall scientific value.
 A thoughtful observational study of real-world language adoption may provide more useful guidance than a randomized experiment on a contrived task with unrepresentative participants.
