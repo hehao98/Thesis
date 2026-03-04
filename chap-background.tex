@@ -357,7 +357,7 @@ Selection bias vanishes conditionally---$E[Y(0) \mid D=1, X] = E[Y(0) \mid D=0, 
     E[Y \mid D=1, X] - E[Y \mid D=0, X] = E[Y(1) - Y(0) \mid X]
 \end{equation}
 Averaging over $X$ recovers the ATE: $\text{ATE} = E_X\!\big[E[Y \mid D\!=\!1, X] - E[Y \mid D\!=\!0, X]\big]$.
-The regression in Equation~\eqref{eq:regression} implements this identification result by modeling $E[Y \mid D, X]$ as linear and additive, which introduces a further assumption: that the functional form is correctly specified and that the treatment effect $\tau$ is constant across units.
+The regression in Equation~\eqref{eq:regression} implements this identification result by modeling $E[Y \mid D, X]$ as linear and additive, which introduces a further assumption, that the functional form is correctly specified and that the treatment effect $\tau$ is constant across units.
 
 In summary, for $\hat{\tau}$ to be causally interpretable, one must assume:
 \begin{enumerate}[leftmargin=15pt]
@@ -366,194 +366,135 @@ In summary, for $\hat{\tau}$ to be causally interpretable, one must assume:
     \item \textbf{Overlap}: Both treatment groups are represented at all covariate values.
     \item \textbf{Correct functional form}: The linear, additive specification is a reasonable approximation to the true conditional expectation function.
 \end{enumerate}
-Unlike randomization, conditional ignorability is fundamentally untestable: we cannot verify from data alone that all confounders have been measured, since the confounders we might be missing are, by definition, unobserved.
-
-%The potential outcomes framework makes these requirements explicit, forcing the analyst to articulate \emph{why} a particular regression warrants a causal interpretation rather than treating covariate adjustment as sufficient by itself.
-
-\begin{comment}
-\paragraph{Why Simple Comparisons Fail.}
-A naive approach to estimating the ATE would compare mean outcomes between treated and control groups:
-\begin{equation}
-    E[Y \mid D=1] - E[Y \mid D=0]
-\end{equation}
-Expanding this in terms of potential outcomes reveals the problem:
-\begin{align}
-    E[Y \mid D=1] - E[Y \mid D=0] &= E[Y(1) \mid D=1] - E[Y(0) \mid D=0] \\
-    &= \underbrace{E[Y(1) \mid D=1] - E[Y(0) \mid D=1]}_{\text{ATT}} \\ &+ \underbrace{E[Y(0) \mid D=1] - E[Y(0) \mid D=0]}_{\text{Selection Bias}}
-\end{align}
-The first term is the ATT---the causal effect among the treated.
-The second term is \emph{selection bias}: The difference in baseline potential outcomes between those who select into treatment and those who do not.
-If treatment is self-selected, these groups may differ systematically even in the absence of treatment.
-High-ability developers may adopt new tools precisely because they are high-ability; comparing their outcomes with those of non-adopters confounds the tool's effect with pre-existing ability differences.
-The observed difference equals the causal effect only when selection bias is zero---that is, when $E[Y(0) \mid D=1] = E[Y(0) \mid D=0]$.
-This holds when treatment is randomly assigned, but rarely otherwise.
-
-\paragraph{Identifying Assumptions.}
-To bridge the gap between observable quantities and causal estimands, we require assumptions that discipline how potential outcomes relate to treatment assignment.
-Three assumptions are foundational:
-
-\begin{enumerate}[leftmargin=15pt]
-    \item \textbf{Stable Unit Treatment Value Assumption (SUTVA).}
-    This assumption has two components.
-    First, \emph{no interference}: The potential outcomes for unit $i$ depend only on $i$'s own treatment status, not on the treatment status of other units.
-    If one developer's adoption of a tool changes another developer's productivity (through collaboration, knowledge sharing, or competition), SUTVA is violated.
-    Second, \emph{no hidden variations of treatment}: There is only one version of treatment, so $Y_i(1)$ is well-defined.
-    If ``adopting a tool'' means different things for different developers (some use it intensively, others superficially), the single potential outcome $Y_i(1)$ may be poorly defined.
-    SUTVA is often violated in networked settings.
-    If developers on the same team influence each other, individual-level analysis may be inappropriate; the relevant unit may be the team, not the developer.
-    
-    \item \textbf{Ignorability (Unconfoundedness, Conditional Independence).}
-    Conditional on observed covariates $X$, treatment assignment is independent of potential outcomes:
-    \begin{equation}
-        (Y(1), Y(0)) \perp D \mid X
-    \end{equation}
-    This assumption asserts that, among units with identical observed characteristics, treatment is as-if randomly assigned.
-    Any systematic differences between treated and control groups are fully captured by $X$; once we condition on $X$, no unmeasured confounders remain.
-    Ignorability is the critical assumption for observational studies.
-    It is inherently untestable---because we cannot observe the unmeasured confounders, we cannot verify that all confounders have been measured.
-    Its plausibility rests entirely on the researcher's knowledge of the data-generating process---or the plausibility of the causal theory based on the researcher's knowledge.
-    
-    \item \textbf{Overlap (Positivity, Common Support).}
-    For all values of $X$ in the population, both treatment states have positive probability:
-    \begin{equation}
-        0 < P(D=1 \mid X) < 1 \quad \text{for all } X
-    \end{equation}
-    This ensures that for any combination of covariates, we can find both treated and untreated units, enabling comparison.
-    If some covariate combinations are treated with probability 1 or 0, we have no counterfactual basis for estimating effects in that region.
-    Overlap is testable: We can usually examine whether the distributions of covariates (or propensity scores) in treated and control groups have common support.
-    Violations suggest that certain treatment effects are not identified from the data.
-\end{enumerate}
-
-\paragraph{Identification Under Ignorability.}
-Under SUTVA, ignorability, and overlap, the ATE is identified from observed data.
-The key insight is that ignorability allows us to substitute observable conditional expectations for unobservable potential outcome means:
-\begin{align}
-    E[Y(1)] &= E_X[E[Y(1) \mid X]] = E_X[E[Y(1) \mid X, D=1]] = E_X[E[Y \mid X, D=1]] \\
-    E[Y(0)] &= E_X[E[Y(0) \mid X]] = E_X[E[Y(0) \mid X, D=0]] = E_X[E[Y \mid X, D=0]]
-\end{align}
-The first equality uses iterated expectations.
-The second uses ignorability: $E[Y(1) \mid X] = E[Y(1) \mid X, D=1]$ because treatment is independent of potential outcomes given $X$.
-The third uses the switching equation: Among the treated, observed $Y$ equals $Y(1)$.
-
-Therefore:
-\begin{equation}
-    \text{ATE} = E_X[E[Y \mid D=1, X] - E[Y \mid D=0, X]]
-\end{equation}
-This expression involves only observable quantities: Conditional means of $Y$ given treatment status and covariates, averaged over the covariate distribution.
-Various estimation strategies---regression adjustment, propensity score matching, inverse probability weighting, doubly robust estimation---implement this identification result using different statistical approaches.
-\end{comment}
+Unlike randomization, conditional ignorability is fundamentally untestable: We cannot verify from data alone that all confounders have been measured, since the confounders we might be missing are, by definition, unobserved.
+Nevertheless, a researcher can argue for its plausibility by encoding the assumed data-generating process as a causal DAG and showing that the covariates in $X$ satisfy the back-door criterion~\cite{pearl2009causality}, and can further probe its robustness through sensitivity analysis techniques such as Rosenbaum bounds~\cite{rosenbaum2002observational}, $E$-values~\cite{vanderweele2017sensitivity}, or coefficient stability tests~\cite{oster2019unobservable}.
 
 \subsection{Graphical Causal Models}
 
-While the potential outcomes framework excels at defining estimands and clarifying the role of randomization, it is less helpful for reasoning about \emph{which} variables to condition on.
-The graphical causal model framework, developed by Pearl and colleagues, addresses this gap by representing causal assumptions as directed acyclic graphs (DAGs) and providing algorithmic criteria for determining when causal effects are identifiable~\cite{pearl2009causality}.
+The potential outcomes framework defines the estimands of interest and specifies the assumptions---such as conditional ignorability---under which they are identified.
+However, it offers limited guidance on a practical question that researchers inevitably face: \emph{Which} variables should be conditioned on, and which should be left out?
+The graphical causal model framework, developed by Pearl~\cite{pearl2009causality}, addresses this gap by encoding causal assumptions as \emph{directed acyclic graphs} (DAGs) and providing criteria for determining whether a proposed adjustment set suffices for causal identification.
 
 \paragraph{Directed Acyclic Graphs.}
-A DAG $G = (V, E)$ consists of a set of nodes $V$ representing variables and a set of directed edges $E$ representing direct causal relationships.
-An edge $X \to Y$ asserts that $X$ has a direct causal effect on $Y$---changing $X$ while holding all other causes of $Y$ fixed would change $Y$.
-The graph is ``acyclic'' because no variable can be its own ancestor: Following directed edges, one can never return to the starting node.
-This rules out simultaneous causation (which requires more complex frameworks) but permits chains of causation over time.
+A DAG consists of nodes representing variables and directed edges ($\to$) representing direct causal effects.
+An edge $X \to Y$ encodes the claim that changing $X$, while holding all other causes of $Y$ fixed, would change $Y$.
+The graph is \emph{acyclic}: following directed edges, one can never return to the starting node.
+Every arrow is a substantive causal claim; every \emph{absent} arrow asserts the absence of a direct effect.
+This makes all causal assumptions visually explicit---critics can challenge a model by questioning specific edges or proposing missing ones, grounding disagreements in concrete structural claims rather than vague appeals to ``omitted variables.''
 
-The power of DAGs lies in what they make explicit.
-Every arrow represents a causal claim; every absent arrow asserts the absence of a direct effect.
-Critics can challenge a causal model by questioning specific edges: ``Why do you assume $X$ affects $Y$ directly?'' or ``Have you considered that $Z$ might cause both $X$ and $Y$?''
-This transparency is impossible with regression equations, where causal assumptions are buried in the choice of variables and functional forms.
+To illustrate, consider the programming language and defect proneness problem introduced in Section~\ref{sec:pitfalls}.
+Figure~\ref{fig:pl-dag} presents a plausible causal DAG for this setting.
+The treatment of interest is Language and the outcome is Defect Proneness.
+The DAG encodes several substantive assumptions: Language affects Defect Proneness indirectly through the tooling and type safety features a language provides; Domain, Team Skill, Org Culture, and Codebase Age each influence both Language choice and Defect Proneness, making them confounders; Team Skill additionally affects the quality of Tooling/Type Safety usage and gives rise to Project Complexity, which independently drives defects.
 
-\paragraph{Paths and Associations.}
-In a DAG, variables can be associated through multiple mechanisms.
-A \emph{path} is any sequence of edges connecting two variables, regardless of direction.
-Three types of paths are fundamental:
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+    var/.style={draw, rounded corners, minimum width=1.6cm, minimum height=0.55cm, font=\small, align=center},
+    arr/.style={->, >=stealth, semithick},
+    node distance=1cm and 2cm
+]
 
-\begin{enumerate}[leftmargin=15pt]
-    \item \emph{Causal paths} (or directed paths): $X \to \cdots \to Y$.
-    All edges point from $X$ toward $Y$.
-    These represent the causal effect of $X$ on $Y$, possibly mediated through intermediate variables.
-    
-    \item \emph{Back-door paths} (or confounding paths): $X \leftarrow \cdots \to Y$ or $X \leftarrow \cdots \leftarrow Z \to \cdots \to Y$.
-    These paths have an arrow \emph{into} $X$ and connect $X$ to $Y$ through a common cause.
-    They represent spurious association due to confounding.
-    
-    \item \emph{Collider paths}: $X \to \cdots \to C \leftarrow \cdots \leftarrow Y$.
-    These paths pass through a \emph{collider}---a variable with arrows pointing into it from both directions.
-    Collider paths are naturally ``blocked'' and do not transmit association unless we condition on the collider (or its descendants), at which point they become ``open.''
-\end{enumerate}
+% Causal chain (middle row)
+\node[var] (lang) {Language};
+\node[var, right=2.8cm of lang] (tool) {Tooling /\\Type Safety};
+\node[var, right=2.8cm of tool] (defect) {Defect\\Proneness};
 
-\paragraph{d-Separation: When Variables Are Independent.}
-The criterion of \emph{d-separation} (``d'' for directional) determines when two variables are statistically independent given a conditioning set.
-A path between $X$ and $Y$ is \emph{blocked} by a set $Z$ if either: (1) The path contains a non-collider (a variable with at most one arrow pointing in) that is in $Z$, or (2) The path contains a collider that is \emph{not} in $Z$ and has no descendants in $Z$.
-Variables $X$ and $Y$ are d-separated by $Z$ if all paths between them are blocked by $Z$.
-D-separation implies conditional independence: If $X$ and $Y$ are d-separated by $Z$ in the graph, then $X \perp Y \mid Z$ in any distribution compatible with the graph.
+% Top confounders
+\node[var, above left=1.6cm and 0.8cm of lang] (org) {Org Culture};
+\node[var, above=2cm of tool] (domain) {Domain};
+\node[var, above right=1.6cm and 0.2cm of defect] (age) {Codebase\\Age};
 
-The practical implication is that we can read off conditional independence relations directly from the graph, without computing probabilities.
-This allows researchers to check whether their assumed causal structure is consistent with observed data (by testing the implied independencies) and to identify which variables must be conditioned on to block confounding.
+% Bottom nodes
+\node[var, below left=1.6cm and 0cm of lang] (skill) {Team Skill};
+\node[var, below=1.8cm of tool] (complex) {Project\\Complexity};
 
-\paragraph{The do-Operator and Interventional Distributions.}
-The central distinction in Pearl's framework is between \emph{observing} that $X = x$ and \emph{intervening} to set $X = x$.
-These correspond to different probability distributions:
-\begin{itemize}[leftmargin=15pt]
-    \item $P(Y \mid X = x)$: The conditional distribution of $Y$ given that we \emph{observe} $X = x$.
-    This may reflect both the causal effect of $X$ on $Y$ and confounding from common causes.
-    
-    \item $P(Y \mid do(X = x))$: The distribution of $Y$ when we \emph{intervene} to set $X = x$, overriding whatever process normally determines $X$.
-    This isolates the causal effect, as the intervention breaks the connection between $X$ and its causes.
-\end{itemize}
+% === Causal path ===
+\draw[arr] (lang) -- (tool);
+\draw[arr] (tool) -- (defect);
 
-Graphically, the intervention $do(X = x)$ corresponds to \emph{graph surgery}: We delete all arrows pointing into $X$ (since the intervention replaces $X$'s natural causes) while preserving all arrows pointing out of $X$ (since $X$ still affects its descendants).
-In the modified graph, $X$ becomes an exogenous variable set to $x$, and the resulting distribution is the interventional distribution.
+% === Domain ===
+\draw[arr] (domain) -- (lang);
+\draw[arr] (domain) -- (defect);
 
-The fundamental goal of causal inference is to estimate $P(Y \mid do(X = x))$ from observational data, which only provides $P(Y \mid X = x)$.
-When are these equal?
-Precisely when there is no confounding---that is, when all paths from $X$ to $Y$ except the causal paths are blocked.
+% === Org Culture ===
+\draw[arr] (org) -- (lang);
+\draw[arr] (org) to[out=-5, in=155] (defect);
+
+% === Codebase Age ===
+\draw[arr] (age) to[out=195, in=40] (lang);
+\draw[arr] (age) -- (defect);
+
+% === Team Skill ===
+\draw[arr] (skill) -- (lang);
+\draw[arr] (skill) to[out=10, in=-135] (tool);
+\draw[arr] (skill) to[out=-10, in=-155] (defect);
+\draw[arr] (skill) -- (complex);
+
+% === Project Complexity ===
+\draw[arr] (complex) -- (defect);
+
+\end{tikzpicture}
+\caption{A plausible causal DAG for the programming language and defect proneness problem.
+Arrows represent hypothesized direct causal effects.
+The causal path of interest runs Language $\to$ Tooling/Type Safety $\to$ Defect Proneness.
+All other paths connecting Language to Defect Proneness are back-door paths that must be blocked for causal identification.}
+\label{fig:pl-dag}
+\end{figure}
+
+\paragraph{Causal Paths and Back-Door Paths.}
+A DAG distinguishes two kinds of paths connecting treatment to outcome.
+\emph{Causal paths} (directed paths) follow the direction of the arrows from treatment to outcome; in Figure~\ref{fig:pl-dag}, the sole causal path is Language $\to$ Tooling/Type Safety $\to$ Defect Proneness.
+\emph{Back-door paths} connect treatment to outcome through a common cause, with at least one arrow pointing \emph{into} the treatment.
+For example, Team Skill $\to$ Language and Team Skill $\to$ Defect Proneness creates a back-door path: Language $\leftarrow$ Team Skill $\to$ Defect Proneness.
+This path transmits a spurious association---even if Language had no causal effect on Defect Proneness, the two would be correlated because they share a common cause.
+The same logic applies to the back-door paths through Domain, Org Culture, and Codebase Age.
+A naive comparison of defect rates across languages conflates the genuine causal effect traveling along the causal path with the spurious associations transmitted by every open back-door path.
 
 \paragraph{The Back-Door Criterion.}
-Pearl's back-door criterion provides a graphical test for when conditioning on a set of variables $Z$ suffices to identify the causal effect.
-A set $Z$ satisfies the back-door criterion relative to $(X, Y)$ if:
+Pearl's \emph{back-door criterion}~\cite{pearl2009causality} provides a graphical test for when conditioning on a set of variables $Z$ suffices to block all confounding.
+A set $Z$ satisfies the back-door criterion relative to the treatment--outcome pair $(X, Y)$ if:
 \begin{enumerate}[leftmargin=15pt]
-    \item No variable in $Z$ is a descendant of $X$ (to avoid conditioning on mediators or colliders on the causal path).
-    \item $Z$ blocks all back-door paths from $X$ to $Y$ (paths with an arrow into $X$).
+    \item No variable in $Z$ is a descendant of $X$ (to avoid blocking the causal path or introducing collider bias).
+    \item $Z$ blocks every back-door path from $X$ to $Y$.
 \end{enumerate}
-
-When the back-door criterion is satisfied, the interventional distribution is identified by adjustment:
+When the back-door criterion is satisfied, the causal effect is identified by covariate adjustment:
 \begin{equation}
-    P(Y \mid do(X = x)) = \sum_z P(Y \mid X = x, Z = z) P(Z = z)
+    P(Y \mid do(X = x)) = \sum_z P(Y \mid X = x, Z = z)\, P(Z = z)
+    \label{eq:backdoor-adj}
 \end{equation}
-This formula has a natural interpretation: We compute the effect of $X$ on $Y$ within each stratum defined by $Z$, then average over the distribution of $Z$ in the population.
-The result is the causal effect, purged of confounding.
+where $do(X = x)$ denotes an intervention that sets $X$ to $x$, breaking the connection between $X$ and its causes while preserving the causal effect of $X$ on its descendants.
 
-The back-door criterion illuminates the ``bad controls'' problem discussed earlier.
-Conditioning on a mediator (a descendant of $X$ on the causal path) violates condition 1 and blocks part of the causal effect.
-Conditioning on a collider opens a previously blocked path and introduces bias.
-The graphical framework provides a systematic way to determine which variables should and should not be included in an adjustment set.
+Applying this to Figure~\ref{fig:pl-dag}, the set $Z = \{\text{Domain},\, \text{Team Skill},\, \text{Org Culture},\, \text{Codebase Age}\}$ satisfies the back-door criterion: none of these variables is a descendant of Language, and together they block every back-door path.
+Conditioning on this set, the observed association between Language and Defect Proneness reflects only the causal path.
+Note that Tooling/Type Safety and Project Complexity should \emph{not} be included in $Z$---Tooling/Type Safety is a mediator on the causal path (conditioning on it would block part of the effect we wish to estimate), and Project Complexity is a descendant of Team Skill but not a confounder of the Language--Defect relationship.
 
-\paragraph{Beyond the Back-Door Criterion.}
-When no set of observed variables satisfies the back-door criterion---perhaps because key confounders are unmeasured---causal effects may still be identifiable through alternative strategies.
-Pearl's do-calculus provides a complete set of rules for determining identifiability from any combination of observational and experimental data.
-The \emph{front-door criterion}, for instance, identifies causal effects through mediating variables when the direct path is confounded but the mediator-outcome relationship is not.
-Instrumental variables, discussed in Section~\ref{sec:identification}, can be understood graphically as exploiting exogenous variation that affects treatment but not outcomes directly.
+\paragraph{Connecting DAGs to Potential Outcomes.}
+The back-door criterion provides the graphical counterpart to the conditional ignorability assumption introduced in the previous section.
+When $Z$ satisfies the back-door criterion, the potential outcomes $(Y(1), Y(0))$ are independent of treatment $D$ conditional on $Z$---precisely the condition required for the multivariate regression estimate to admit a causal interpretation.
+In this way, the two frameworks are complementary: potential outcomes define \emph{what} we want to estimate and \emph{what assumptions} are needed, while the DAG provides a visual tool for arguing \emph{why} those assumptions are plausible in a given research context.
 
-\subsection{Using the Frameworks in Practice}
+\paragraph{Alternative Explanations as Alternative DAGs.}
+A central virtue of DAGs---and a key element of the causal credibility assessments advocated in this thesis---is that alternative explanations take the form of alternative graph structures that can be explicitly examined.
+Returning to Figure~\ref{fig:pl-dag}, a critic might argue that the DAG omits an important confounder: for instance, \emph{developer motivation} may drive both language choice and code quality yet is absent from the graph.
+Adding this node would introduce a new back-door path that the current adjustment set does not block, undermining causal identification.
+Another critic might challenge the causal path itself, arguing that Language has no genuine effect on Defect Proneness and that the entire observed association is driven by confounders---a DAG in which the edge Language $\to$ Tooling/Type Safety is removed.
+Under that alternative structure, no amount of covariate adjustment would recover a causal effect because none exists.
 
-How should an applied researcher use these frameworks?
-In practice, neither framework is a statistical method that one ``runs'' on data.
-Rather, they are \emph{conceptual tools for reasoning about causation}---languages for articulating what causal effect one seeks to estimate, what assumptions would justify that estimate, and what could go wrong.
-The actual estimation is performed by specific statistical methods---difference-in-differences, regression discontinuity, instrumental variables, matching---which the following sections present.
-Each method makes specific assumptions (parallel trends, continuity at the threshold, exclusion restrictions) that can be understood and justified within either framework.
+These disagreements are productive precisely because they are \emph{concrete and falsifiable}: Each alternative DAG implies specific conditional independence relations that can, at least in principle, be tested against observed data.
+When two researchers disagree about whether a study's findings are causally interpretable, the DAG framework channels the debate into questions about specific edges and paths rather than vague objections about ``lurking variables.''
+This is the sense in which the thesis statement calls for researchers to ``make the causal theory explicit as DAGs'' and to ``thoughtfully navigate alternative explanations (i.e., alternative DAGs) that may also be supported with current results.''
 
-The practical workflow typically proceeds as follows.
-First, the researcher uses the potential outcomes framework to clarify the research question: What is the treatment?
-What is the outcome?
-What causal estimand (ATE, ATT, LATE) is of interest?
-Second, the researcher draws a causal graph encoding domain knowledge about the data-generating process, identifying potential confounders, mediators, and colliders.
-This step forces explicit articulation of assumptions that might otherwise remain implicit.
-Third, the researcher selects an identification strategy---a research design that, under stated assumptions, provides a credible path from observed data to causal effects.
-The choice depends on what natural experiments or exogenous variation the setting provides.
-Finally, the researcher implements the chosen method using appropriate statistical techniques, conducts robustness checks, and interprets results in light of the assumptions made.
+\subsection{Using the Two Frameworks Together}
 
-Though developed independently, the two frameworks are mathematically compatible and often used together.
-The potential outcomes condition of ignorability---$(Y(1), Y(0)) \perp D \mid X$---corresponds precisely to d-separation in an appropriately constructed graph.
-In practice, potential outcomes excel at the first step (defining estimands and clarifying what we want to learn), while graphical models excel at the second step (encoding assumptions visually and determining what to adjust for).
-The frameworks thus serve as the \emph{theoretical foundation} upon which specific methods rest: A difference-in-differences analysis implicitly assumes that the parallel trends assumption blocks all back-door paths; an instrumental variable strategy assumes the instrument satisfies exclusion restrictions that can be depicted graphically.
-Understanding both frameworks enables researchers to see what each method achieves and where it might fail---knowledge essential for choosing appropriate designs and interpreting results honestly.
+Neither the potential outcomes framework nor graphical causal models is a statistical method that one ``runs'' on data.
+They are conceptual tools for reasoning about causation: the potential outcomes framework defines the causal estimand and clarifies under what assumptions it is identified; the graphical model encodes domain knowledge about the data-generating process and determines which variables to condition on.
+The actual estimation is performed by specific statistical methods---difference-in-differences, regression discontinuity, instrumental variables, matching---each of which makes assumptions that can be understood and justified within either framework.
+
+In practice, the two frameworks are mathematically compatible and are most powerful when used together.
+Potential outcomes excel at defining \emph{what} we want to learn (ATE, ATT, or another estimand) and \emph{what} would go wrong if assumptions fail (selection bias, as shown in Equation~\eqref{eq:selection-bias}).
+Graphical models excel at encoding \emph{why} the assumptions are plausible in the specific research context and at identifying \emph{what} could be missing (omitted confounders, unblocked back-door paths).
+Together, they provide the theoretical foundation upon which the specific methods discussed in the remainder of this thesis rest.
 
 \section{Threats to Causal Validity and Its Mitigations}
 \label{sec:threats}
