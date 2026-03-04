@@ -366,25 +366,24 @@ In summary, for $\hat{\tau}$ to be causally interpretable, one must assume:
     \item \textbf{Overlap}: Both treatment groups are represented at all covariate values.
     \item \textbf{Correct functional form}: The linear, additive specification is a reasonable approximation to the true conditional expectation function.
 \end{enumerate}
-Unlike randomization, conditional ignorability is fundamentally untestable: We cannot verify from data alone that all confounders have been measured, since the confounders we might be missing are, by definition, unobserved.
-Nevertheless, a researcher can argue for its plausibility by encoding the assumed data-generating process as a causal DAG and showing that the covariates in $X$ satisfy the back-door criterion~\cite{pearl2009causality}, and can further probe its robustness through sensitivity analysis techniques such as Rosenbaum bounds~\cite{rosenbaum2002observational}, $E$-values~\cite{vanderweele2017sensitivity}, or coefficient stability tests~\cite{oster2019unobservable}.
+Unlike randomization, conditional ignorability is fundamentally untestable: We cannot, from data alone, verify that all confounders have been measured, since the confounders we might be missing are, by definition, unobserved.
+Nevertheless, a researcher can still argue for the plausibility of conditional ignorability by encoding the assumed data-generating process as a causal DAG and showing that the covariates in $X$ satisfy the back-door criterion~\cite{pearl2009causality}, and can further probe its robustness through sensitivity analysis techniques such as Rosenbaum bounds~\cite{rosenbaum2002observational}, $E$-values~\cite{vanderweele2017sensitivity}, or coefficient stability tests~\cite{oster2019unobservable}.
 
 \subsection{Graphical Causal Models}
 
 The potential outcomes framework defines the estimands of interest and specifies the assumptions---such as conditional ignorability---under which they are identified.
-However, it offers limited guidance on a practical question that researchers inevitably face: \emph{Which} variables should be conditioned on, and which should be left out?
+However, it offers limited guidance on a practical question that researchers inevitably face, especially when using multivariate regression: \emph{Which} variables should be conditioned on and which should be left out?
 The graphical causal model framework, developed by Pearl~\cite{pearl2009causality}, addresses this gap by encoding causal assumptions as \emph{directed acyclic graphs} (DAGs) and providing criteria for determining whether a proposed adjustment set suffices for causal identification.
 
 \paragraph{Directed Acyclic Graphs.}
 A DAG consists of nodes representing variables and directed edges ($\to$) representing direct causal effects.
 An edge $X \to Y$ encodes the claim that changing $X$, while holding all other causes of $Y$ fixed, would change $Y$.
-The graph is \emph{acyclic}: following directed edges, one can never return to the starting node.
+The graph is \emph{acyclic}: Following directed edges, one can never return to the starting node.
 Every arrow is a substantive causal claim; every \emph{absent} arrow asserts the absence of a direct effect.
 This makes all causal assumptions visually explicit---critics can challenge a model by questioning specific edges or proposing missing ones, grounding disagreements in concrete structural claims rather than vague appeals to ``omitted variables.''
-
 To illustrate, consider the programming language and defect proneness problem introduced in Section~\ref{sec:pitfalls}.
 Figure~\ref{fig:pl-dag} presents a plausible causal DAG for this setting.
-The treatment of interest is Language and the outcome is Defect Proneness.
+The treatment of interest is Language, and the outcome is Defect Proneness.
 The DAG encodes several substantive assumptions: Language affects Defect Proneness indirectly through the tooling and type safety features a language provides; Domain, Team Skill, Org Culture, and Codebase Age each influence both Language choice and Defect Proneness, making them confounders; Team Skill additionally affects the quality of Tooling/Type Safety usage and gives rise to Project Complexity, which independently drives defects.
 
 \begin{figure}[t]
@@ -464,7 +463,6 @@ When the back-door criterion is satisfied, the causal effect is identified by co
     \label{eq:backdoor-adj}
 \end{equation}
 where $do(X = x)$ denotes an intervention that sets $X$ to $x$, breaking the connection between $X$ and its causes while preserving the causal effect of $X$ on its descendants.
-
 Applying this to Figure~\ref{fig:pl-dag}, the set $Z = \{\text{Domain},\, \text{Team Skill},\, \text{Org Culture},\, \text{Codebase Age}\}$ satisfies the back-door criterion: none of these variables is a descendant of Language, and together they block every back-door path.
 Conditioning on this set, the observed association between Language and Defect Proneness reflects only the causal path.
 Note that Tooling/Type Safety and Project Complexity should \emph{not} be included in $Z$---Tooling/Type Safety is a mediator on the causal path (conditioning on it would block part of the effect we wish to estimate), and Project Complexity is a descendant of Team Skill but not a confounder of the Language--Defect relationship.
@@ -479,21 +477,20 @@ A central virtue of DAGs---and a key element of the causal credibility assessmen
 Returning to Figure~\ref{fig:pl-dag}, a critic might argue that the DAG omits an important confounder: for instance, \emph{developer motivation} may drive both language choice and code quality yet is absent from the graph.
 Adding this node would introduce a new back-door path that the current adjustment set does not block, undermining causal identification.
 Another critic might challenge the causal path itself, arguing that Language has no genuine effect on Defect Proneness and that the entire observed association is driven by confounders---a DAG in which the edge Language $\to$ Tooling/Type Safety is removed.
-Under that alternative structure, no amount of covariate adjustment would recover a causal effect because none exists.
+Under that alternative structure, no amount of covariate adjustment would recover a true causal effect simply because none exists.
 
 These disagreements are productive precisely because they are \emph{concrete and falsifiable}: Each alternative DAG implies specific conditional independence relations that can, at least in principle, be tested against observed data.
-When two researchers disagree about whether a study's findings are causally interpretable, the DAG framework channels the debate into questions about specific edges and paths rather than vague objections about ``lurking variables.''
+When two researchers disagree about whether a study's findings are causally interpretable, the DAG framework channels the debate into questions about specific edges and paths rather than vague objections about ``lurking variables'' and ``untrustworthy methods.''
 This is the sense in which the thesis statement calls for researchers to ``make the causal theory explicit as DAGs'' and to ``thoughtfully navigate alternative explanations (i.e., alternative DAGs) that may also be supported with current results.''
 
 \subsection{Using the Two Frameworks Together}
 
 Neither the potential outcomes framework nor graphical causal models is a statistical method that one ``runs'' on data.
-They are conceptual tools for reasoning about causation: the potential outcomes framework defines the causal estimand and clarifies under what assumptions it is identified; the graphical model encodes domain knowledge about the data-generating process and determines which variables to condition on.
-The actual estimation is performed by specific statistical methods---difference-in-differences, regression discontinuity, instrumental variables, matching---each of which makes assumptions that can be understood and justified within either framework.
-
+They are conceptual tools for reasoning about causation: The potential outcomes framework defines the causal estimand and clarifies under what assumptions it is identified; the graphical model encodes domain knowledge about the data-generating process and determines which variables to condition on.
+The actual estimation is performed using specific statistical methods—difference-in-differences, regression discontinuity, instrumental variables, and matching—each of which makes assumptions that can be understood and justified within either framework.
 In practice, the two frameworks are mathematically compatible and are most powerful when used together.
 Potential outcomes excel at defining \emph{what} we want to learn (ATE, ATT, or another estimand) and \emph{what} would go wrong if assumptions fail (selection bias, as shown in Equation~\eqref{eq:selection-bias}).
-Graphical models excel at encoding \emph{why} the assumptions are plausible in the specific research context and at identifying \emph{what} could be missing (omitted confounders, unblocked back-door paths).
+Graphical models excel at encoding \emph{why} the assumptions are plausible in the specific research context and at identifying \emph{what} may be missing (e.g., omitted confounders, unblocked backdoor paths).
 Together, they provide the theoretical foundation upon which the specific methods discussed in the remainder of this thesis rest.
 
 \section{Threats to Causal Validity and Its Mitigations}
