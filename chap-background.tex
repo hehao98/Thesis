@@ -371,7 +371,7 @@ Nevertheless, a researcher can still argue for the plausibility of conditional i
 
 \paragraph{Summary of Common Methods.}
 The potential outcomes framework provides a unified language for comparing the estimands and identification assumptions of different causal inference methods.
-Table~\ref{tab:methods-summary} summarizes the methods most frequently encountered in applied research, including the two discussed above and several quasi-experimental designs that appear in later chapters.
+Table~\ref{tab:methods-summary} summarizes the methods most frequently used in applied research, including the two discussed above and several quasi-experimental designs that appear in later chapters.
 Each method targets a specific causal estimand---not all methods estimate the same quantity---and each rests on distinct assumptions whose plausibility must be argued on substantive grounds.
 For instance, difference-in-differences identifies the ATT under a parallel-trends assumption, instrumental variables recover a \emph{Local Average Treatment Effect} (LATE) that applies only to units whose treatment status is shifted by the instrument, and regression discontinuity identifies a LATE at the threshold of a running variable.
 The choice of method should be guided by the research setting and the type of identifying variation available, not by convention or convenience.
@@ -381,9 +381,9 @@ The choice of method should be guided by the research setting and the type of id
 \caption{Common causal inference methods, their target estimands, and key identification assumptions under the potential outcomes framework.
 ATE = Average Treatment Effect; ATT = Average Treatment Effect on the Treated; LATE = Local Average Treatment Effect (the effect for units at the margin of treatment change).}
 \label{tab:methods-summary}
-\small
+\footnotesize
 \begin{adjustbox}{max width=\textwidth}
-\begin{tabular}{@{} p{3.8cm} p{2.2cm} p{8.2cm} @{}}
+\begin{tabular}{@{} p{4.1cm} p{2.2cm} p{8.5cm} @{}}
 \toprule
 \textbf{Method} & \textbf{Estimand} & \textbf{Key Identification Assumptions} \\
 \midrule
@@ -562,10 +562,10 @@ This step forces the researcher to confront questions that a regression specific
 Which variables are mediators that should not be conditioned on?
 What alternative DAG structures could generate the same observed associations?
 
-Crucially, the plausibility of a causal DAG rests on \emph{domain knowledge}~\cite{pearl2009causality}, and in software engineering that knowledge is largely embodied in the prior literature---especially descriptive and qualitative research.
+Crucially, the plausibility of a causal DAG rests on \emph{domain knowledge}~\cite{pearl2009causality}, and in software engineering, this is largely captured in the prior literature, especially descriptive and qualitative research.
 Surveys, case studies, ethnographies, and grounded-theory studies of development practice are what tell us \emph{which} factors shape language adoption, team behaviour, and defect introduction~\cite{DBLP:conf/icse/Devanbu0B16}; without this foundation, there is no principled basis for deciding which variables belong in the DAG and which edges connect them.
 A DAG whose structure cannot be traced back to substantive findings or well-documented domain expertise is little more than speculation dressed in formal notation.
-Prior descriptive and qualitative work therefore plays an indispensable role in causal inference: It supplies the substantive justification for the completeness of the graph and, by extension, for the validity of every downstream identification argument.
+Prior descriptive and qualitative work, therefore, plays an indispensable role in causal inference: It supplies the substantive justification for the completeness of the graph and, by extension, for the validity of every downstream identification argument.
 
 For the language--defect problem, Figure~\ref{fig:pl-dag} encodes the theory that Language affects Defect Proneness through Tooling/Type Safety, while Domain, Team Skill, Org Culture, and Codebase Age confound the relationship.
 Each of these variables and edges should be grounded in prior evidence---for example, qualitative studies documenting how organisational culture shapes technology adoption, or descriptive analyses linking team experience to code quality~\cite{DBLP:journals/tse/Murphy-HillJSSP21,DBLP:journals/ese/ScholtesMS16}.
@@ -597,12 +597,12 @@ The researcher should consider rival causal structures---alternative DAGs---that
 Constructive engagement with alternatives means deriving \emph{testable implications} that differ across competing DAGs and checking them against the data.
 In the language--defect example, consider three plausible challenges:
 %
-\begin{enumerate}
-\item \emph{Alternative mechanism.} A critic might argue that the apparent benefit of statically-typed languages operates entirely through the maturity of the associated tooling ecosystem (linters, testing frameworks, package quality) rather than through the type system itself. This alternative implies a DAG in which Language $\to$ Ecosystem Quality $\to$ Defects, with no direct Language $\to$ Defects edge. The researcher can probe this by conditioning on proxies for ecosystem quality: If the estimated language effect survives this additional adjustment, the ecosystem-only explanation is weakened. If it vanishes, the finding is reinterpreted---still useful, but with a different causal story.
+\begin{enumerate}[leftmargin=15pt]
+\item \emph{Alternative mechanism.} A critic might argue that the apparent benefit of statically-typed languages operates entirely through the maturity of the associated tooling ecosystem (linters, testing frameworks, package quality) rather than through the type system itself. This alternative implies a DAG in which Language $\to$ Ecosystem Quality $\to$ Defects. The researcher can probe this by conditioning on proxies of ecosystem quality: If the estimated language effect survives this additional adjustment, the ecosystem-only explanation is weakened. If it vanishes, the finding is reinterpreted---still useful, but with a different causal story.
 
-\item \emph{Unmeasured confounding.} A critic might posit that developer motivation---unmeasured in the DAG---drives both language choice and code quality, so that the estimated effect is wholly or partly spurious. The researcher cannot rule this out from data alone but can respond in two ways. First, sensitivity analysis (e.g., $E$-values~\cite{vanderweele2017sensitivity} or Rosenbaum bounds~\cite{rosenbaum2002observational}) can quantify how strong the confounding from motivation would need to be to explain away the estimated effect; if the required strength is implausibly large, confidence in the finding is strengthened. Second, the researcher can design \emph{falsification tests}~\cite{oster2019unobservable}: If motivation were the true driver, one would expect to see similar ``effects'' for language features that should be irrelevant to defect proneness (e.g., syntax style); the absence of such spurious effects supports the causal interpretation.
+\item \emph{Unmeasured confounding.} A critic might posit that developer motivation---unmeasured in the DAG---drives both language choice and code quality, so that the estimated effect is wholly or partly spurious. The researcher cannot rule this out from the data alone, but can respond in two ways. First, sensitivity analysis (e.g., $E$-values~\cite{vanderweele2017sensitivity} or Rosenbaum bounds~\cite{rosenbaum2002observational}) can quantify how strong the confounding from motivation would need to be to explain away the estimated effect; if the required strength is implausibly large, confidence in the finding is strengthened. Second, the researcher can design \emph{falsification tests}~\cite{oster2019unobservable}: If motivation were the true driver, one would expect to see similar ``effects'' for language features that should be irrelevant to defect proneness (e.g., syntax style); the absence of such spurious effects supports the causal interpretation.
 
-\item \emph{Reverse causality.} Defect-prone projects may preferentially migrate to languages perceived as safer, creating an association that runs opposite to the assumed causal direction. This alternative generates a distinctive temporal signature---language switches should follow spikes in defect rates---that the researcher can check in panel data, and whose absence would count against the reverse-causality story.
+\item \emph{Reverse causality.} A critic might argue that defect-prone projects may preferentially migrate to languages perceived as safer, creating an association that runs opposite to the assumed causal direction. This alternative generates a distinctive temporal signature---language switches should follow spikes in defect rates---that the researcher can check in panel data, and whose absence would count against the reverse-causality story.
 \end{enumerate}
 %
 The goal is not to eliminate all alternative explanations---an impossible standard---but to engage with the most plausible ones transparently, derive predictions that distinguish them from the proposed causal story, and show that the findings are robust to reasonable alternatives.
