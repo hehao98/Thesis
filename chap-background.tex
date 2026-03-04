@@ -300,7 +300,76 @@ Note that ATE and ATT coincide only when treatment effects are homogeneous or wh
 Other estimands include the \emph{Average Treatment Effect on the Controls} (ATC), \emph{quantile treatment effects} (effects on specific percentiles of the outcome distribution), and \emph{conditional average treatment effects} (CATEs) that allow effects to vary with observed characteristics.
 %The choice of estimand should be guided by the substantive question, not statistical convenience.
 
-\paragraph{}
+\paragraph{From Estimands to Identification.}
+Having defined the estimands of interest, the next question is under what conditions they can be estimated from observed data.
+Consider the naive estimator that compares mean outcomes between treated and control groups:
+\begin{equation}
+    E[Y \mid D=1] - E[Y \mid D=0]
+\end{equation}
+Expanding in terms of potential outcomes reveals:
+\begin{align}
+    E[Y \mid D=1] - E[Y \mid D=0] &= E[Y(1) \mid D=1] - E[Y(0) \mid D=0] \nonumber\\
+    &= \underbrace{E[Y(1) \mid D=1] - E[Y(0) \mid D=1]}_{\text{ATT}} + \underbrace{E[Y(0) \mid D=1] - E[Y(0) \mid D=0]}_{\text{Selection Bias}}
+    \label{eq:selection-bias}
+\end{align}
+The first term is the ATT.
+The second is \emph{selection bias}: the difference in baseline potential outcomes between those who receive treatment and those who do not.
+When treatment is self-selected, these groups may differ systematically even absent any treatment effect---high-ability developers may adopt new tools precisely because they are high-ability, so comparing their outcomes with non-adopters conflates the tool's effect with pre-existing ability differences.
+Whether the naive comparison recovers a causal effect depends entirely on whether selection bias vanishes.
+We now apply this reasoning to two canonical settings.
+
+\paragraph{Case 1: Randomized Control Trials.}
+In a randomized control trial (RCT), treatment is assigned by a mechanism that is independent of the units' characteristics, ensuring:
+\begin{equation}
+    (Y(1), Y(0)) \perp D
+    \label{eq:rct-independence}
+\end{equation}
+Independence implies $E[Y(0) \mid D=1] = E[Y(0) \mid D=0] = E[Y(0)]$, so selection bias in Equation~\eqref{eq:selection-bias} is exactly zero.
+Similarly, $E[Y(1) \mid D=1] = E[Y(1)]$, so the ATT equals the ATE, and the naive difference in means identifies the ATE:
+\begin{equation}
+    E[Y \mid D=1] - E[Y \mid D=0] = E[Y(1)] - E[Y(0)] = \text{ATE}
+\end{equation}
+Randomization alone suffices; no covariates, modeling assumptions, or functional form restrictions are needed.
+This is why RCTs are considered the gold standard for causal inference: identification follows from the design of the study rather than from the plausibility of modeling assumptions.
+
+A valid RCT additionally requires the \emph{Stable Unit Treatment Value Assumption (SUTVA)}---that unit $i$'s potential outcomes depend only on $i$'s own treatment status (no interference) and that treatment is well-defined (no hidden variations)---as well as \emph{compliance}: units must receive the treatment they are assigned.
+If subjects opt out or cross over, the realized treatment diverges from the random assignment, and additional assumptions (e.g., monotonicity in the instrumental variables sense) are needed to recover causal effects.
+Under randomization, SUTVA, and compliance, the sample difference $\bar{Y}_{\text{treated}} - \bar{Y}_{\text{control}}$ is an unbiased estimator of the ATE.
+
+\paragraph{Case 2: Multivariate Regression.}
+When randomization is infeasible---as is common in software engineering, where programming languages, tools, and team structures cannot be randomly assigned---researchers often turn to multivariate regression:
+\begin{equation}
+    Y_i = \alpha + \tau D_i + X_i' \beta + \varepsilon_i
+    \label{eq:regression}
+\end{equation}
+where $X_i$ is a vector of observed covariates and $\varepsilon_i$ is the error term.
+The potential outcomes framework makes explicit the assumptions under which the OLS estimate $\hat{\tau}$ admits a causal interpretation.
+
+The key assumption is \emph{conditional ignorability} (also called unconfoundedness or selection on observables):
+\begin{equation}
+    (Y(1), Y(0)) \perp D \mid X
+    \label{eq:cond-ignorability}
+\end{equation}
+This asserts that, among units with the same observed characteristics $X$, treatment assignment is independent of potential outcomes---that is, treatment is as-if randomly assigned within strata defined by $X$.
+A complementary assumption is \emph{overlap} (positivity): $0 < P(D=1 \mid X=x) < 1$ for all $x$ in the support of $X$, ensuring both treated and untreated units exist at every covariate profile.
+
+Under these two conditions, the RCT logic applies within each stratum.
+Selection bias vanishes conditionally---$E[Y(0) \mid D=1, X] = E[Y(0) \mid D=0, X]$---so:
+\begin{equation}
+    E[Y \mid D=1, X] - E[Y \mid D=0, X] = E[Y(1) - Y(0) \mid X]
+\end{equation}
+Averaging over $X$ recovers the ATE: $\text{ATE} = E_X\!\big[E[Y \mid D\!=\!1, X] - E[Y \mid D\!=\!0, X]\big]$.
+The regression in Equation~\eqref{eq:regression} implements this identification result by modeling $E[Y \mid D, X]$ as linear and additive, which introduces a further assumption: that the functional form is correctly specified and that the treatment effect $\tau$ is constant across units.
+
+In summary, for $\hat{\tau}$ to be causally interpretable, one must assume:
+\begin{enumerate}[leftmargin=15pt]
+    \item \textbf{SUTVA}: No interference between units and a well-defined treatment.
+    \item \textbf{Conditional ignorability}: All variables that jointly affect treatment and outcome are included in $X$; no unmeasured confounders remain.
+    \item \textbf{Overlap}: Both treatment groups are represented at all covariate values.
+    \item \textbf{Correct functional form}: The linear, additive specification is a reasonable approximation to the true conditional expectation function.
+\end{enumerate}
+Unlike randomization, conditional ignorability is fundamentally untestable: we cannot verify from data alone that all confounders have been measured, since the confounders we might be missing are, by definition, unobserved.
+The potential outcomes framework makes these requirements explicit, forcing the analyst to articulate \emph{why} a particular regression warrants a causal interpretation rather than treating covariate adjustment as sufficient by itself.
 
 \begin{comment}
 \paragraph{Why Simple Comparisons Fail.}

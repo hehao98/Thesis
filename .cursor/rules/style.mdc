@@ -3,30 +3,41 @@ description: Writing style conventions for thesis documents
 globs: "*.tex"
 ---
 
-# Writing Style Conventions
+# Thesis Writing Style
+
+## Tone and Register
+
+- Use a **declarative, measured** academic tone. Write with confidence but without superlatives or enthusiasm markers ("remarkably powerful," "crucially important").
+- Avoid hedging language ("it seems," "perhaps," "it could be argued"). State claims directly and qualify them with precise conditions instead.
+- Prefer precise, neutral verbs: "admits a causal interpretation" over "carries a causal interpretation"; "suffices" over "does the work."
+- Do not use informal phrasing ("plays out," "faith in a model"). Use register-appropriate alternatives ("applies," "plausibility of assumptions").
+
+## Sentence and Paragraph Structure
+
+- **One sentence per line** in the LaTeX source for clean diffs.
+- Sentences are short to medium length. Most begin with the subject.
+- Use **em-dashes** (`---`) for parenthetical remarks, not parentheses: "When randomization is infeasible---as is common in software engineering---researchers turn to regression."
+- Each `\paragraph{}` follows a **setup-formalism-interpretation** rhythm: motivate with a verbal setup, present the equation, then interpret it in words. Never let an equation stand alone without verbal explanation before and after.
+- Paragraphs open with a clear topic sentence and are dense but not excessively long.
+
+## Technical Writing Conventions
+
+- Introduce technical terms with `\emph{}` on first use: "\emph{selection bias}," "\emph{conditional ignorability}."
+- Use rhetorical questions sparingly as pedagogical devices to motivate new concepts: "Under what conditions can we estimate these quantities from observed data?"
+- Weave **software engineering examples** naturally into the exposition rather than setting them apart in standalone illustrations.
+- After a formal definition or estimand, provide a one-sentence practical interpretation: "The ATE answers: On average across the population, how much does treatment change outcomes?"
 
 ## Capitalization After Colons
 
-When a colon introduces a complete sentence or independent clause, capitalize the first letter after the colon.
-
-**Examples:**
-
-✅ Correct:
+Capitalize the first letter after a colon when it introduces a complete sentence or independent clause:
 - "The central question becomes: Under what conditions can we use observed data?"
-- "Its strength lies in making assumptions explicit: A DAG encodes what the researcher believes."
-- "The framework asks: What feature of the real world generates exogenous variation?"
 
-❌ Incorrect:
-- "The central question becomes: under what conditions can we use observed data?"
-- "Its strength lies in making assumptions explicit: a DAG encodes what the researcher believes."
-
-## When NOT to Capitalize
-
-Do not capitalize after a colon when it introduces:
-- A list of items (unless they are complete sentences)
-- A phrase or fragment that is not a complete sentence
-- Technical notation or mathematical expressions
-
-**Examples where lowercase is correct:**
+Do **not** capitalize after a colon when it introduces a list, fragment, or math expression:
 - "The methods include: matching, DiD, and IV."
 - "Define the effect as: $Y^1 - Y^0$."
+
+## Conciseness
+
+- Avoid saying the same thing twice in different words. If the equation already states a result, do not restate it verbatim in prose.
+- Prefer merging two short sentences into one when they share a logical thread: "Similarly, $E[Y(1) \mid D=1] = E[Y(1)]$, so the ATT equals the ATE, and the naive difference in means identifies the ATE."
+- Omit meta-commentary ("It is worth noting that," "As we shall see"). Get to the point.
