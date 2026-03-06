@@ -83,7 +83,7 @@ It then examines common pitfalls in descriptive and correlational research, expl
 After formalizing the key concepts through the potential outcomes framework and graphical causal models, the chapter concludes with a pragmatic approach to causal credibility assessments in empirical software engineering research---operationalizing the four-step framework articulated in the thesis statement, discussing the internal--external validity trade-off, and presenting a hierarchy of evidence for situating causal claims.
 
 \paragraph{Three Cases of Empirical Studies}
-Then, the thesis dives deep into three empirical studies I published in the past that challenged well-known software engineering myths through pragmatic causal inference---making assumptions explicit, acknowledging limitations honestly, and navigating methodological trade-offs thoughtfully~\cite{DBLP:journals/corr/abs-2502-06662, DBLP:journals/corr/abs-2412-13459, DBLP:journals/corr/abs-2511-04427}.
+Then, the thesis dives deep into three empirical studies I published in the past that challenged well-known software engineering myths through a pragmatic causal inference with explicit causal credibility assessments---each study making theory, estimand, and assumptions explicit, acknowledging limitations honestly, and navigating alternative explanations thoughtfully~\cite{DBLP:journals/corr/abs-2502-06662, DBLP:journals/corr/abs-2412-13459, DBLP:journals/corr/abs-2511-04427}.
 
 \begin{itemize}[leftmargin=15pt]
     \item \textbf{The Impact of Dependency Pinning on Supply Chain Security (Chapter~\ref{chp:pinning})}: Recent high-profile incidents in open-source software have greatly increased practitioner attention on software supply chain attacks. 
@@ -110,12 +110,11 @@ Then, the thesis dives deep into three empirical studies I published in the past
 \end{itemize}
 
 \paragraph{Proposed Work (Chapter~\ref{chp:proposed-work})}
-The proposed work extends the thesis in three directions that collectively demonstrate the value of pragmatic causal inference. 
-First, I propose to strengthen the causal evidence in the fake GitHub stars study (Chapter~4) by applying panel generalized method of moments (GMM) analysis, addressing potential endogeneity concerns in the current panel autoregression approach and illustrating how appropriate method selection depends on the specific threats to validity present in each research context.
-Second, I propose a systematic sensitivity analysis comparing difference-in-differences with alternative analytical approaches in the Cursor study (Chapter~5). 
-By re-analyzing the same data using a hierarchy of methods---from descriptive statistics through cross-sectional regression to modern causal inference designs---I will demonstrate concretely how analytical choices affect conclusions and why pragmatic causal inference yields more credible findings. 
-Third, I propose revisiting the longstanding debate on programming languages and defect proneness~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17, DBLP:journals/toplas/BergerHMVV19}, applying the pragmatic causal inference framework to a contested question that has resisted consensus despite extensive prior research.
-Together, these contributions illustrate how to navigate the trade-offs between internal and external validity, how to communicate uncertainty honestly, and how to build trustworthy evidence incrementally through complementary designs.
+The proposed work extends the thesis by demonstrating a complementary use of the causal credibility assessment framework: systematically assessing \emph{existing} empirical research on a fundamentally causal question to clarify what the evidence supports, where its limitations lie, and what specific study designs would yield stronger evidence.
+To this end, I revisit the longstanding debate on programming languages and defect proneness~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17, DBLP:journals/toplas/BergerHMVV19}---a contested question that has resisted consensus despite extensive prior research.
+I apply the four-step framework to the debate surrounding the seminal study by \citet{DBLP:conf/sigsoft/RayPFD14}, showing that when studies investigate causal questions using correlational methods without explicit causal reasoning---even when findings are carefully framed as correlational, as they were in Ray et al.---the resulting ambiguity invites confusion and unproductive controversy.
+Informed by this assessment, I propose two complementary empirical studies: a panel fixed effects analysis exploiting within-developer and within-repository variation, and a difference-in-differences study of JavaScript-to-TypeScript migration events.
+Together, these contributions illustrate how the framework can serve as both a diagnostic tool for evaluating existing research and a design guide for future studies, charting a principled path from identified limitations to stronger evidence.
 
 \paragraph{Summary of Contributions} This thesis makes the following contributions:
 
