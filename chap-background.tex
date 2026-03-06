@@ -59,7 +59,7 @@ Section~\ref{sec:pitfalls} examines common pitfalls in descriptive and correlati
 Section~\ref{sec:formalism} formalizes the key concepts, presenting the potential outcomes framework and graphical causal models that are tremendously useful in reasoning about causality and assessing the credibility of causal claims.
 %Section~\ref{sec:identification} surveys identification strategies---randomized controlled trials, difference-in-differences, regression discontinuity, and instrumental variables---that provide complete causal identification under stated assumptions.
 %Section~\ref{sec:control} discusses control strategies---matching, fixed effects, and generalized method of moments---that address specific sources of confounding without providing complete identification.
-Section~\ref{sec:threats} discusses threats to validity in causal designs and the role of sensitivity analysis in strengthening credibility.
+%Section~\ref{sec:threats} discusses threats to validity in causal designs and the role of sensitivity analysis in strengthening credibility.
 Finally, Section~\ref{sec:pragmatic} advocates a pragmatic approach to causal inference and how to conduct explicit causal credibility assessments in empirical software engineering research.
 
 \section{Pitfalls in Descriptive and Correlational Research}
@@ -74,7 +74,7 @@ The dictum ``correlation does not imply causation'' is perhaps the most frequent
 The violation persists not because researchers are careless, but because the underlying mechanisms that generate spurious correlations are subtle and pervasive.
 Let us examine these mechanisms through the lens of our programming language example.
 
-Recall the question: Does choice of programming language causally affect defect-proneness?
+Recall the question: Does the choice of programming language causally affect defect-proneness?
 Suppose we compute the correlation between language type (say, functional vs. imperative) and defect density across thousands of GitHub projects and find that functional language projects have 20\% fewer defects.
 Can we conclude that switching to a functional language would reduce defects by 20\%?
 The answer is almost certainly no, and understanding why requires distinguishing three mechanisms that can generate spurious correlations.
@@ -124,7 +124,7 @@ If functional language projects fail faster when they have bugs (because functio
 
 Confronted with confounding, researchers often adopt what seems like an obvious solution: ``control for'' the confounders using multivariate regression.
 If developer expertise confounds the relationship between language and defects, why not simply include expertise as a covariate?
-While intuitive, this approach has fundamental limitations that render it insufficient for causal inference.
+While intuitive, this approach has fundamental limitations that often render it insufficient for causal claims unless the researcher approaches it with extreme caution (Section~\ref{sec:when-can-regression}).
 
 \paragraph{Omitted Variable Bias: The Inescapable Problem of Unobserved Confounders.}
 The most fundamental limitation is that regression can only adjust for \emph{observed} confounders.
@@ -193,6 +193,7 @@ The interpretation of ``controlling for $Z$'' depends entirely on the causal str
 \end{comment}
 
 \subsection{When Can Multivariate Regression Support Causal Claims}
+\label{sec:when-can-regression}
 
 The preceding discussion may leave the impression that multivariate regression is never useful for causal inference.
 This would be an overstatement---and an impractical one.
@@ -367,9 +368,10 @@ In summary, for $\hat{\tau}$ to be causally interpretable, one must assume:
     \item \textbf{Correct functional form}: The linear, additive specification is a reasonable approximation to the true conditional expectation function.
 \end{enumerate}
 Unlike randomization, conditional ignorability is fundamentally untestable: We cannot, from data alone, verify that all confounders have been measured, since the confounders we might be missing are, by definition, unobserved.
-Nevertheless, a researcher can still argue for the plausibility of conditional ignorability by encoding the assumed data-generating process as a causal DAG and showing that the covariates in $X$ satisfy the back-door criterion~\cite{pearl2009causality}, and can further probe its robustness through sensitivity analysis techniques such as Rosenbaum bounds~\cite{rosenbaum2002observational}, $E$-values~\cite{vanderweele2017sensitivity}, or coefficient stability tests~\cite{oster2019unobservable}.
+Nevertheless, a researcher can still argue for the plausibility of conditional ignorability by encoding the assumed data-generating process as a causal DAG and showing that the covariates in $X$ satisfy the back-door criterion~\cite{pearl2009causality}.
+The researcher can further probe its robustness through sensitivity analysis techniques such as Rosenbaum bounds~\cite{rosenbaum2002observational}, $E$-values~\cite{vanderweele2017sensitivity}, or coefficient stability tests~\cite{oster2019unobservable}.
 
-\paragraph{Summary of Common Methods.}
+\paragraph{Summary of Other Methods.}
 The potential outcomes framework provides a unified language for comparing the estimands and identification assumptions of different causal inference methods.
 Table~\ref{tab:methods-summary} summarizes the methods most frequently used in applied research, including the two discussed above and several quasi-experimental designs that appear in later chapters.
 Each method targets a specific causal estimand---not all methods estimate the same quantity---and each rests on distinct assumptions whose plausibility must be argued on substantive grounds.
@@ -548,7 +550,7 @@ Together, they provide the theoretical foundation upon which the specific method
 
 The preceding sections developed the technical foundations for causal credibility assessments: the potential outcomes framework for defining estimands and assumptions, and graphical causal models for encoding and scrutinizing those assumptions. %and a taxonomy of threats that can undermine any study.
 This section synthesizes these concepts into the pragmatic approach advocated by this thesis.
-We first show how the four steps of causal credibility assessment articulated in the thesis statement (Chapter~\ref{chp:intro}) map onto the concepts introduced in this chapter, and illustrate each step using the programming language and defect proneness example.
+We first show how the four steps of causal credibility assessment articulated in the thesis statement (Chapter~\ref{chp:intro}) map onto the concepts introduced in this chapter and illustrate each step using the programming language and defect-proneness example.
 We then discuss two broader considerations---the internal--external validity trade-off and the hierarchy of evidence---that guide researchers in situating their contributions within the landscape of causal evidence in empirical software engineering research.
 
 \subsection{Causal Credibility Assessments in Four Steps}
