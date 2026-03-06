@@ -1,6 +1,6 @@
 This chapter presents three empirical studies that exemplify the pragmatic causal inference approach and the four-step causal credibility assessment framework advocated in this thesis.
 Each study challenges a widely held software engineering belief---what I have termed a \emph{software engineering myth}---by applying the framework articulated in the thesis statement: making the causal theory explicit, defining the causal estimand and specifying the identifying assumptions, honestly acknowledging and mitigating limitations in data collection and analysis, and thoughtfully navigating alternative explanations that could also account for the observed results.
-Together, these studies demonstrate how this framework yields stronger and more credible evidence than the descriptive, correlational, and opinion-based research that has historically characterized these debates, even when perfect experimental designs are infeasible.
+Together, these studies demonstrate how this framework yields stronger and more credible evidence than the descriptive, correlational, and opinion-based research that has historically characterized these debates, even when perfect experimental designs are infeasible for these settings.
 
 \section{Empirical Study I: The Impact of Dependency Pinning on Supply Chain Security}
 \label{sec:finished-pinning}
@@ -8,13 +8,13 @@ Together, these studies demonstrate how this framework yields stronger and more 
 
 \subsection{Overview}
 
-The first study addresses a contentious debate in software supply chain security: whether developers should \emph{pin} their dependencies to specific versions or allow \emph{floating} version constraints that automatically incorporate updates.
+The first study addresses a contentious debate in software supply chain security: Should developers \emph{pin} their dependencies to specific versions or allow \emph{floating} version constraints that automatically incorporate updates?
 This debate exemplifies the kind of software engineering myth that persists due to conflicting practitioner intuitions and the absence of rigorous quantitative evidence.
 Specifically, security practitioners increasingly advocate for dependency pinning as protection against malicious package updates---the rationale being that pinned dependencies prevent automatic installation of compromised versions.
 This recommendation has been codified in security scorecards and best practice guidelines, with the OpenSSF Scorecard project including ``pinned dependencies'' among its 18 security best practices~\cite{DBLP:journals/ieeesp/ZahanKHSW23}.
 Conversely, software engineering practitioners argue that pinning creates substantial maintenance burdens, accumulates technical debt through outdated dependencies, and paradoxically increases exposure to known security vulnerabilities by blocking automatic propagation of security patches~\cite{DBLP:journals/tse/JafariCAST22}.
 Prior research on this topic has been limited to collecting and synthesizing practitioner opinions~\cite{DBLP:journals/tosem/BogartKHT21, DBLP:journals/tse/JafariCAST22, DBLP:conf/sp/LadisaPMB23} or aggregating descriptive statistics from software repositories~\cite{DBLP:conf/msr/0001PSTB19, DBLP:conf/msr/PinckneyCGB23}.
-Neither approach provides the quantitative, causal evidence necessary to resolve the controversy or inform evidence-based decision-making.
+Neither approach provides the quantitative, causal evidence necessary to substantiate causal claims about the impact of pinning, thereby resolving the controversy or informing evidence-based decision-making.
 
 \subsection{Method}
 
@@ -32,7 +32,7 @@ For each project, I resolve dependency graphs at five time points spanning 12 mo
 This creates a balanced panel dataset with repeated observations under both conditions.
 
 \paragraph{Outcome Metrics}
-Five metrics capture the security and maintenance trade-offs commonly debated:
+Five metrics capture the security and maintenance trade-offs commonly debated around the use of pinning and floating version constraints:
 \begin{enumerate}[leftmargin=15pt]
     \item \emph{Number of floating dependencies}: The attack surface for malicious updates---packages where a compromised version would be automatically installed.
     \item \emph{Number of automatic updates}: Exposure to breaking changes, assuming such changes occur uniformly among releases.
@@ -47,7 +47,7 @@ The model specification includes project-fixed effects ($\alpha$), time-fixed ef
 \begin{equation}
 \ln(M+1) \sim \text{\emph{pinning}} + \ln(size(G)) + \text{\emph{pinning}} \times \ln(size(G)) + \alpha + \beta
 \end{equation}
-This specification allows the examination of whether pinning's impact differs between projects with small and large dependency graphs---a critical nuance that prior qualitative studies could not address.
+This specification allows the examination of whether pinning's impact differs between projects with small and large dependency graphs---a critical nuance that prior studies did not address.
 
 \begin{figure}[t]
 \centering
@@ -59,12 +59,12 @@ This specification allows the examination of whether pinning's impact differs be
 
 % Causal chain (middle row)
 \node[var] (pinning) {Local Version\\Constraints};
-\node[var, right=2.8cm of pinning] (npm) {npm Resolution\\(Deduplication)};
-\node[var, right=2.8cm of npm] (outcome) {Security \&\\Maint.\ Outcomes};
+\node[var, right=1.5cm of pinning] (npm) {npm Resolution\\(Deduplication)};
+\node[var, right=1.5cm of npm] (outcome) {Security \&\\Maint.\ Outcomes};
 
 % Top confounders
 \node[var, above left=1.6cm and 0.8cm of pinning] (project) {Project\\Characteristics};
-\node[var, above right=1.6cm and 0.2cm of outcome] (time) {Ecosystem\\Evolution};
+\node[var, above right=1.6cm and -1.5cm of outcome] (time) {Ecosystem\\Evolution};
 
 % Bottom: upstream practices
 \node[var, below=1.8cm of npm] (upstream) {Upstream\\Versioning};
@@ -86,7 +86,7 @@ This specification allows the examination of whether pinning's impact differs be
 \draw[arr] (time) to[out=215, in=50] (upstream);
 
 \end{tikzpicture}
-\caption{A causal DAG for the dependency pinning study.
+\caption{The causal DAG explained for the dependency pinning study.
 Arrows represent hypothesized direct causal effects.
 The causal path of interest runs Local Version Constraints $\to$ npm Resolution (Deduplication) $\to$ Security \& Maintenance Outcomes.
 Project Characteristics and Ecosystem Evolution are confounders controlled by the counterfactual simulation design (the same project is observed under both pinned and unpinned conditions at the same time points) and by project-fixed effects ($\alpha$) and time-fixed effects ($\beta$) in the panel regression.
@@ -103,7 +103,7 @@ Project Characteristics and Ecosystem Evolution are confounders controlled by th
 Crucially, the DAG makes visible the key structural feature driving the study's surprising results: Upstream Versioning feeds into npm Resolution alongside the project's local constraints, so the effect of local pinning is contingent on ecosystem-wide practices---a nuance that prior qualitative debates could not articulate.
 \emph{(2) Causal estimand and identification:} The estimand is the average treatment effect on the treated (ATT)---the within-project difference in each outcome metric between pinned and unpinned conditions---identified under the assumption that the counterfactual simulation faithfully reconstructs historical dependency resolution.
 This assumption's plausibility is supported by the 83.6--87.7\% resolution success rate and validated against known npm behavior.
-Additional identifying assumptions include that malicious attacks occur uniformly randomly among packages~\cite{DBLP:conf/dimva/OhmPS020}, and that the conservative baseline of no manual developer intervention represents a meaningful lower bound on pinning's costs.
+Additional identifying assumptions include that malicious attacks occur uniformly at random across packages~\cite{DBLP:conf/dimva/OhmPS020}, and that the conservative baseline of no manual developer intervention constitutes a meaningful lower bound on pinning's costs.
 \emph{(3) Limitations:} The study honestly acknowledges that outcome metrics rely on proxy measures (e.g., counting floating dependencies as attack surface rather than actual attack events), that simulations assume no manual developer intervention (a conservative baseline), and that findings are specific to the npm ecosystem and may not generalize to ecosystems with different resolution mechanisms (e.g., Maven's single-version constraint).
 \emph{(4) Alternative explanations:} The counterfactual simulation design is uniquely strong in ruling out standard observational confounders, since the same project is observed under both conditions with all other factors held constant.
 The primary alternative explanation for the surprising finding---that pinning \emph{increases} attack surface in large dependency graphs---is that this effect is an artifact of npm's specific deduplication heuristics.
@@ -117,9 +117,9 @@ This surprising result stems from how npm's dependency resolver handles version 
 For projects with 498 or more dependencies (affecting 26\% of GitHub repositories in the dataset), pinning becomes actively counterproductive for its primary security goal.
 
 Meanwhile, the expected costs of pinning are confirmed: projects that pin their dependencies experience significantly higher exposure to known security vulnerabilities, more outdated dependencies requiring manual updates, and increased dependency conflicts.
-These findings contradict security practitioner recommendations but align with the opinions of npm developers who have long viewed pinned dependencies as a ``smell'' indicating accumulated technical debt.
+These findings contradict security practitioners' recommendations but align with the views of npm developers, who have long regarded pinned dependencies as a ``smell'' indicating accumulated technical debt.
 
-The study also explored ecosystem-level interventions, demonstrating through simulation that coordinated pinning in carefully selected upstream packages could reduce ecosystem-wide risk of malicious updates by up to 75\%---far more effective than individual developers independently pinning their own dependencies.
+The study also explored alternative ecosystem-level interventions, demonstrating through simulation that coordinated pinning of carefully selected upstream packages could reduce the ecosystem-wide risk of malicious updates by up to 75\%---far more effective than individual developers independently pinning their own dependencies.
 
 From a Bayesian perspective, findings that challenge established best practices require stronger evidence to be credible.
 The combination of large-scale data (20,000 projects), longitudinal observation (12 months), counterfactual simulation, and robust statistical modeling with fixed effects provides the kind of compelling evidence necessary to warrant updating beliefs about dependency management practices.
@@ -232,7 +232,8 @@ Fixed effects control for time-invariant repository characteristics (e.g., domai
 Furthermore, measurement of ``fake'' versus ``real'' stars depends on the detection tool's heuristics, introducing potential measurement error that could attenuate estimated effects.
 \emph{(4) Alternative explanations:} The most concerning alternative explanation is endogeneity from unobserved maintainer quality: if inexperienced maintainers both buy fake stars and produce low-quality projects that independently fail to attract real attention, the negative long-term coefficient on fake stars would reflect maintainer quality rather than a causal effect of faking.
 The fixed-effects specification partially addresses this by controlling for time-invariant repository characteristics, and the short-term \emph{positive} effect of fake stars is harder to explain through this alternative mechanism alone (low-quality projects would not temporarily attract more real stars merely because their maintainers are inexperienced).
-Nevertheless, the study positions its causal claims cautiously, acknowledging that future work with stronger identification strategies (e.g., panel GMM to address endogeneity, as proposed in Chapter~\ref{chp:proposed-work}) is needed to establish more credible causal evidence.
+Nevertheless, the study positions its causal claims cautiously, acknowledging that future work with stronger identification strategies %(e.g., panel GMM to address endogeneity, as proposed in Chapter~\ref{chp:proposed-work}) 
+is needed to establish more credible causal evidence.
 
 \subsection{Key Findings}
 
@@ -254,7 +255,7 @@ Fake stars become a liability rather than an asset, perhaps because repositories
 
 \subsection{Overview}
 
-The third study addresses what is perhaps the most prominent software engineering myth of the current era: the belief that AI coding assistants, particularly modern LLM agent assistants like Cursor, produce unambiguous and sustained productivity improvements.
+The third study addresses perhaps the most prominent software engineering myth of the current era: The belief that AI coding assistants, particularly modern LLM agents such as Cursor, produce unambiguous and sustained productivity improvements in real software projects.
 This belief pervades industry discourse, with developers self-reporting ``multi-fold productivity increases'' and practitioners claiming transformative workflow impacts~\cite{cursor-reddit-survey, cursor-10x}---precisely the kind of experience-derived conventional wisdom that, per the thesis argument, requires rigorous empirical testing rather than uncritical acceptance.
 Yet, substantial concerns persist regarding LLM-generated code quality and the long-term consequences of AI-heavy development workflows.
 Prior studies have documented that AI coding assistants can produce code with security vulnerabilities~\cite{DBLP:conf/sp/PearceA0DK22, DBLP:conf/ccs/PerryS0B23}, performance issues~\cite{DBLP:conf/issre/LiC0X0S24}, and increased complexity~\cite{DBLP:journals/tse/LiuTLZZ24}.
@@ -330,7 +331,7 @@ This allows testing whether technical debt accumulation ($X_{it}$) causally redu
 
 % Top confounders
 \node[var, above left=1.6cm and 0.8cm of cursor] (project) {Team / Project\\Characteristics};
-\node[var, above right=1.6cm and 0.2cm of debt] (trends) {Industry\\Trends};
+\node[var, above right=1.6cm and -2cm of debt] (trends) {Industry\\Trends};
 
 % Bottom: other AI tools
 \node[var, below=1.8cm of velocity] (ai) {Other AI\\Tool Usage};
@@ -381,14 +382,14 @@ Findings may not generalize to enterprise settings, other AI tools, or programmi
 \emph{(4) Alternative explanations:} Two primary alternative explanations are considered.
 First, potential contamination from alternative AI tools (e.g., GitHub Copilot) in both groups means that the estimated effects reflect Cursor's \emph{additional} impact relative to the current state-of-practice; this interpretation is conservative and does not undermine the finding of quality degradation, since it represents a lower bound on total AI-induced quality effects.
 Second, selection effects---where repositories experiencing rapid growth might both adopt Cursor and subsequently slow down due to natural regression to the mean---are addressed through the matching design (which controls for pre-adoption growth trajectories) and the DiD framework (which differences out repository-specific baselines).
-The panel GMM analysis provides additional evidence against this alternative by revealing a specific causal mechanism: technical debt accumulation causally reduces future velocity, consistent with the proposed interpretation rather than regression to the mean.
+The panel GMM analysis provides additional evidence against this alternative by revealing a specific causal mechanism: Technical debt accumulation causally reduces future velocity, consistent with the proposed interpretation rather than regression to the mean.
 
 \subsection{Key Findings}
 
 The findings reveal a nuanced picture that challenges both unbridled optimism and categorical pessimism about AI-assisted coding.
-Cursor adoption produces substantial but \emph{transient} velocity gains: projects experience 3-5x increases in lines added in the first month post-adoption, but these gains dissipate entirely after two months, with velocity returning to baseline levels.
+Cursor adoption produces substantial but \emph{transient} velocity gains: Projects experience 3-5x increases in lines added in the first month post-adoption, but these gains dissipate entirely after two months, with velocity returning to baseline levels.
 
-Concurrently, the study documents \emph{persistent} technical debt accumulation.
+Concurrently, the study documents the \emph{persistent} accumulation of technical debt.
 Static analysis warnings increase by 30\% and code complexity increases by 41\% on average post-adoption, and these quality degradations do not diminish over the observation period.
 Panel GMM analysis reveals that accumulated technical debt subsequently reduces future development velocity, creating a self-reinforcing cycle in which initial productivity surges give way to maintenance burdens.
 Notably, the code complexity increase persists even after controlling for velocity dynamics, providing evidence that code generated by LLM agents may be inherently more complex than human-written code---a ``complexity debt'' that compounds over time.
@@ -399,14 +400,14 @@ Cross-sectional comparisons or short-term experiments would have produced mislea
 
 \section{Summary}
 
-These three empirical studies collectively demonstrate the value of the four-step causal credibility framework for building trustworthy evidence that can challenge software engineering myths and inform evidence-based practice.
+These three empirical studies collectively demonstrate the value of the four-step causal credibility framework for developing trustworthy evidence that challenges software engineering myths and informs evidence-based practice.
 Each study targets a widely held belief---that dependency pinning improves security, that fake popularity signals provide sustainable promotional benefits, and that AI coding assistants produce unambiguous productivity improvements---and in each case, rigorous empirical analysis reveals a more nuanced reality than conventional wisdom suggests.
 
 Importantly, the studies illustrate all four steps of the causal credibility assessment framework articulated in the thesis statement, albeit at different levels of formality appropriate to each research context.
 Each makes its causal theory explicit as a DAG---whether encoding how version constraints interact with npm's dependency resolution through a counterfactual simulation (pinning, Figure~\ref{fig:pinning-dag}), contrasting the hypothesized promotional dynamics with the alternative confounding structure from unobserved maintainer quality (fake stars, Figure~\ref{fig:fake-stars-dag}), or encoding the treatment mechanism with its two direct causal paths and the dynamic feedback loop between technical debt and velocity identified through panel GMM (Cursor, Figure~\ref{fig:cursor-dag}).
 Each defines a causal estimand through the potential outcomes framework---the within-project ATT of pinning (pinning), the longitudinal effect of fake on real star acquisition (fake stars), or the ATT and horizon-specific effects of Cursor adoption---and specifies the identifying assumptions under which the estimate carries a causal interpretation.
 Each honestly acknowledges limitations in data collection, metric design, and model specification, allowing readers to calibrate their confidence accordingly.
-And each navigates alternative explanations: the counterfactual design rules out most observational confounding by construction (pinning); endogeneity from unobserved maintainer quality is explicitly considered and partially addressed through fixed effects (fake stars); selection effects and contamination are addressed through matching, pre-trend tests, and panel GMM (Cursor).
+And each navigates alternative explanations: The counterfactual design rules out most observational confounding by construction; endogeneity from unobserved maintainer quality is explicitly considered and partially addressed through fixed effects; selection effects and contamination are addressed through matching, pre-trend tests, and panel GMM.
 
-The three studies also occupy different positions in the hierarchy of evidence discussed in Chapter~\ref{chp:background}: the counterfactual simulation (pinning) provides strong internal validity within its simulation assumptions but limited external validity beyond the npm ecosystem; the panel regression (fake stars) provides suggestive but not definitive causal evidence under selection-on-observables assumptions, occupying a lower tier in the hierarchy; and the DiD design (Cursor) provides quasi-experimental evidence under a partially testable parallel trends assumption, sitting between the other two in causal credibility.
+The three studies also occupy different positions in the hierarchy of evidence discussed in Chapter~\ref{chp:background}: The counterfactual simulation (pinning) provides strong internal validity within its simulation assumptions but limited external validity beyond the npm ecosystem; the panel regression (fake stars) provides suggestive but not definitive causal evidence under selection-on-observables assumptions, occupying a lower tier in the hierarchy; and the DiD design (Cursor) provides quasi-experimental evidence under a partially testable parallel trends assumption, sitting between the other two in causal credibility.
 Together, they provide a template for how software engineering research can move beyond descriptive correlations and synthesized practitioner opinions toward credible causal evidence, while demonstrating that the appropriate level of methodological rigor depends on the research context, data availability, and the specific threats to validity present in each setting.
