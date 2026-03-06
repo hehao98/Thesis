@@ -571,3 +571,162 @@ Divergent results, conversely, signal that conclusions depend on methodological 
 Finally, \emph{placebo tests} check whether effects appear where they should not.
 In a difference-in-differences study of JavaScript-to-TypeScript migration, if defect rates appear to drop \emph{before} migration occurs, the result suggests confounding rather than causation---perhaps the team improved its practices before undertaking the migration.
 Passing such tests does not prove validity, but failing them is highly informative about specific threats to the research design.
+
+\section{Strengthening Causal Evidence in the Fake Star Study}
+\label{sec:proposed-gmm}
+
+\subsection{Motivation and Limitations of the Current Study}
+
+The fake GitHub stars study (Chapter~\ref{chp:fake-stars}) provides substantial evidence regarding the prevalence, characteristics, and short-term ineffectiveness of fake star campaigns.
+Specifically, the RQ4 analysis employs panel autoregression models to estimate the promotional effect of fake stars, finding that fake stars have a modest positive effect on attracting real stars in the short term (one to two months) but become a liability in the long term.
+While these findings are consistent across multiple model specifications (Table~\ref{tab:all-regressions}) and provide initial evidence against the growth hacking hypothesis, the current analysis has several methodological limitations that warrant additional investigation.
+
+First, the panel autoregression approach assumes that the relationship between fake stars and subsequent organic growth is unidirectional: repositories acquire fake stars, which then influences their ability to attract real stars.
+However, this assumption may be violated in practice.
+Repositories experiencing organic growth may also be more likely to purchase fake stars to amplify momentum, creating a potential reverse causality problem.
+The current study acknowledges this limitation but does not rigorously address it.
+
+Second, while the panel autoregression models include fixed effects to control for time-invariant repository characteristics, they do not fully account for time-varying confounders that may influence both fake star acquisition and organic growth.
+For example, external promotional activities (e.g., social media campaigns, conference presentations, or product launches) may coincide with fake star purchases, and these unobserved time-varying factors could bias the estimated effects.
+
+Third, the current analysis relies on the assumption that lagged values of fake and real stars are exogenous after conditioning on fixed effects.
+This assumption, while common in panel data analysis, may be violated if there exist dynamic feedback loops between variables that are not fully captured by the specified lag structure.
+
+\subsection{Proposed Analysis: Panel GMM Estimation}
+
+To address these limitations, I propose applying the Arellano-Bond dynamic panel generalized method of moments (GMM) estimator~\cite{arellano1991some}, which provides consistent estimates when explanatory variables are potentially endogenous.
+This approach has been successfully applied in Chapter~\ref{chp:cursor} to disentangle the temporal interactions between development velocity and software quality; applying the same methodology to the fake stars study would strengthen the causal evidence and enable more direct comparisons across the two empirical contexts.
+
+Specifically, I propose estimating the following dynamic panel model:
+\begin{equation}
+\label{eq:proposed-gmm-fake}
+\textit{real}_{i,t} = \mu_i + \lambda_t + \rho \cdot \textit{real}_{i,t-1} + \beta \cdot \textit{fake}_{i,t} + \Gamma' Z_{i,t} + \epsilon_{i,t}
+\end{equation}
+where $\textit{real}_{i,t}$ represents the count of real (non-fake) stars received by repository $i$ in month $t$; $\textit{fake}_{i,t}$ represents the count of fake stars acquired in month $t$; $\mu_i$ and $\lambda_t$ are repository and time fixed effects, respectively; $Z_{i,t}$ includes time-varying control variables (age, release status, authentic development activity); and $\epsilon_{i,t}$ is the error term.
+
+The key innovation of GMM estimation lies in its treatment of potentially endogenous regressors.
+Rather than assuming that $\textit{fake}_{i,t}$ is exogenous, the GMM approach uses lagged values of the endogenous variables as instrumental variables.
+Under the assumption that $\textit{fake}_{i,t-2}$, $\textit{fake}_{i,t-3}$, etc., are correlated with current fake stars but uncorrelated with the current error term (conditional on fixed effects), these lagged values provide valid instruments for identification.
+
+The validity of this approach rests on two testable assumptions:
+\begin{enumerate}[leftmargin=15pt]
+    \item \textbf{Instrument validity}: The lagged values must be uncorrelated with the contemporaneous error term, testable via the Sargan test of overidentifying restrictions.
+    \item \textbf{No serial correlation in the original errors}: While the first-differenced errors will exhibit first-order autocorrelation by construction, there should be no second-order autocorrelation, testable via the AR(2) test.
+\end{enumerate}
+
+Passing these specification tests would provide stronger evidence that the estimated effects represent genuine causal relationships rather than spurious correlations arising from endogeneity.
+
+\subsection{Expected Contributions}
+
+The proposed GMM analysis is expected to contribute in three ways.
+First, it will provide more rigorous causal evidence regarding the promotional (in)effectiveness of fake stars.
+If the GMM estimates confirm the panel autoregression findings---that fake stars provide only transient benefits and become long-term liabilities---this would substantially strengthen the main conclusions of Chapter~\ref{chp:fake-stars}.
+Alternatively, if GMM reveals different effect magnitudes or patterns, this would indicate that endogeneity bias affected the original estimates, providing important methodological insights.
+
+Second, the proposed analysis enables a direct methodological comparison between panel autoregression and panel GMM within the same empirical context.
+This comparison will illuminate when and why the choice of estimation method matters for causal inference in software engineering research.
+
+Third, this analysis demonstrates the generalizability of the GMM approach introduced in Chapter~\ref{chp:cursor} to different empirical settings within software engineering.
+By applying the same methodological framework across two distinct studies---one examining tool adoption effects on code quality (Cursor) and another examining promotional signal manipulation (fake stars)---the thesis establishes GMM as a broadly applicable technique for addressing endogeneity concerns in longitudinal software repository data.
+
+\section{Sensitivity Analysis: Comparing DiD with Alternative Designs}
+\label{sec:proposed-sensitivity}
+
+\subsection{Motivation: The Importance of Causal Identification}
+
+The Cursor study (Chapter~\ref{chp:cursor}) employs a difference-in-differences (DiD) design with staggered adoption to estimate the causal effect of Cursor adoption on development velocity and software quality.
+The study finds that Cursor adoption leads to transient velocity gains but persistent increases in technical debt, contradicting the prevailing narrative that AI coding assistants unambiguously improve developer productivity.
+These findings have important implications for practitioners, tool designers, and researchers.
+
+However, the study's conclusions depend critically on the methodological choice to employ DiD rather than simpler correlational or descriptive analyses.
+While Chapter~\ref{chp:cursor} provides extensive robustness checks comparing different DiD estimators (two-way fixed effects, Callaway and Sant'Anna, Borusyak imputation), it does not systematically compare DiD with fundamentally different analytical approaches.
+This leaves open the question: \emph{Would the study have reached the same conclusions using descriptive or correlational methods commonly employed in empirical software engineering research?}
+
+This question is not merely academic.
+If DiD and simpler methods yield similar conclusions, one might argue that the additional methodological complexity is unnecessary.
+Conversely, if DiD yields substantially different---and more credible---conclusions, this would demonstrate the practical importance of pragmatic causal inference and motivate its broader adoption in the field.
+
+\subsection{Proposed Analysis: Systematic Methodological Comparison}
+
+I propose a systematic sensitivity analysis that re-analyzes the Cursor adoption data using a hierarchy of analytical approaches, ranging from purely descriptive statistics to sophisticated causal inference designs.
+Specifically, I will implement and compare the following approaches:
+
+\paragraph{Approach 1: Descriptive Comparison}
+The simplest approach compares outcome means between Cursor-adopting repositories and non-adopting repositories without adjusting for potential confounders.
+This approach, while naive, represents a baseline that practitioners might employ when evaluating tool effectiveness based on observational data.
+Formally, the descriptive estimator is:
+\begin{equation}
+\hat{\tau}_{\text{desc}} = \bar{Y}_{\text{treated}} - \bar{Y}_{\text{control}}
+\end{equation}
+where $\bar{Y}_{\text{treated}}$ and $\bar{Y}_{\text{control}}$ are the mean outcomes in the treated and control groups, respectively, computed over all post-adoption observations.
+
+\paragraph{Approach 2: Cross-Sectional Regression}
+A slightly more sophisticated approach uses cross-sectional regression to control for observable differences between treated and control repositories.
+This approach, common in empirical software engineering, estimates:
+\begin{equation}
+Y_{it} = \alpha + \beta D_{it} + \Gamma' Z_{it} + \epsilon_{it}
+\end{equation}
+where $D_{it}$ is a treatment indicator and $Z_{it}$ includes time-varying covariates (lines of code, contributors, stars, issues).
+The coefficient $\hat{\beta}$ estimates the treatment effect conditional on observables.
+
+\paragraph{Approach 3: One-Way Fixed Effects (Repository Only)}
+Adding repository fixed effects controls for time-invariant unobserved heterogeneity:
+\begin{equation}
+Y_{it} = \mu_i + \beta D_{it} + \Gamma' Z_{it} + \epsilon_{it}
+\end{equation}
+This approach, often described as ``controlling for project characteristics,'' is frequently employed in longitudinal software repository analyses.
+However, it does not account for time-varying confounders common to all repositories.
+
+\paragraph{Approach 4: One-Way Fixed Effects (Time Only)}
+Alternatively, time fixed effects control for macro trends affecting all repositories:
+\begin{equation}
+Y_{it} = \lambda_t + \beta D_{it} + \Gamma' Z_{it} + \epsilon_{it}
+\end{equation}
+This approach accounts for factors such as changes in GitHub platform features, seasonal patterns in open-source activity, or evolving LLM capabilities.
+
+\paragraph{Approach 5: Two-Way Fixed Effects (TWFE)}
+Combining both repository and time fixed effects yields the TWFE estimator, a standard approach in panel data analysis:
+\begin{equation}
+Y_{it} = \mu_i + \lambda_t + \beta D_{it} + \Gamma' Z_{it} + \epsilon_{it}
+\end{equation}
+As discussed in Chapter~\ref{chp:cursor}, TWFE can produce biased estimates under staggered adoption with heterogeneous treatment effects.
+
+\paragraph{Approach 6: Modern DiD Estimators}
+Finally, the Borusyak imputation estimator and Callaway-Sant'Anna estimator represent state-of-the-art approaches designed explicitly for staggered adoption settings.
+These methods avoid the ``forbidden comparisons'' that can bias TWFE estimates and provide valid inference under weaker assumptions.
+
+\subsection{Comparison Framework}
+
+For each approach, I will report:
+\begin{enumerate}[leftmargin=15pt]
+    \item \textbf{Point estimates and confidence intervals}: The estimated treatment effects on each outcome (commits, lines added, static analysis warnings, duplicate line density, code complexity).
+    \item \textbf{Statistical significance}: Whether the estimated effects are statistically distinguishable from zero at conventional significance levels.
+    \item \textbf{Sign and magnitude}: Whether the qualitative conclusions (e.g., velocity increase, quality decrease) are consistent across approaches.
+    \item \textbf{Temporal dynamics}: Whether the approaches capture the transient nature of velocity gains and the persistence of quality degradation.
+\end{enumerate}
+
+Additionally, I will assess the \emph{plausibility} of each approach by examining:
+\begin{itemize}[leftmargin=15pt]
+    \item \textbf{Pre-trend tests}: For approaches that support pre-trend analysis (DiD variants), whether parallel trends hold.
+    \item \textbf{Covariate balance}: For approaches involving comparison groups, whether treatment and control groups are comparable on observable characteristics.
+    \item \textbf{Specification tests}: For approaches with testable assumptions (e.g., Sargan test for GMM), whether the assumptions are satisfied.
+\end{itemize}
+
+\subsection{Expected Findings and Contributions}
+
+Based on preliminary intuitions and prior research on the limitations of correlational analysis~\cite{DBLP:journals/toplas/BergerHMVV19}, I hypothesize that:
+\begin{enumerate}[leftmargin=15pt]
+    \item Descriptive comparisons and cross-sectional regressions will overestimate the positive effects of Cursor adoption on velocity, as they fail to account for selection bias (more active repositories may be more likely to adopt Cursor).
+    \item Approaches without time fixed effects will confound Cursor effects with broader trends in open-source development activity.
+    \item TWFE may produce attenuated or biased estimates due to negative weighting from ``forbidden comparisons'' under treatment effect heterogeneity.
+    \item Modern DiD estimators will reveal the transient nature of velocity gains and the persistence of quality degradation that simpler methods obscure.
+\end{enumerate}
+
+If confirmed, these hypotheses would demonstrate that \emph{the choice of analytical method materially affects conclusions about AI tool effectiveness}.
+This finding would carry important implications for the interpretation of prior empirical studies on AI coding assistants, many of which rely on correlational evidence or simple before-after comparisons.
+More broadly, the proposed analysis would serve as a methodological case study illustrating why pragmatic causal inference---with explicit assumptions, diagnostic tests, and honest acknowledgment of limitations---yields more credible findings than approaches that either ignore causality entirely or make implicit assumptions that cannot be examined.
+
+The expected contributions of this sensitivity analysis are threefold.
+First, it will provide a concrete demonstration of how different analytical approaches can lead to different conclusions on the same data, reinforcing the thesis argument that methodological rigor matters for myth-busting research.
+Second, it will offer practical guidance for researchers selecting among alternative analytical approaches, highlighting the trade-offs between simplicity and validity.
+Third, it will establish a template for systematic methodological comparison that can be applied in future empirical software engineering studies.
