@@ -1,21 +1,20 @@
-The three empirical studies presented in Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, and~\ref{chp:cursor} demonstrate how applying the four-step causal credibility assessment framework---making causal theory explicit, defining the estimand and identifying assumptions, honestly acknowledging limitations, and navigating alternative explanations---can produce more trustworthy evidence that challenges widely held software engineering beliefs.
+The three empirical studies presented in Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, and~\ref{chp:cursor} demonstrate how applying the four-step causal credibility assessment framework---making causal theory explicit, defining the estimand and identifying assumptions, honestly acknowledging limitations, and navigating alternative explanations---can produce more trustworthy evidence that challenges widely held software engineering myths.
 In each study, the framework guided the research design from the outset, ensuring that causal claims were appropriately calibrated to the strength of the evidence.
 
 Building on these contributions, the proposed work extends the thesis by demonstrating a complementary use of the framework: systematically assessing the causal credibility of \emph{existing} empirical research to identify specific methodological gaps and guide the design of future studies that yield stronger evidence.
 To this end, I revisit the longstanding debate on whether programming language choice causally affects software defect proneness~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17, DBLP:journals/toplas/BergerHMVV19}---a controversy introduced in Chapter~\ref{chp:intro} and used as a running example throughout Chapter~\ref{chp:background}.
 I first apply the four-step framework to assess the causal credibility of the seminal study by \citet{DBLP:conf/sigsoft/RayPFD14} in detail (Section~\ref{sec:proposed-assessment}), identifying specific gaps that explain the field's inability to reach consensus.
-Then, informed by the assessment results, I propose two complementary empirical studies designed to address the identified gaps: a panel fixed effects analysis exploiting within-developer and within-repository variation (Section~\ref{sec:proposed-fe}), and a difference-in-differences study of JavaScript-to-TypeScript migration events (Section~\ref{sec:proposed-did}).
-Together, these proposed contributions demonstrate that the causal credibility assessment framework is valuable not only for designing new studies but also for critically evaluating existing research and charting a principled path toward stronger evidence on contested questions.
+Then, informed by the assessment results, I propose two complementary empirical studies to address the identified gaps: a panel fixed-effects analysis exploiting within-developer and within-repository variation (Section~\ref{sec:proposed-fe}), and a difference-in-differences study of JavaScript-to-TypeScript migration events (Section~\ref{sec:proposed-did}).
+Together, these proposed contributions demonstrate that the proposed causal credibility assessment framework is valuable not only for designing new studies but also for critically evaluating existing research and charting a principled path toward \emph{better} evidence on important software engineering myths.
 
 \section{Revisiting the Programming Language and Defect Proneness Debate}
 \label{sec:proposed-language}
 
 \subsection{Background: A Longstanding Controversy}
 
-The question of whether programming language choice causally affects software defect rates represents one of the most contentious debates in empirical software engineering.
+The question of whether programming language choice causally affects software defect rates is among the most contentious debates in empirical software engineering.
 The seminal study by \citet{DBLP:conf/sigsoft/RayPFD14}, published at FSE 2014 and later extended in Communications of the ACM~\cite{DBLP:journals/cacm/RayPDF17}, analyzed 729 projects across 17 programming languages on GitHub and concluded that programming language has a ``small but significant'' effect on defect proneness.
-Specifically, the study reported that certain language classes---including functional languages and statically-typed languages---are associated with fewer defect-fixing commits compared to other classes.
-
+Specifically, the study reported that certain language classes---such as functional and statically typed languages---are associated with fewer defect-fixing commits than other classes.
 However, a rigorous reproduction study by \citet{DBLP:journals/toplas/BergerHMVV19} challenged these conclusions on multiple grounds.
 The reproduction identified errors in language classification, inadequate handling of polyglot repositories, and concerns about the statistical models employed.
 After correcting these issues, the reproduction found that many of the original effects shrank dramatically or failed to replicate entirely.
@@ -23,8 +22,7 @@ After correcting these issues, the reproduction found that many of the original 
 The ensuing debate~\cite{DBLP:journals/corr/abs-1911-07393, DBLP:journals/corr/abs-1911-11894} exposed a deeper methodological impasse.
 The reproduction team argued that an ``analysis of GitHub is necessarily measuring correlation and not establishing causation, as it does not constitute an experiment''~\cite{DBLP:journals/corr/abs-1911-11894}, while the original authors maintained that their statistical controls adequately accounted for confounding.
 This impasse illustrates precisely the problem motivating this thesis: without an explicit framework for evaluating what a study's design can and cannot credibly claim, debates devolve into irreconcilable positions about ``correlation versus causation.''
-
-I now demonstrate how the four-step causal credibility assessment framework proposed in this thesis can move beyond this impasse---not by resolving the empirical question definitively, but by precisely identifying where the existing evidence falls short and what specific improvements would yield more credible claims.
+In this section, I will demonstrate how the four-step causal credibility assessment framework proposed in this thesis can move beyond this impasse---rather than definitively resolving the empirical question, it precisely identifies where the existing evidence falls short and what specific improvements would yield more credible claims.
 
 \subsection{Applying the Causal Credibility Assessment Framework}
 \label{sec:proposed-assessment}
@@ -33,15 +31,13 @@ I now demonstrate how the four-step causal credibility assessment framework prop
 The study by \citet{DBLP:conf/sigsoft/RayPFD14} does not present an explicit causal model.
 Their causal theory is instead embedded implicitly in the choice of statistical model: a negative binomial regression of defect-fixing commits on language, controlling for project age, project size, and number of developers.
 The implicit claim is that after conditioning on these covariates, the remaining association between language and defect-fixing commits reflects a causal effect.
-
 However, making the causal theory explicit as a DAG (as developed in Figure~\ref{fig:pl-dag} in Chapter~\ref{chp:background}) reveals that this implicit theory is incomplete.
 The DAG encodes several confounders---Domain, Team Skill, Org Culture, and Codebase Age---each of which plausibly affects both language choice and defect proneness through independent pathways.
 The back-door criterion (Section~\ref{sec:formalism}) requires conditioning on all four to block every confounding path.
 Yet the covariates available in Ray et al.'s model---project age, project size, and developer count---are at best crude proxies for some of these confounders and entirely miss others.
-Project age partially captures Codebase Age, and developer count is a noisy proxy for Team Skill, but neither Domain nor Org Culture is measured at all.
-
+Project age partially captures Codebase Age, and developer count is a noisy proxy for Team Skill, but neither Domain nor Org Culture is measured.
 The absence of an explicit DAG had concrete consequences for the debate.
-Neither the original authors nor the reproduction team could identify precisely \emph{which} confounding paths remained unblocked by the statistical controls, leading to vague disagreements about whether the findings ``adequately controlled for confounders'' rather than productive engagement with specific threats to validity.
+Neither the original authors nor the reproduction team could precisely identify \emph{which} confounding paths remained unblocked by the statistical controls, leading to vague disagreements about whether the findings ``adequately controlled for confounders'' rather than to productive engagement with specific threats to validity.
 
 \paragraph{Step 2: Define the causal estimand, estimation method, and identifying assumptions.}
 Ray et al.'s estimand is the coefficient on language type in a negative binomial regression, interpretable as the average partial effect of programming language on the count of defect-fixing commits, conditional on the included covariates.
@@ -247,11 +243,7 @@ Phase 4 & Month 6 & Integrate findings across both studies; synthesize with the 
 The proposed timeline reflects several efficiency considerations.
 Phase 1 (data construction) serves both proposed studies, as the panel dataset of developers, repositories, languages, and defects provides the foundation for both the fixed effects analysis and the migration study.
 The fixed effects analysis (Phase 2) can begin as soon as the panel data is assembled, while migration event identification (Phase 3) requires additional data processing that can proceed in parallel with the early stages of Phase 2.
-The SonarQube infrastructure and GHArchive pipelines developed for Chapter~\ref{chp:cursor} can be reused for defect measurement, reducing implementation effort.
-
-\subsection{Risk Assessment}
-
-Table~\ref{tab:risk-assessment} identifies the primary risks to the proposed work and outlines mitigation strategies for each.
+The SonarQube infrastructure and GHArchive pipelines developed for Chapter~\ref{chp:cursor} can be reused for defect measurement, reducing implementation effort. Table~\ref{tab:risk-assessment} identifies the primary risks to the proposed work and outlines mitigation strategies for each.
 
 \begin{table}[h]
 \centering
