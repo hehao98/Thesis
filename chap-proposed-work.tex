@@ -3,7 +3,7 @@ In each study, the framework guided the research design from the outset, ensurin
 
 Building on these contributions, the proposed work extends the thesis by demonstrating a complementary use of the framework: systematically assessing the causal credibility of \emph{existing} empirical research to identify specific methodological gaps and guide the design of future studies that yield stronger evidence.
 To this end, I revisit the longstanding debate on whether programming language choice causally affects software defect proneness~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17, DBLP:journals/toplas/BergerHMVV19}---a controversy introduced in Chapter~\ref{chp:intro} and used as a running example throughout Chapter~\ref{chp:background}.
-I first apply the four-step framework to assess the causal credibility of the seminal study by \citet{DBLP:conf/sigsoft/RayPFD14} in detail (Section~\ref{sec:proposed-assessment}), identifying specific gaps that explain the field's inability to reach consensus.
+I first apply the four-step framework to the debate surrounding the seminal study by \citet{DBLP:conf/sigsoft/RayPFD14} (Section~\ref{sec:proposed-assessment}), showing how explicit causal reasoning can clarify what the existing evidence supports and where the field needs stronger designs.
 Then, informed by the assessment results, I propose two complementary empirical studies to address the identified gaps: a panel fixed-effects analysis exploiting within-developer and within-repository variation (Section~\ref{sec:proposed-fe}), and a difference-in-differences study of JavaScript-to-TypeScript migration events (Section~\ref{sec:proposed-did}).
 Together, these proposed contributions demonstrate that the proposed causal credibility assessment framework is valuable not only for designing new studies but also for critically evaluating existing research and charting a principled path toward \emph{better} evidence on important software engineering myths.
 
@@ -13,46 +13,56 @@ Together, these proposed contributions demonstrate that the proposed causal cred
 \subsection{Background: A Longstanding Controversy}
 
 The question of whether programming language choice causally affects software defect rates is among the most contentious debates in empirical software engineering.
-The seminal study by \citet{DBLP:conf/sigsoft/RayPFD14}, published at FSE 2014 and later extended in Communications of the ACM~\cite{DBLP:journals/cacm/RayPDF17}, analyzed 729 projects across 17 programming languages on GitHub and concluded that programming language has a ``small but significant'' effect on defect proneness.
-Specifically, the study reported that certain language classes---such as functional and statically typed languages---are associated with fewer defect-fixing commits than other classes.
-However, a rigorous reproduction study by \citet{DBLP:journals/toplas/BergerHMVV19} challenged these conclusions on multiple grounds.
+The seminal study by \citet{DBLP:conf/sigsoft/RayPFD14}, published at FSE 2014 and later extended in Communications of the ACM~\cite{DBLP:journals/cacm/RayPDF17}, analyzed 729 projects across 17 programming languages on GitHub and reported that certain language classes---such as functional and statically typed languages---are associated with fewer defect-fixing commits than other classes.
+Importantly, the original authors were careful to frame their findings as correlational associations, describing the language effect as ``small but significant'' while acknowledging limitations of their observational design.
+
+Nevertheless, a rigorous reproduction study by \citet{DBLP:journals/toplas/BergerHMVV19} challenged both the robustness and the interpretation of these findings.
 The reproduction identified errors in language classification, inadequate handling of polyglot repositories, and concerns about the statistical models employed.
 After correcting these issues, the reproduction found that many of the original effects shrank dramatically or failed to replicate entirely.
 
 The ensuing debate~\cite{DBLP:journals/corr/abs-1911-07393, DBLP:journals/corr/abs-1911-11894} exposed a deeper methodological impasse.
 The reproduction team argued that an ``analysis of GitHub is necessarily measuring correlation and not establishing causation, as it does not constitute an experiment''~\cite{DBLP:journals/corr/abs-1911-11894}, while the original authors maintained that their statistical controls adequately accounted for confounding.
-This impasse illustrates precisely the problem motivating this thesis: without an explicit framework for evaluating what a study's design can and cannot credibly claim, debates devolve into irreconcilable positions about ``correlation versus causation.''
-In this section, I will demonstrate how the four-step causal credibility assessment framework proposed in this thesis can move beyond this impasse---rather than definitively resolving the empirical question, it precisely identifies where the existing evidence falls short and what specific improvements would yield more credible claims.
+This impasse is revealing: Even though Ray et al.\ presented their results as correlational, the question that practitioners and researchers actually care about---\emph{should I choose Language A over Language B to reduce defects?}---is fundamentally causal.
+When a study investigates a causal question using correlational methods but without an explicit framework for assessing what the findings can and cannot credibly claim, the resulting ambiguity invites precisely the kind of unproductive controversy that followed.
+Neither side had the vocabulary to articulate \emph{under what specific conditions} the reported associations would or would not support causal interpretation, and the debate devolved into generic positions about ``correlation versus causation'' rather than progressing toward concrete, actionable next steps.
+
+I now demonstrate how the four-step causal credibility assessment framework proposed in this thesis can move beyond this impasse.
+The goal is not to criticize Ray et al.\ for failing to make causal claims---their correlational framing was appropriate given their design---but to show that applying explicit causal reasoning to a fundamentally causal question clarifies what the existing evidence can support, where its limitations lie, and what specific study designs would yield stronger evidence.
 
 \subsection{Applying the Causal Credibility Assessment Framework}
 \label{sec:proposed-assessment}
 
 \paragraph{Step 1: Make the causal theory explicit as a DAG.}
-The study by \citet{DBLP:conf/sigsoft/RayPFD14} does not present an explicit causal model.
-Their causal theory is instead embedded implicitly in the choice of statistical model: a negative binomial regression of defect-fixing commits on language, controlling for project age, project size, and number of developers.
-The implicit claim is that after conditioning on these covariates, the remaining association between language and defect-fixing commits reflects a causal effect.
-However, making the causal theory explicit as a DAG (as developed in Figure~\ref{fig:pl-dag} in Chapter~\ref{chp:background}) reveals that this implicit theory is incomplete.
+Consistent with their correlational framing, \citet{DBLP:conf/sigsoft/RayPFD14} do not present an explicit causal model.
+Their statistical approach---a negative binomial regression of defect-fixing commits on language, controlling for project age, project size, and number of developers---is designed to estimate conditional associations rather than causal effects.
+This choice is defensible on its own terms, but it leaves an important question unanswered: What \emph{would} the data-generating process need to look like for the reported associations to reflect genuine language effects?
+
+Making the causal theory explicit as a DAG (as developed in Figure~\ref{fig:pl-dag} in Chapter~\ref{chp:background}) helps answer this question.
 The DAG encodes several confounders---Domain, Team Skill, Org Culture, and Codebase Age---each of which plausibly affects both language choice and defect proneness through independent pathways.
-The back-door criterion (Section~\ref{sec:formalism}) requires conditioning on all four to block every confounding path.
-Yet the covariates available in Ray et al.'s model---project age, project size, and developer count---are at best crude proxies for some of these confounders and entirely miss others.
+The back-door criterion (Section~\ref{sec:formalism}) shows that conditioning on all four would be necessary to block every confounding path.
+Yet the covariates available in the regression model---project age, project size, and developer count---are at best crude proxies for some of these confounders and entirely miss others.
 Project age partially captures Codebase Age, and developer count is a noisy proxy for Team Skill, but neither Domain nor Org Culture is measured.
-The absence of an explicit DAG had concrete consequences for the debate.
-Neither the original authors nor the reproduction team could precisely identify \emph{which} confounding paths remained unblocked by the statistical controls, leading to vague disagreements about whether the findings ``adequately controlled for confounders'' rather than to productive engagement with specific threats to validity.
+
+The absence of an explicit DAG had concrete consequences for the subsequent debate.
+Without a shared visual representation of the assumed data-generating process, neither the original authors nor the reproduction team could identify precisely \emph{which} confounding paths remained open, leading to vague disagreements about whether the findings ``adequately controlled for confounders'' rather than productive engagement with specific threats.
+A DAG would have channeled the debate into concrete questions---Is Team Skill adequately proxied by developer count? Is Domain a relevant confounder in this sample?---rather than the generic ``correlation versus causation'' impasse that ultimately resulted.
 
 \paragraph{Step 2: Define the causal estimand, estimation method, and identifying assumptions.}
-Ray et al.'s estimand is the coefficient on language type in a negative binomial regression, interpretable as the average partial effect of programming language on the count of defect-fixing commits, conditional on the included covariates.
-For this coefficient to carry a causal interpretation, the study requires the conditional ignorability assumption (Equation~\eqref{eq:cond-ignorability}): that conditional on project age, size, and developer count, language choice is as-if randomly assigned.
+Ray et al.'s regression coefficient on language type is best understood as a conditional association: the average partial association between programming language and defect-fixing commit counts, conditional on the included covariates.
+The authors do not claim this coefficient is causal, and their correlational framing is appropriate given the design.
+However, the question that motivates the study and drives practitioner interest---whether choosing one language over another would reduce defects---is inherently causal.
+The potential outcomes framework helps clarify the gap between the correlational estimate and the causal quantity of interest.
 
+For the regression coefficient to carry a causal interpretation, the study would require the conditional ignorability assumption (Equation~\eqref{eq:cond-ignorability}): that conditional on project age, size, and developer count, language choice is as-if randomly assigned.
 This assumption is implausible given the DAG in Figure~\ref{fig:pl-dag}.
 Even if the included covariates perfectly measured the concepts they proxy for, they would fail to block the back-door paths through Domain (application domains differ across languages and independently affect defect rates), Team Skill (more experienced developers select into certain languages and independently write fewer bugs), and Org Culture (organizations with stronger quality cultures adopt certain languages and independently produce fewer defects).
-The conditional ignorability assumption further requires that there are no additional unmeasured confounders beyond those in the DAG---a claim that is difficult to defend in an observational study of this scope.
 
 Furthermore, the study's cross-sectional design limits identification to \emph{between-project} comparisons: Python projects are compared with Haskell projects, Java projects with Ruby projects.
-This design cannot distinguish whether observed differences in defect rates reflect genuine language effects or systematic differences in the types of projects, developers, and organizations that adopt each language.
-The potential outcomes framework makes this limitation precise: The study estimates $E[Y | D = \text{Haskell}, X] - E[Y | D = \text{Python}, X]$, but this equals the causal effect only if selection bias (Equation~\eqref{eq:selection-bias}) vanishes conditional on $X$---which, given the unblocked back-door paths, it almost certainly does not.
+The potential outcomes framework makes explicit why this is problematic for causal interpretation: The study estimates $E[Y | D = \text{Haskell}, X] - E[Y | D = \text{Python}, X]$, but this equals the causal effect only if selection bias (Equation~\eqref{eq:selection-bias}) vanishes conditional on $X$---which, given the unblocked back-door paths, it almost certainly does not.
+Making these assumptions explicit does not invalidate the correlational findings, but it precisely delineates the conditions under which they would---or would not---support the causal conclusions that practitioners seek.
 
 \paragraph{Step 3: Honestly acknowledge and mitigate limitations.}
-Beyond the identification concerns, the study faces several data and measurement limitations that affect the credibility of its findings.
+Beyond the identification considerations, the study faces several data and measurement challenges that affect how strongly the findings---whether interpreted correlationally or causally---can be trusted.
 
 First, the treatment---``programming language''---is operationalized using GitHub's dominant-language classification, which assigns each repository a single language based on byte counts.
 \citet{DBLP:journals/toplas/BergerHMVV19} demonstrated that many repositories are polyglot, containing substantial code in secondary languages, and that reclassifying these repositories substantially changed the estimated effects.
@@ -67,8 +77,9 @@ Third, the study does not conduct sensitivity analysis to assess how strong unme
 Tools such as $E$-values~\cite{vanderweele2017sensitivity} or Rosenbaum bounds~\cite{rosenbaum2002observational} would have provided readers with a quantitative assessment of the findings' robustness to unmeasured confounders, enabling more calibrated interpretation.
 
 \paragraph{Step 4: Navigate alternative explanations.}
-The study does not systematically engage with alternative causal structures that could generate the same observed associations.
-Four prominent alternatives illustrate the gap:
+Because the study does not frame its investigation in causal terms, it does not systematically consider alternative data-generating processes that could produce the same observed associations.
+An explicit causal framework would have enabled---and motivated---engagement with competing explanations, each of which implies a different DAG and different implications for the reported findings.
+Four prominent alternatives illustrate how such engagement would work:
 \begin{enumerate}[leftmargin=15pt]
     \item \emph{Developer expertise as confounder.} If more skilled developers preferentially adopt functional and statically-typed languages and independently write fewer bugs, the observed association is (partly or wholly) an artifact of developer selection. This alternative implies a DAG where Language $\leftarrow$ Team Skill $\to$ Defect Proneness is an open back-door path. The cross-sectional design cannot distinguish this from a genuine language effect.
     
@@ -79,23 +90,25 @@ Four prominent alternatives illustrate the gap:
     \item \emph{Reverse causality.} Quality-conscious teams may select ``safer'' languages \emph{because} they care about minimizing defects, reversing the assumed causal direction. Cross-sectional data cannot discriminate Language $\to$ Defects from Quality Consciousness $\to$ Language and Quality Consciousness $\to$ Defects.
 \end{enumerate}
 
-Each alternative implies distinct testable predictions---for instance, the developer-expertise alternative predicts that the language effect should vanish when comparing the \emph{same developer's} contributions across languages, while the domain-confounding alternative predicts that controlling for application domain should substantially attenuate the effect.
-The original study's design cannot test these predictions, and neither the original nor the reproduction study derives or examines them.
+Each alternative implies distinct testable predictions---for instance, the developer-expertise alternative predicts that the language association should vanish when comparing the \emph{same developer's} contributions across languages, while the domain-confounding alternative predicts that controlling for application domain should substantially attenuate the association.
+These predictions could, in principle, be tested empirically, but neither the original study nor the reproduction derives or examines them.
+This is not a criticism of the original authors' stated goals---they did not set out to establish causation---but it illustrates how the absence of explicit causal reasoning left the field without a roadmap for resolving the disagreement that followed.
 
 \subsection{Assessment Summary and Proposed Path Forward}
 
-The four-step assessment reveals that the causal credibility of Ray et al.'s findings is limited by three interconnected gaps:
+The four-step assessment is not meant as a criticism of Ray et al., whose correlational framing was appropriate for their study design.
+Rather, it illustrates a broader pattern: When empirical software engineering research investigates fundamentally causal questions without explicit causal reasoning, three consequences tend to follow.
 \begin{enumerate}[leftmargin=15pt]
-    \item \textbf{No explicit causal theory}: The absence of a DAG left multiple confounding paths unblocked and prevented productive debate about specific threats to validity.
-    \item \textbf{Inadequate identification strategy}: The cross-sectional design relies on conditional ignorability with covariates that are insufficient to block the back-door paths identified in the DAG, making the causal interpretation of the regression coefficients untenable.
-    \item \textbf{No systematic engagement with alternatives}: Neither the original study nor the reproduction derived testable predictions from competing causal structures, causing the debate to stall on the generic question of ``correlation versus causation'' rather than progressing toward specific evidence that would resolve the disagreement.
+    \item \textbf{Ambiguous interpretation}: Without an explicit DAG, readers cannot determine which confounding paths the statistical controls address and which remain open. The resulting ambiguity invites both over-interpretation (treating associations as evidence of causation) and over-skepticism (dismissing all observational evidence as ``merely correlational'').
+    \item \textbf{Limited identification}: A cross-sectional design with selection-on-observables provides the weakest form of evidence on the hierarchy discussed in Chapter~\ref{chp:background}. When the covariates are insufficient to block the back-door paths identified in the DAG, neither correlational nor causal interpretation of the regression coefficients is well-supported.
+    \item \textbf{Unproductive debate}: Without testable predictions derived from competing causal structures, disagreements devolve into generic positions about ``correlation versus causation'' rather than progressing toward concrete evidence that would resolve the question.
 \end{enumerate}
 
-These gaps are not unique to Ray et al.---they reflect common patterns in empirical software engineering research that relies on multivariate regression of observational data without explicit causal reasoning.
-Addressing them requires two methodological advances, each of which motivates a proposed study:
+These consequences are not unique to Ray et al.---they reflect a common pattern in empirical software engineering research that investigates causal questions using correlational methods without explicit causal reasoning.
+The causal credibility assessment framework proposed in this thesis offers a constructive path forward by identifying two specific methodological advances, each of which motivates a proposed study:
 \begin{itemize}[leftmargin=15pt]
-    \item \textbf{Gap 2 $\to$ Proposed Study I (Section~\ref{sec:proposed-fe})}: The cross-sectional design's inability to control for developer- and repository-level confounders motivates a \emph{panel fixed effects analysis} that exploits within-developer and within-repository variation, controlling for all time-invariant confounders without needing to measure them.
-    \item \textbf{Gaps 1, 3 $\to$ Proposed Study II (Section~\ref{sec:proposed-did})}: The absence of quasi-experimental variation and the inability to discriminate among alternative causal structures motivate a \emph{difference-in-differences study of JavaScript-to-TypeScript migration events}, which exploits within-repository language transitions as natural experiments and generates testable predictions that distinguish language effects from selection effects.
+    \item \textbf{Consequence 2 $\to$ Proposed Study I (Section~\ref{sec:proposed-fe})}: The cross-sectional design's inability to control for developer- and repository-level confounders motivates a \emph{panel fixed effects analysis} that exploits within-developer and within-repository variation, controlling for all time-invariant confounders without needing to measure them.
+    \item \textbf{Consequences 1, 3 $\to$ Proposed Study II (Section~\ref{sec:proposed-did})}: The absence of quasi-experimental variation and the inability to discriminate among alternative causal structures motivate a \emph{difference-in-differences study of JavaScript-to-TypeScript migration events}, which exploits within-repository language transitions as natural experiments and generates testable predictions that distinguish language effects from selection effects.
 \end{itemize}
 
 Together, the two proposed studies provide triangulation: If both designs---one controlling for time-invariant confounders through fixed effects, the other exploiting quasi-experimental variation through DiD---converge on similar conclusions, confidence in the causal interpretation grows beyond what either study alone could provide.
@@ -104,7 +117,7 @@ If they diverge, the discrepancy itself is informative about which alternative e
 \section{Proposed Study I: Panel Fixed Effects Analysis}
 \label{sec:proposed-fe}
 
-The credibility assessment reveals that the cross-sectional design in Ray et al.\ conflates language effects with time-invariant developer and project characteristics that drive both language choice and defect rates.
+The credibility assessment reveals that the cross-sectional design used by Ray et al.\ cannot disentangle language associations from time-invariant developer and project characteristics that drive both language choice and defect rates.
 To address this gap, I propose a panel fixed effects analysis that leverages longitudinal software repository data to control for unobserved heterogeneity at both the developer and repository levels.
 
 \subsection{Research Design}
@@ -202,10 +215,10 @@ Findings should therefore be interpreted as evidence about the specific effect o
 \section{Expected Contributions}
 
 The proposed work is expected to contribute in several ways.
-First, the detailed causal credibility assessment of Ray et al.\ will demonstrate concretely how the four-step framework can diagnose the methodological limitations of existing research and identify specific improvements---thereby illustrating the framework's value not only for designing new studies (as demonstrated in Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, and~\ref{chp:cursor}) but also for critically evaluating existing work.
+First, the causal credibility assessment of the programming language debate will demonstrate concretely how the four-step framework can clarify the strengths and limitations of existing research on fundamentally causal questions, identifying specific study designs that would yield stronger evidence---thereby illustrating the framework's value not only for designing new studies (as demonstrated in Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, and~\ref{chp:cursor}) but also for constructively engaging with existing work.
 
-Second, the two proposed studies will provide new empirical evidence on a longstanding and consequential question, using methods that directly address the criticisms leveled at prior work.
-The fixed effects analysis controls for time-invariant developer and project characteristics that confound Ray et al.'s cross-sectional comparisons, while the DiD study exploits quasi-experimental variation that supports stronger causal claims than selection-on-observables approaches.
+Second, the two proposed studies will provide new empirical evidence on a longstanding and consequential question, using methods that move beyond the correlational evidence in prior work.
+The fixed effects analysis controls for time-invariant developer and project characteristics that confound cross-sectional comparisons, while the DiD study exploits quasi-experimental variation that supports stronger causal claims than selection-on-observables approaches.
 
 Third, the analysis will produce concrete comparisons between correlational and causal inference approaches on the programming language question, complementing the methodological comparisons across the completed empirical studies.
 Together, these analyses will provide evidence for the thesis argument that a framework for causal credibility assessments---with its emphasis on explicit theory, transparent assumptions, and honest limitations---yields more trustworthy findings and more productive scholarly debate than approaches without explicit causal reasoning.
@@ -271,10 +284,10 @@ GitHub API rate limits delay data collection & Low & Medium & Leverage GHArchive
 \section{Summary}
 
 This chapter has outlined a proposed research program that demonstrates how the causal credibility assessment framework advocated in this thesis can serve as both a diagnostic tool for existing research and a design guide for future studies.
-By applying the four-step framework to the seminal study by \citet{DBLP:conf/sigsoft/RayPFD14}, the assessment identified three specific gaps---the absence of an explicit causal theory, an inadequate identification strategy relying on conditional ignorability with insufficient covariates, and the lack of systematic engagement with alternative causal structures---that explain the field's inability to reach consensus on the programming language and defect proneness question.
+By applying the four-step framework to the programming language and defect proneness debate, the assessment revealed how investigating a fundamentally causal question without explicit causal reasoning---even when findings are carefully framed as correlational---leads to ambiguous interpretation, limited identification, and unproductive debate that the field struggles to resolve.
 
 These gaps directly motivate two proposed empirical studies.
 The panel fixed effects analysis (Section~\ref{sec:proposed-fe}) addresses the identification gap by exploiting within-developer and within-repository variation to control for time-invariant confounders, while the JavaScript-to-TypeScript migration study (Section~\ref{sec:proposed-did}) provides quasi-experimental evidence through a difference-in-differences design that generates testable predictions distinguishing language effects from selection effects.
 
-Together with the completed empirical studies, the proposed work demonstrates the full scope of this thesis's contribution: \emph{an explicit framework and vocabulary for causal credibility assessments} that (1) guides the design of new studies to produce more trustworthy evidence (Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, \ref{chp:cursor}), (2) enables systematic evaluation of existing research to identify specific methodological limitations (Section~\ref{sec:proposed-assessment}), and (3) charts a principled path from identified gaps to improved study designs (Sections~\ref{sec:proposed-fe} and~\ref{sec:proposed-did}).
+Together with the completed empirical studies, the proposed work demonstrates the full scope of this thesis's contribution: \emph{an explicit framework and vocabulary for causal credibility assessments} that (1) guides the design of new studies to produce more trustworthy evidence (Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, \ref{chp:cursor}), (2) enables constructive evaluation of existing research on fundamentally causal questions (Section~\ref{sec:proposed-assessment}), and (3) charts a principled path from identified limitations to improved study designs (Sections~\ref{sec:proposed-fe} and~\ref{sec:proposed-did}).
 By providing both empirical insights and methodological guidance that emphasizes transparency over perfection, this thesis aims to contribute to the transformation of software engineering into a more evidence-based discipline---not through claims of epistemological certainty, but through the honest accumulation of credible evidence informed by explicit causal reasoning.
