@@ -21,13 +21,13 @@ The reproduction identified errors in language classification, inadequate handli
 After correcting these issues, the reproduction found that many of the original effects shrank dramatically or failed to replicate entirely.
 
 The ensuing debate~\cite{DBLP:journals/corr/abs-1911-07393, DBLP:journals/corr/abs-1911-11894} exposed a deeper methodological impasse.
-The reproduction team argued that an ``analysis of GitHub is necessarily measuring correlation and not establishing causation, as it does not constitute an experiment''~\cite{DBLP:journals/corr/abs-1911-11894}, while the original authors maintained that their statistical controls adequately accounted for confounding.
+The reproduction team argued that an ``analysis of GitHub is necessarily measuring correlation and not establishing causation, as it does not constitute an experiment''~\cite{DBLP:journals/corr/abs-1911-11894}, while the original authors maintained that their statistical findings are robust despite corrections.
 This impasse is revealing: Even though Ray et al.\ presented their results as correlational, the question that practitioners and researchers actually care about---\emph{should I choose Language A over Language B to reduce defects?}---is fundamentally causal.
 When a study investigates a causal question using correlational methods but without an explicit framework for assessing what the findings can and cannot credibly claim, the resulting ambiguity invites precisely the kind of unproductive controversy that followed.
-Neither side had the vocabulary to articulate \emph{under what specific conditions} the reported associations would or would not support causal interpretation, and the debate devolved into generic positions about ``correlation versus causation'' rather than progressing toward concrete, actionable next steps.
+Neither side had the vocabulary to articulate \emph{under which specific conditions} the reported associations would or would not support causal interpretation, and the debate devolved into generic positions on ``correlation versus causation'' rather than advancing toward concrete, actionable next steps.
 
 I now demonstrate how the four-step causal credibility assessment framework proposed in this thesis can move beyond this impasse.
-The goal is not to criticize Ray et al.\ for failing to make causal claims---their correlational framing was appropriate given their design---but to show that applying explicit causal reasoning to a fundamentally causal question clarifies what the existing evidence can support, where its limitations lie, and what specific study designs would yield stronger evidence.
+The goal is not to criticize Ray et al.\ for failing to make causal claims---their correlational framing was appropriate given their design and generated important insights for open-source projects---but to show that applying explicit causal reasoning to a fundamentally causal question clarifies what the existing evidence can support, where its limitations lie, and what specific study designs would yield stronger evidence.
 
 \subsection{Applying the Causal Credibility Assessment Framework}
 \label{sec:proposed-assessment}
@@ -35,13 +35,13 @@ The goal is not to criticize Ray et al.\ for failing to make causal claims---the
 \paragraph{Step 1: Make the causal theory explicit as a DAG.}
 Consistent with their correlational framing, \citet{DBLP:conf/sigsoft/RayPFD14} do not present an explicit causal model.
 Their statistical approach---a negative binomial regression of defect-fixing commits on language, controlling for project age, project size, and number of developers---is designed to estimate conditional associations rather than causal effects.
-This choice is defensible on its own terms, but it leaves an important question unanswered: What \emph{would} the data-generating process need to look like for the reported associations to reflect genuine language effects?
+This choice is defensible on its own terms, but it leaves an important question unanswered: What \emph{would} the data-generating process need to look like for the reported associations to reflect genuine causal effects from the choice of programming languages?
 
 Making the causal theory explicit as a DAG (as developed in Figure~\ref{fig:pl-dag} in Chapter~\ref{chp:background}) helps answer this question.
 The DAG encodes several confounders---Domain, Team Skill, Org Culture, and Codebase Age---each of which plausibly affects both language choice and defect proneness through independent pathways.
 The back-door criterion (Section~\ref{sec:formalism}) shows that conditioning on all four would be necessary to block every confounding path.
 Yet the covariates available in the regression model---project age, project size, and developer count---are at best crude proxies for some of these confounders and entirely miss others.
-Project age partially captures Codebase Age, and developer count is a noisy proxy for Team Skill, but neither Domain nor Org Culture is measured.
+Specifically, the project age partially captures Codebase Age, and the developer count is a noisy proxy for Team Skill;  neither Domain nor Org Culture is measured in the regression model.
 
 The absence of an explicit DAG had concrete consequences for the subsequent debate.
 Without a shared visual representation of the assumed data-generating process, neither the original authors nor the reproduction team could identify precisely \emph{which} confounding paths remained open, leading to vague disagreements about whether the findings ``adequately controlled for confounders'' rather than productive engagement with specific threats.
@@ -56,7 +56,6 @@ The potential outcomes framework helps clarify the gap between the correlational
 For the regression coefficient to carry a causal interpretation, the study would require the conditional ignorability assumption (Equation~\eqref{eq:cond-ignorability}): that conditional on project age, size, and developer count, language choice is as-if randomly assigned.
 This assumption is implausible given the DAG in Figure~\ref{fig:pl-dag}.
 Even if the included covariates perfectly measured the concepts they proxy for, they would fail to block the back-door paths through Domain (application domains differ across languages and independently affect defect rates), Team Skill (more experienced developers select into certain languages and independently write fewer bugs), and Org Culture (organizations with stronger quality cultures adopt certain languages and independently produce fewer defects).
-
 Furthermore, the study's cross-sectional design limits identification to \emph{between-project} comparisons: Python projects are compared with Haskell projects, Java projects with Ruby projects.
 The potential outcomes framework makes explicit why this is problematic for causal interpretation: The study estimates $E[Y | D = \text{Haskell}, X] - E[Y | D = \text{Python}, X]$, but this equals the causal effect only if selection bias (Equation~\eqref{eq:selection-bias}) vanishes conditional on $X$---which, given the unblocked back-door paths, it almost certainly does not.
 Making these assumptions explicit does not invalidate the correlational findings, but it precisely delineates the conditions under which they would---or would not---support the causal conclusions that practitioners seek.
@@ -137,9 +136,9 @@ The identifying variation comes from developers who contribute to multiple langu
 
 \paragraph{Data Construction.}
 The analysis requires constructing a panel dataset of developer--repository--month observations with associated language and defect information.
-I will operationalize this using GHArchive and GitHub API data, identifying developers who contribute to repositories in at least two distinct programming languages during the observation period.
-Defect-related commits will be identified using the commit message heuristics from \citet{DBLP:conf/sigsoft/RayPFD14}, supplemented with issue-linked commit analysis where available.
-Language assignment at the commit level---rather than the repository level---avoids the polyglot misclassification problem identified by \citet{DBLP:journals/toplas/BergerHMVV19}.
+I will operationalize this using the dataset shared by \citet{DBLP:journals/toplas/BergerHMVV19}, identifying developers who contribute to repositories in at least two distinct programming languages during the observation period.
+Defect-related commits will be identified using the commit-message heuristics of \citet{DBLP:conf/sigsoft/RayPFD14}, supplemented by issue-linked commit analysis where available.
+Language assignment at the commit level---rather than the repository level---avoids the polyglot misclassification problem.
 
 \subsection{Expected Challenges and Limitations}
 
@@ -236,6 +235,7 @@ Both proposed studies build on methodological foundations and data infrastructur
 
 \begin{table}[h]
 \centering
+\small
 \caption{Proposed timeline for completing the thesis.}
 \label{tab:proposed-timeline}
 \begin{tabular}{llp{12cm}}
@@ -258,11 +258,12 @@ Phase 1 (data construction) serves both proposed studies, as the panel dataset o
 The fixed effects analysis (Phase 2) can begin as soon as the panel data is assembled, while migration event identification (Phase 3) requires additional data processing that can proceed in parallel with the early stages of Phase 2.
 The SonarQube infrastructure and GHArchive pipelines developed for Chapter~\ref{chp:cursor} can be reused for defect measurement, reducing implementation effort. Table~\ref{tab:risk-assessment} identifies the primary risks to the proposed work and outlines mitigation strategies for each.
 
-\begin{table}[h]
+\begin{table}
 \centering
+\footnotesize
 \caption{Risk assessment for the proposed work.}
 \label{tab:risk-assessment}
-\begin{tabular}{p{3.8cm}ccp{6.5cm}}
+\begin{tabular}{p{4cm}ccp{8cm}}
 \toprule
 \textbf{Risk} & \textbf{Impact} & \textbf{Likelihood} & \textbf{Mitigation} \\
 \midrule
