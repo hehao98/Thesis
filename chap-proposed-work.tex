@@ -2,7 +2,7 @@ The three empirical studies presented in Chapters~\ref{chp:pinning}, \ref{chp:fa
 In each study, the four-step process guided the research design from the outset, ensuring that causal claims were appropriately calibrated to the strength of the evidence.
 
 Building on these contributions, the proposed work extends the thesis by developing the causal credibility assessment framework into an accessible \emph{tutorial} aimed at the broader software engineering research community.
-A key barrier to the adoption of explicit causal reasoning in software engineering is the lack of pedagogical materials that demonstrate how to apply causal frameworks to concrete, familiar research problems.
+A key barrier to adopting explicit causal reasoning in software engineering is the lack of pedagogical materials demonstrating how to apply causal frameworks to concrete, familiar research problems.
 To address this, I propose a tutorial paper that uses the longstanding debate on whether programming language choice affects software defect proneness~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17, DBLP:journals/toplas/BergerHMVV19}---a controversy introduced in Chapter~\ref{chp:intro} and used as a running example throughout Chapter~\ref{chp:background}---as a worked example to walk readers through applying the four-step process to \emph{existing} empirical research.
 The tutorial first applies the four-step framework to the debate surrounding the seminal study by \citet{DBLP:conf/sigsoft/RayPFD14} (Section~\ref{sec:proposed-assessment}), showing how explicit causal reasoning can clarify what existing evidence supports and where specific study designs would yield stronger evidence.
 Then, informed by the assessment, I propose a panel fixed-effects analysis exploiting within-developer and within-repository variation as a concrete illustration of how the framework guides the design of future studies (Section~\ref{sec:proposed-fe}).
@@ -19,20 +19,20 @@ Importantly, the original authors were careful to frame their findings as correl
 
 A reproduction study by \citet{DBLP:journals/toplas/BergerHMVV19} challenged both the robustness and the interpretation of these findings.
 The reproduction identified errors in language classification, inadequate handling of polyglot repositories, and concerns about the statistical models employed.
-After correcting these issues, the reproduction found that many of the original effects shrank dramatically or failed to replicate entirely.
+After correcting these issues, the authors of the replication study claimed that many of the original effects shrank dramatically or failed to replicate entirely in their reproduction.
 
 The ensuing debate~\cite{DBLP:journals/corr/abs-1911-07393, DBLP:journals/corr/abs-1911-11894} exposed a deeper methodological impasse.
 The reproduction team argued that an ``analysis of GitHub is necessarily measuring correlation and not establishing causation, as it does not constitute an experiment''~\cite{DBLP:journals/corr/abs-1911-11894}, while the original authors maintained that their statistical findings are robust despite corrections.
-It is worth noting that the two groups disagree strongly on measurement---how to classify languages, handle polyglot repositories, and operationalize defect-proneness---and these measurement concerns are legitimate and important.
-However, poor measurement is orthogonal to the causal reasoning problem addressed in this thesis, albeit also a very challenging and consequential topic in software engineering research that deserves separate treatment.
+It is worth noting that the two groups strongly disagree on multiple measurement problems---how to classify languages, handle polyglot repositories, and operationalize defect-proneness---and these concerns are legitimate and important.
+While measurement itself is a very challenging and consequential topic in software engineering research that deserves separate treatment, it is orthogonal to the causal reasoning problem addressed in this thesis, and we will not discuss it here.
 
 Crucially, neither group explicitly discusses the problem through the lens of causal reasoning.
 The reproduction team's critique that observational data ``cannot establish causation'' is correct as a general statement, but it does not engage with the more productive question of \emph{under which specific conditions} observational data could or could not support causal interpretation, nor does it articulate what specific confounders or alternative causal structures threaten the findings.
 Similarly, the original authors' defense focuses on the robustness of their statistical associations without articulating the assumptions under which those associations would carry causal meaning.
-Both papers could have benefited from explicit causal theory and assumptions: the original study could have made transparent the conditions under which its findings would support causal conclusions, and the reproduction could have provided a constructive path forward by identifying specific causal threats and study designs that would address them.
-Without such a framework, the reproduction---despite its valuable contributions to measurement and robustness---does not ultimately advance the field toward resolving the underlying causal question about programming languages and defects.
+Both papers could have benefited from an explicit causal theory and assumptions: The original study could have made transparent the conditions under which its findings would support causal conclusions, and the reproduction could have provided a constructive path forward by identifying specific causal threats and study designs to address them.
+Without such a framework, the reproduction---despite its contributions to measurement---does not ultimately advance the field toward resolving the underlying causal question about programming languages and defects.
 
-This impasse is revealing: Even though Ray et al.\ presented their results as correlational, the question that practitioners and researchers actually care about---\emph{should I choose Language A over Language B to reduce defects?}---is fundamentally causal.
+This impasse is revealing: Even though Ray et al.\ presented their results as correlational, the question that practitioners and researchers actually care about---\emph{should I choose programming language A over programming language B to reduce defects?}---is fundamentally causal.
 When a study investigates a causal question using correlational methods but without an explicit framework for assessing what the findings can and cannot credibly claim, the resulting ambiguity invites precisely the kind of unproductive controversy that followed.
 
 \paragraph{Downstream causal misinterpretation.}
@@ -43,7 +43,7 @@ In a detailed analysis accompanying their counter-rebuttal, \citet{DBLP:journals
 This pattern---where a carefully framed correlational study is progressively interpreted causally by downstream work---illustrates a systemic problem that the framework proposed in this thesis directly addresses.
 Had the original study included an explicit causal model articulating the assumptions under which its associations would or would not support causal interpretation, downstream authors would have had a clear basis for calibrating their claims.
 The programming language debate thus serves as a compelling pedagogical example not only because of its intrinsic interest but because it vividly demonstrates how the absence of explicit causal reasoning creates an ``interpretive vacuum'' that downstream work fills with unjustified causal claims.
-More recent work by \citet{DBLP:journals/tosem/FuriaTF24} has independently arrived at a similar diagnosis, demonstrating through structural causal models that purely associational and causal analyses of programming language data yield considerably different conclusions---further underscoring the need for accessible guidance on applying causal reasoning to software engineering research.
+More recent work by \citet{DBLP:journals/tosem/FuriaTF24} has independently arrived at a similar diagnosis, demonstrating through structural causal models that purely associational and causal analyses of programming language data yield considerably different conclusions---further underscoring the need for accessible guidance on applying causal reasoning to empirical software engineering and mining software repository research.
 
 I now demonstrate how the four-step causal credibility assessment framework proposed in this thesis can move beyond this impasse.
 The goal is not to criticize either Ray et al.\ or Berger et al.---the former's correlational framing was appropriate given their design, and the latter raised legitimate measurement and robustness concerns---but to show that applying explicit causal reasoning to a fundamentally causal question clarifies what existing evidence can support, where its limitations lie, and what specific study designs would yield stronger evidence.
@@ -159,26 +159,21 @@ Language assignment at the commit level---rather than the repository level---avo
 
 Fixed effects alone cannot address time-varying confounders.
 A developer who switches from JavaScript to TypeScript may do so precisely because they are working on a more complex feature requiring stronger typing---in which case the language switch is confounded with feature complexity.
-This limitation is intrinsic to fixed effects designs and cannot be resolved without additional identifying variation, such as quasi-experimental designs that exploit specific language transition events.
-
+This limitation is intrinsic to fixed-effects designs and cannot be resolved without additional identifying variation, such as quasi-experimental designs that exploit specific language-transition events.
 Second, the analysis requires sufficient within-unit variation: developers must contribute in multiple languages, and repositories must use multiple languages.
 If the majority of developers specialize in a single language, the fixed effects estimator will have limited statistical power.
-I will assess the available within-developer variation at the data construction stage and report the fraction of developers contributing to each pair of languages.
-
+I will assess the available within-developer variation during the data construction stage and report the fraction of developers contributing to each language pair.
 Third, the causal estimand in a fixed effects model is the \emph{within-unit} effect, which may differ from the population-average effect if language effects are heterogeneous.
-Developers who work in multiple languages may be systematically different from single-language developers (e.g., more versatile, more senior), limiting the generalizability of findings.
+Developers who work in multiple languages may differ systematically from single-language developers (e.g., being more versatile or more senior), limiting the generalizability of findings.
 
 \section{Expected Contributions}
 
 The proposed work is expected to contribute in several ways.
-First, by packaging the causal credibility assessment as an accessible tutorial with a familiar worked example, the proposed paper lowers the barrier for software engineering researchers to adopt explicit causal reasoning in their own work.
+First, by packaging the causal credibility assessment as an accessible tutorial with a familiar worked example, the proposed paper lowers the barrier to software engineering researchers adopting explicit causal reasoning in their own work.
 The programming language and defect proneness debate is widely known in the community, making it an effective pedagogical vehicle for demonstrating how the four-step framework can clarify the strengths and limitations of existing research and guide improved study designs.
-
 Second, the causal credibility assessment of the programming language debate demonstrates a complementary use of the framework: applying it not to design new studies from scratch (as in Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, and~\ref{chp:cursor}) but to constructively engage with existing research, identifying specific gaps and articulating what would be needed to address them.
-
-Third, the proposed panel fixed effects study provides new empirical evidence on a longstanding question, using methods that move beyond the correlational evidence in prior work by controlling for time-invariant developer and project characteristics that confound cross-sectional comparisons.
+Third, the proposed panel fixed-effects study provides new empirical evidence on a longstanding question, using methods that go beyond the correlational evidence in prior work by controlling for time-invariant developer and project characteristics that confound cross-sectional comparisons.
 Regardless of whether the analysis finds that programming language affects defect proneness, the methodological contribution stands: the tutorial illustrates how to move from a diagnostic assessment of existing evidence to a concrete, improved study design.
-
 Finally, the downstream citation analysis documents a systemic pattern---carefully framed correlational findings being progressively reinterpreted as causal by citing work---that motivates the need for explicit causal frameworks beyond this specific debate.
 This analysis provides empirical support for the thesis argument that the absence of explicit causal reasoning in software engineering research has concrete, measurable consequences for how findings propagate through the literature.
 
@@ -187,6 +182,10 @@ This analysis provides empirical support for the thesis argument that the absenc
 
 Table~\ref{tab:proposed-timeline} presents the anticipated timeline for completing the proposed work.
 The proposed work builds on methodological foundations and data infrastructure developed through the completed empirical studies (Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, \ref{chp:cursor}), reducing implementation risk and enabling efficient execution.
+The proposed timeline reflects several efficiency considerations.
+Phase 1 (tutorial drafting) can proceed immediately using the causal credibility assessment framework already developed in this thesis, while the data construction (Phase 2) builds on the GHArchive pipelines developed for Chapter~\ref{chp:cursor}.
+The SonarQube infrastructure can be reused for defect measurement, reducing implementation effort.
+Table~\ref{tab:risk-assessment} identifies the primary risks to the proposed work and outlines mitigation strategies for each.
 
 \begin{table}[h]
 \centering
@@ -207,11 +206,6 @@ Phase 4 & Months 4--5 & Integrate the empirical study into the tutorial paper; r
 \bottomrule
 \end{tabular}
 \end{table}
-
-The proposed timeline reflects several efficiency considerations.
-Phase 1 (tutorial drafting) can proceed immediately using the causal credibility assessment framework already developed in this thesis, while the data construction (Phase 2) builds on the GHArchive pipelines developed for Chapter~\ref{chp:cursor}.
-The SonarQube infrastructure can be reused for defect measurement, reducing implementation effort.
-Table~\ref{tab:risk-assessment} identifies the primary risks to the proposed work and outlines mitigation strategies for each.
 
 \begin{table}
 \centering
@@ -237,9 +231,8 @@ GitHub API rate limits delay data collection & Low & Medium & Leverage GHArchive
 
 This chapter has outlined a proposed tutorial paper that demonstrates how the causal credibility assessment framework developed in this thesis can serve as both a diagnostic tool for existing research and a design guide for future studies.
 By applying the four-step framework to the programming language and defect proneness debate, the assessment revealed how investigating a fundamentally causal question without explicit causal reasoning---even when findings are carefully framed as correlational---leads to ambiguous interpretation, limited identification, and unproductive debate that the field struggles to resolve.
-The downstream citation analysis further demonstrates a concrete consequence of this absence: carefully framed correlational findings are progressively reinterpreted as causal by citing work, creating an ``interpretive vacuum'' that an explicit causal framework would have prevented.
-
-The proposed panel fixed effects study (Section~\ref{sec:proposed-fe}) illustrates how the framework's diagnostic output translates into actionable research design improvements, addressing the identification gap by exploiting within-developer and within-repository variation to control for time-invariant confounders.
+The downstream citation analysis further demonstrates a concrete consequence of this absence: carefully framed correlational findings are progressively reinterpreted as causal through citations, creating an ``interpretive vacuum'' that an explicit causal framework would have prevented.
+The proposed panel fixed-effects study (Section~\ref{sec:proposed-fe}) illustrates how the framework's diagnostic output translates into actionable research-design improvements, addressing the identification gap by exploiting within-developer and within-repository variation to control for time-invariant confounders.
 
 Together with the completed empirical studies, the proposed work demonstrates the full scope of this thesis's contribution: that \emph{causal credibility assessments are feasible in empirical software engineering through an explicit articulation of causal theory and assumptions}.
 The four-step process demonstrated throughout this thesis (1) guides the design of new studies to produce trustworthy evidence (Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, \ref{chp:cursor}), (2) enables constructive evaluation of existing research on fundamentally causal questions (Section~\ref{sec:proposed-assessment}), and (3) charts a principled path from identified limitations to improved study designs (Section~\ref{sec:proposed-fe}).

@@ -170,7 +170,7 @@ Two cases are particularly important:
     This is a pure statistical artifact.
 \end{itemize}
 The lesson is that without a causal model specifying the data-generating process, researchers cannot determine which controls are appropriate.
-A regression with 100 covariates and 0.99 $R^2$ is not better than others in terms of causal credibility.
+A regression with 100 covariates is not better than a regression with five in terms of causal credibility.
 Regression software will happily estimate coefficients regardless of whether the specification is causally meaningful. 
 
 \begin{comment}
@@ -540,7 +540,7 @@ DAGs are one particularly useful way to achieve this explicitness, as discussed 
 
 Neither the potential outcomes framework nor graphical causal models is a statistical method that one ``runs'' on data.
 They are conceptual tools for reasoning about causation: The potential outcomes framework defines the causal estimand and clarifies under what assumptions it is identified; the graphical model encodes domain knowledge about the data-generating process and determines which variables to condition on.
-The actual estimation is performed using specific statistical methods—difference-in-differences, regression discontinuity, instrumental variables, and matching—each of which makes assumptions that can be understood and justified within either framework.
+The actual estimation is performed using specific designs and statistical methods---difference-in-differences, regression discontinuity, instrumental variables, and matching---each of which makes assumptions that can be understood and justified within either framework.
 In practice, the two frameworks are mathematically compatible and are most powerful when used together.
 Potential outcomes excel at defining \emph{what} we want to learn (ATE, ATT, or another estimand) and \emph{what} would go wrong if assumptions fail (selection bias, as shown in Equation~\eqref{eq:selection-bias}).
 Graphical models excel at encoding \emph{why} the assumptions are plausible in the specific research context and at identifying \emph{what} may be missing (e.g., omitted confounders, unblocked backdoor paths).
@@ -556,7 +556,7 @@ We then discuss two broader considerations---the internal--external validity tra
 
 \subsection{Causal Credibility Assessments in Four Steps}
 
-As argued in the thesis statement, causal credibility assessments are feasible in empirical software engineering through an explicit articulation of causal theory and assumptions.
+As argued in the thesis statement, causal credibility assessments are feasible in empirical software engineering through explicit articulations of causal theory and assumptions.
 The four-step process introduced in Chapter~\ref{chp:intro} operationalizes this idea as a structured process for articulating why a study's findings should---or should not---be interpreted causally.
 Each step is grounded in the formal tools introduced earlier in this chapter.
 
@@ -566,16 +566,16 @@ This step forces the researcher to confront questions that a regression specific
 Which variables are mediators that should not be conditioned on?
 What alternative causal structures could generate the same observed associations?
 
-In practice, software engineering papers that engage with causal reasoning typically embed their theoretical assumptions in textual discussions---describing potential confounders in prose, acknowledging threats to validity, and arguing informally about causal pathways.
+In practice, empirical software engineering papers that engage with causal reasoning typically embed their theoretical assumptions in textual discussions---describing potential confounders in prose, acknowledging threats to validity, and arguing informally about causal pathways.
 While such textual articulation can convey the researcher's causal reasoning, it makes assumptions difficult to evaluate systematically: Readers must reconstruct the assumed causal structure from prose scattered across sections, and it is easy to overlook inconsistencies, missing confounders, or implicit conditioning on mediators and colliders.
 A directed acyclic graph (DAG) provides a more disciplined alternative by encoding the assumed data-generating process as a formal structure (Section~\ref{sec:formalism}): Each arrow is a substantive claim; each absent arrow asserts the absence of a direct effect.
-This visual explicitness opens the assumptions to scrutiny in a way that prose alone cannot.
+This visual explicitness opens the assumptions to scrutiny in a way that prose alone cannot: The absence of confounders or the inclusion of colliders in a model specification would become apparent once an explicit causal DAG is defined by the researcher.
 
 The importance of an explicit DAG varies with the research design.
 For studies relying on regression adjustment or selection-on-observables---where the credibility of causal claims hinges entirely on whether the correct set of variables is conditioned on---a DAG is particularly valuable, because the back-door criterion (Section~\ref{sec:formalism}) provides a formal basis for determining which covariates to include and which to exclude.
 Conditioning on a mediator, a collider, or an irrelevant variable can introduce bias that textual reasoning alone may not detect.
 For quasi-experimental designs such as difference-in-differences or regression discontinuity, where identification derives from the study design itself rather than from covariate selection, specifying a complete DAG is less critical: The key assumptions (e.g., parallel trends, continuity at the threshold) are properties of the research setting that can be argued and tested without fully enumerating every variable in the data-generating process.
-Even in these settings, however, a partial DAG can help clarify which confounders the design does and does not address, and what alternative explanations remain plausible.
+Even in these settings, however, a partial DAG can help clarify which confounders the design does and does not address, and what alternative explanations remain plausible in each specific research setting.
 
 Crucially, the plausibility of any explicit causal theory---whether expressed as a DAG or articulated in prose---rests on \emph{domain knowledge}~\cite{pearl2009causality}, and in software engineering, this is largely captured in the prior literature, especially descriptive and qualitative research.
 Surveys, case studies, ethnographies, and grounded-theory studies of development practice are what tell us \emph{which} factors shape language adoption, team behaviour, and defect introduction~\cite{DBLP:conf/icse/Devanbu0B16}; without this foundation, there is no principled basis for deciding which variables belong in the causal theory and which relationships connect them.
@@ -588,14 +588,13 @@ Because this example relies on a selection-on-observables identification strateg
 
 \paragraph{Step 2: Define the causal estimate of interest and specify the identifying assumption.}
 With the causal theory articulated, the researcher defines the causal estimate of interest using the potential outcomes framework (Section~\ref{sec:formalism}) and specifies the assumption under which the estimate would carry a causal interpretation.
-In the language-defect setting, the causal estimate of interest might be the ATE of adopting a statically-typed language with respect to defect density.
+In the language-defect setting, the causal estimate of interest might be the ATE of adopting a specific programming language with respect to the average defect density over projects in all programming languages.
 The back-door criterion applied to Figure~\ref{fig:pl-dag} identifies the adjustment set $\{$Domain, Team Skill, Org Culture, Codebase Age$\}$ and thereby operationalizes the conditional ignorability assumption (Equation~\eqref{eq:cond-ignorability}): Within strata defined by these four variables, language choice is assumed to be as-if random.
 
 This step also determines the statistical method, and here software engineering researchers benefit enormously from engaging with the econometrics and epidemiology literatures, where the science of causal identification from observational data has been developed and refined over decades~\cite{angrist1996identification,rosenbaum2002observational,pearl2009causality,cunningham2021causal,hansen2022econometrics}.
 These fields have produced a rich toolkit---difference-in-differences~\cite{card1993minimum,roth2023s}, instrumental variables~\cite{angrist1996identification}, regression discontinuity~\cite{thistlethwaite1960regression,calonico2014robust}, matching estimators~\cite{rosenbaum1983central,caliendo2008some}, marginal structural models---along with precise characterisations of the assumptions each method requires and the settings in which those assumptions are plausible.
 Importing these methods without understanding their epistemological foundations, however, risks misapplication; the assumptions are not interchangeable, and each method is designed for a specific data structure and a specific type of identifying variation.
 Software engineering researchers who invest in this methodological literature are far better equipped to choose an appropriate design, state its assumptions transparently, and anticipate the ways in which those assumptions might fail in their specific setting.
-
 For example, if the researcher has access to panel data where developers or repositories use multiple languages over time, developer and repository fixed effects can absorb time-invariant confounders---a strategy well understood in the panel-data econometrics literature~\cite{baltagi2008econometric}.
 If the setting features staggered language migration events, a difference-in-differences design can exploit within-project variation, but only under parallel-trends and no-anticipation assumptions whose plausibility must be argued on substantive grounds and, where possible, probed with pre-trend tests~\cite{roth2023s,marcus2021role}.
 Each method rests on specific assumptions that should be stated explicitly and connected back to the causal theory, and the researcher should consult the methodological literature to understand when those assumptions are tenable and what diagnostics are available to assess them.
@@ -604,7 +603,7 @@ Each method rests on specific assumptions that should be stated explicitly and c
 As discussed in the introduction to this chapter and elaborated in Section~\ref{sec:tradeoff}, no single study---however well-designed---achieves perfect identification, and this limitation is especially acute in software engineering, where treatments are complex, multi-dimensional, and entangled with the sociotechnical context in which they occur.
 Compounding this challenge, data collection, metric design, and measurement infrastructure in software engineering are themselves fraught with difficulty: Key constructs---defect proneness, productivity, code quality---lack universally accepted definitions~\cite{DBLP:journals/software/KitchenhamP96,DBLP:journals/queue/ForsgrenSMZHB21}; the proxies available from mining software repositories (bug-fix commits, issue counts, static-analysis warnings) each capture only a narrow, noisy slice of the underlying concept~\cite{DBLP:journals/ese/KalliamvakouGBS16}; and the tools and heuristics used to extract these metrics (e.g., commit-message classifiers, static analysis engines whose precision varies across languages) may themselves introduce systematic artifacts that interact with the treatment under study.
 Confounding from unmeasured variables, selection bias, measurement errors, and SUTVA violations are ever-present, and the researcher's task is to assess their severity honestly rather than assume them away.
-In the language--defect example, key limitations may include: Conditional ignorability may be violated if developer motivation or risk tolerance (absent from the DAG) drives both language choice and code quality; the treatment ``programming language'' is measured imprecisely in polyglot repositories; and the outcome ``defect proneness''---itself hard to define and operationalize---is typically proxied by bug-fix commits, a measure that is noisy, incomplete (not all defects are surfaced as commits), and potentially correlated with language-specific commit conventions and project-level bug-tracking practices.
+In the language-defect example, key limitations may include: Conditional ignorability may be violated if developer motivation or risk tolerance (absent from the DAG) drives both language choice and code quality; the treatment ``programming language'' is measured imprecisely in polyglot repositories; and the outcome ``defect proneness''---itself hard to define and operationalize---is typically proxied by bug-fix commits, a measure that is noisy, incomplete (not all defects are surfaced as commits), and potentially correlated with language-specific commit conventions and project-level bug-tracking practices.
 Where possible, limitations should be mitigated: Sensitivity analysis can bound the impact of omitted confounders (e.g., via $E$-values~\cite{vanderweele2017sensitivity} or Rosenbaum bounds~\cite{rosenbaum2002observational}), and triangulating across multiple outcome measures can guard against construct-dependent conclusions.
 
 \paragraph{Step 4: Thoughtfully navigate alternative explanations.}
@@ -626,7 +625,7 @@ The goal is not to eliminate all alternative explanations---an impossible standa
 \label{sec:tradeoff}
 
 Even after careful credibility assessment, each study faces a fundamental tension between internal and external validity. 
-For example, in the language--defect setting, a randomized experiment---assigning developers to implement the same task in different languages---would achieve strong internal validity: Random assignment eliminates confounding by construction.
+For example, in the language-defect setting, a randomized experiment---assigning developers to implement the same task in different languages---would achieve strong internal validity: Random assignment eliminates confounding by construction.
 But the controlled setting may not reflect real-world practice: The tasks may be too small, the developers unrepresentative, and the absence of long-term maintenance dynamics may limit relevance.
 Conversely, a large-scale observational study of GitHub repositories captures real-world variation and diverse contexts but cannot rule out that the estimated language effect is driven by unobserved selection.
 
