@@ -25,7 +25,7 @@ In this case, the quantitative repository mining study fails to provide evidence
 
 Similarly, consider the longstanding debate over whether the choice of programming language causally affects defect-proneness. 
 A large-scale correlational study~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17} analyzed millions of commits across thousands of GitHub projects; the study concluded that programming language has a significant but modest effect on defect-proneness, with functional and statically-typed languages associated with fewer defects.
-However, a rigorous reproduction study~\cite{DBLP:journals/toplas/BergerHMVV19} revisiting the same dataset with improved methodology—correcting errors in language classification, accounting for polyglot repositories, and applying more appropriate statistical models—found that the original effect sizes shrank dramatically and many findings failed to replicate. 
+However, a reproduction study~\cite{DBLP:journals/toplas/BergerHMVV19} revisiting the same dataset with improved methodology—correcting errors in language classification, accounting for polyglot repositories, and applying more appropriate statistical models—found that the original effect sizes shrank dramatically and many findings failed to replicate. 
 The original authors issued a rebuttal~\cite{DBLP:journals/corr/abs-1911-07393} defending their methodology, which prompted a counter-rebuttal~\cite{DBLP:journals/corr/abs-1911-11894} from the reproduction team. 
 Putting the controversy around the specific research design aside, the counter-rebuttal~\cite{DBLP:journals/corr/abs-1911-11894} reveals a deeper methodological impasse behind why the field cannot reach consensus on a seemingly straightforward empirical question:
 \begin{quote}
@@ -113,11 +113,10 @@ Then, the thesis dives deep into three empirical studies I published in the past
 \end{itemize}
 
 \paragraph{Proposed Work (Chapter~\ref{chp:proposed-work})}
-The proposed work extends the thesis by demonstrating a complementary use of the causal credibility assessment framework: systematically assessing \emph{existing} empirical research on a fundamentally causal question to clarify what the evidence supports, where its limitations lie, and what specific study designs would yield stronger evidence.
-To this end, I revisit the longstanding debate on programming languages and defect proneness~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17, DBLP:journals/toplas/BergerHMVV19}---a contested question that has resisted consensus despite extensive prior research.
-I apply the four-step framework to the debate surrounding the seminal study by \citet{DBLP:conf/sigsoft/RayPFD14}, showing that when studies investigate causal questions using correlational methods without explicit causal reasoning---even when findings are carefully framed as correlational, as they were in Ray et al.---the resulting ambiguity invites confusion and unproductive controversy.
-Informed by this assessment, I propose two complementary empirical studies: a panel fixed effects analysis exploiting within-developer and within-repository variation, and a difference-in-differences study of JavaScript-to-TypeScript migration events.
-Together, these contributions illustrate how the framework can serve as both a diagnostic tool for evaluating existing research and a design guide for future studies, charting a principled path from identified limitations to stronger evidence.
+The proposed work extends the thesis by developing the causal credibility assessment framework into an accessible \emph{tutorial} aimed at the broader software engineering research community.
+Using the longstanding debate on programming languages and defect proneness~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17, DBLP:journals/toplas/BergerHMVV19} as a worked example, I apply the four-step framework to the debate surrounding the seminal study by \citet{DBLP:conf/sigsoft/RayPFD14}, showing that when studies investigate causal questions using correlational methods without explicit causal reasoning---even when findings are carefully framed as correlational---the resulting ambiguity invites confusion, unproductive controversy, and downstream causal misinterpretation by citing work.
+Informed by this assessment, I propose a panel fixed effects analysis exploiting within-developer and within-repository variation as a concrete illustration of how the framework guides the design of improved studies.
+Together, these contributions illustrate how the framework can serve as both a diagnostic tool for evaluating existing research and a design guide for future studies, while the tutorial format aims to lower the barrier for adoption by the software engineering research community.
 
 \paragraph{Summary of Contributions} This thesis makes the following contributions:
 
