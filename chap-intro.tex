@@ -25,7 +25,7 @@ In this case, the quantitative repository mining study fails to provide evidence
 
 Similarly, consider the longstanding debate over whether the choice of programming language causally affects defect-proneness. 
 A large-scale correlational study~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17} analyzed millions of commits across thousands of GitHub projects; the study concluded that programming language has a significant but modest effect on defect-proneness, with functional and statically-typed languages associated with fewer defects.
-However, a reproduction study~\cite{DBLP:journals/toplas/BergerHMVV19} revisiting the same dataset with improved methodology—correcting errors in language classification, accounting for polyglot repositories, and applying more appropriate statistical models—found that the original effect sizes shrank dramatically and many findings failed to replicate. 
+However, a reproduction study~\cite{DBLP:journals/toplas/BergerHMVV19} revisiting the same dataset with methods that they claim to be better---correcting errors in language classification, accounting for polyglot repositories, and applying more appropriate statistical models---found that the original effect sizes shrank dramatically and many findings failed to replicate. 
 The original authors issued a rebuttal~\cite{DBLP:journals/corr/abs-1911-07393} defending their methodology, which prompted a counter-rebuttal~\cite{DBLP:journals/corr/abs-1911-11894} from the reproduction team. 
 Putting the controversy around the specific research design aside, the counter-rebuttal~\cite{DBLP:journals/corr/abs-1911-11894} reveals a deeper methodological impasse behind why the field cannot reach consensus on a seemingly straightforward empirical question:
 \begin{quote}
@@ -39,16 +39,16 @@ The result is a field that produces voluminous research but limited actionable k
 
 Modern causal inference methods offer a principled approach to addressing this problem~\cite{cunningham2021causal, pearl2009causality, hansen2022econometrics}. 
 Developed primarily in econometrics and epidemiology over the past several decades, these methods provide frameworks for distinguishing genuine causal effects from spurious correlations in observational data---precisely the kind of data investigated in repository mining studies.
-Importantly, the value of causal inference methods lies not in any claim to methodological perfection, but rather in its insistence on \emph{transparency}: Every causal design rests on assumptions that must be explicitly stated, examined, and debated.
+Importantly, the value of causal inference methods lies not in any claim to methodological perfection, but rather in their insistence on \emph{transparency}: Every causal design rests on assumptions that must be explicitly stated, examined, and debated.
 When a difference-in-differences study claims a causal effect, it does so under the assumption of parallel trends---an assumption that can be partially tested and openly scrutinized~\cite{marcus2021role}.
 When an instrumental variables analysis identifies an effect, it does so under exclusion restrictions that critics can directly challenge~\cite{deaton2010instruments}.
 This methodological transparency addresses the core problem illustrated by the programming language vs. defect-proneness example: 
 When studies produce contested results, progress requires not endless reanalysis but a shared framework for evaluating whether the findings and claims are plausible given the specific research context and, if not, how to develop a better design.
 
-In this thesis, I argue that \emph{causal credibility assessments is feasible in empirical software engineering through an explicit articulation of causal theory and assumptions}.
+In this thesis, I argue that \emph{causal credibility assessments are feasible in empirical software engineering through explicit articulations of causal theory and assumptions}.
 This pragmatic stance recognizes that causal inference in observational settings is inherently imperfect: No study eliminates all confounding, no natural experiment is as clean as a randomized controlled trial, and no finding generalizes to all contexts without qualification.
 Yet, these limitations do not render causal inquiry futile.
-Rather, they demand intellectual honesty about what we can and cannot conclude using available data, and careful calibration of confidence to convey the strength of the evidence to the audience.
+Rather, they demand intellectual honesty about what we can and cannot conclude from the available data sources, and careful calibration of confidence to convey the strength of the evidence to the audience in each study.
 
 Explicit causal credibility assessments are particularly important for research challenging well-known software engineering myths.
 From a Bayesian perspective, if a study yields results contrary to practitioners' intuitions, it requires more compelling evidence to shift posterior beliefs than a study that merely confirms conventional wisdom.\footnote{This reflects the Bayesian epistemological principle often summarized as ``extraordinary claims require extraordinary evidence.'' When a claim has a low prior probability (i.e., it contradicts established beliefs or practitioner intuition), stronger evidence is needed to shift the posterior belief toward acceptance. Formally, if $P(H)$ is low, then $P(E|H)/P(E|\neg H)$---the likelihood ratio---must be correspondingly high for $P(H|E)$ to reach credible levels. For a rigorous treatment of Bayesian reasoning in scientific inference, see Howson and Urbach~\cite{howson2006scientific}.}
@@ -62,13 +62,13 @@ Software engineering practice is characterized by \emph{myths}---widely held bel
 In this thesis, I argue that \emph{causal credibility assessments is feasible in empirical software engineering through an explicit articulation of causal theory and assumptions}.
 \end{framed}
 
-Various disciplines have developed approaches for assessing the credibility of causal claims in observational settings---from Bradford Hill's viewpoints for evaluating epidemiological evidence~\cite{hill1965environment}, to the design-based credibility revolution in empirical economics that emphasizes transparent identification strategies~\cite{angrist2010credibility}, to sensitivity analysis frameworks that quantify robustness to unmeasured confounding~\cite{rosenbaum2002observational}.
+There are multiple established approaches in other disciplines for causal credibility assessments---from Bradford Hill's viewpoints for evaluating epidemiological evidence~\cite{hill1965environment}, to the design-based credibility revolution in empirical economics that emphasizes transparent identification strategies~\cite{angrist2010credibility}, to sensitivity analysis frameworks that quantify robustness to unmeasured confounding~\cite{rosenbaum2002observational}.
 Drawing on these traditions, this thesis demonstrates the feasibility of causal credibility assessments in software engineering through one particular operationalization: a four-step process that I apply consistently across the empirical studies in this thesis:
 \begin{enumerate}[leftmargin=20pt]
-    \item Make the causal theory explicit---for instance, as a directed acyclic graph (DAG), which is especially valuable for regression-based studies where variable selection determines the credibility of causal claims,
+    \item Derive an explicit causal theory from existing software engineering domain knowledge---for instance, as a directed acyclic graph (DAG), which is especially valuable for regression-based studies where variable selection determines the credibility of causal claims,
     \item Define the causal estimate of interest through the potential outcome framework and specify the assumption under which the estimate would carry a causal interpretation,
-    \item Honestly acknowledge and mitigate limitations in data collection, metric design, and model specifications, 
-    \item Thoughtfully navigate alternative explanations (i.e., alternative causal structures) that may also be supported with current results. 
+    \item Honestly acknowledge and mitigate limitations and known caveats in data collection, metric design, measurement infrastructure, and model specifications, 
+    \item Thoughtfully navigate alternative explanations (i.e., alternative causal structures or causal DAGs) that may also be supported with the current results. 
 \end{enumerate}
 This four-step process is not the only way to conduct causal credibility assessments, nor does this thesis claim it is superior to alternative approaches.
 Other operationalizations---emphasizing different combinations of formal sensitivity analysis~\cite{rosenbaum2002observational, vanderweele2017sensitivity}, structured reporting guidelines, or pre-registered analysis plans---may be equally valid depending on the research context.
