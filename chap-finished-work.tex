@@ -1,6 +1,6 @@
-This chapter presents three empirical studies that exemplify the pragmatic causal inference approach and the four-step causal credibility assessment framework advocated in this thesis.
-Each study challenges a widely held software engineering belief---what I have termed a \emph{software engineering myth}---by applying the framework articulated in the thesis statement: making the causal theory explicit, defining the causal estimand and specifying the identifying assumptions, honestly acknowledging and mitigating limitations in data collection and analysis, and thoughtfully navigating alternative explanations that could also account for the observed results.
-Together, these studies demonstrate how this framework yields stronger and more credible evidence than the descriptive, correlational, and opinion-based research that has historically characterized these debates, even when perfect experimental designs are infeasible for these settings.
+This chapter presents three empirical studies that demonstrate the feasibility of explicit causal credibility assessments in empirical software engineering, using the four-step process introduced in Chapter~\ref{chp:intro}.
+Each study challenges a widely held software engineering belief---what I have termed a \emph{software engineering myth}---by making the causal theory explicit, defining the causal estimand and specifying the identifying assumptions, honestly acknowledging and mitigating limitations in data collection and analysis, and thoughtfully navigating alternative explanations that could also account for the observed results.
+Together, these studies illustrate that explicit causal credibility assessments are feasible and productive across diverse research settings in software engineering, even when perfect experimental designs are infeasible.
 
 \section{Empirical Study I: The Impact of Dependency Pinning on Supply Chain Security}
 \label{sec:finished-pinning}
@@ -19,7 +19,7 @@ Neither approach provides the quantitative, causal evidence necessary to substan
 \subsection{Method}
 
 To move beyond prior correlational and qualitative evidence, this study employs a \emph{counterfactual analysis} approach~\cite{morgan2015counterfactuals}---estimating the causal effect of pinning by comparing observed outcomes with simulated ``what-if'' scenarios where each project pins all its direct dependencies.
-This design directly embodies the four-step causal credibility framework advocated in this thesis: The causal theory is made explicit through the counterfactual simulation structure, the causal estimand is defined through potential outcomes reasoning, limitations are honestly acknowledged, and alternative explanations for the surprising findings are systematically addressed.
+This design directly embodies the four-step causal credibility assessment process demonstrated in this thesis: The causal theory is made explicit through the counterfactual simulation structure, the causal estimand is defined through potential outcomes reasoning, limitations are honestly acknowledged, and alternative explanations for the surprising findings are systematically addressed.
 
 \paragraph{Data Collection}
 The study curates a dataset of 10,000 npm packages and 10,000 GitHub repositories, ensuring representation of both libraries and applications.
@@ -96,7 +96,7 @@ Its interaction with npm's deduplication heuristics drives the counterintuitive 
 \end{figure}
 
 \paragraph{Causal Credibility Assessment}
-Following the four-step framework advocated in this thesis, I assess the causal credibility of this study's findings.
+Following the four-step process demonstrated in this thesis, I assess the causal credibility of this study's findings.
 \emph{(1) Causal theory:} The causal theory is made explicit as a DAG in Figure~\ref{fig:pinning-dag} and operationalized through the counterfactual simulation structure.
 The treatment (pinning all direct dependencies) affects security and maintenance outcomes through the mediating mechanism of npm's dependency resolution, which also takes as input the upstream versioning practices that the project cannot control.
 Project Characteristics and Ecosystem Evolution are confounders controlled by the simulation design (same project under both conditions) and by project- and time-fixed effects in the panel regression.
@@ -140,7 +140,7 @@ Prior reports from gray literature document repositories buying stars for growth
 \subsection{Method}
 
 This study presents the first systematic, global, and longitudinal measurement of fake GitHub stars, combining scalable anomaly detection with causal analysis of promotional effectiveness.
-The methodological approach exemplifies the causal credibility framework advocated in this thesis---the detection tool makes explicit assumptions about what constitutes anomalous behavior, validates performance against known ground truth, and the causal analysis of promotional effectiveness employs panel regression with fixed effects while explicitly articulating the causal theory, identifying assumptions, limitations, and alternative explanations.
+The methodological approach exemplifies the causal credibility assessment process demonstrated in this thesis---the detection tool makes explicit assumptions about what constitutes anomalous behavior, validates performance against known ground truth, and the causal analysis of promotional effectiveness employs panel regression with fixed effects while explicitly articulating the causal theory, identifying assumptions, limitations, and alternative explanations.
 
 \paragraph{Detection Tool Design}
 I developed \SystemName, a scalable detection tool that identifies two signatures of anomalous starring behavior across the entire GitHub event archive (63.9 million users, 331 million repositories, 326 million stars from 2019--2024):
@@ -265,7 +265,7 @@ However, these findings derive primarily from controlled experiments or benchmar
 
 This study provides the first large-scale empirical investigation of how LLM agent assistants impact project-level development velocity and software quality over time.
 The research design employs a \emph{difference-in-differences} (DiD) approach with staggered adoption~\cite{borusyak2024revisiting}---a state-of-the-art causal inference technique that exploits natural variation in when repositories adopted Cursor to identify causal effects.
-This design most directly instantiates the four-step causal credibility framework articulated in the thesis statement: The causal theory is encoded in the DiD structure with matched controls; the causal estimand (ATT) is defined through the potential outcomes framework under the parallel trends assumption; the assumption's plausibility is assessed through pre-trend tests and strengthened by propensity score matching; and alternative explanations are systematically addressed through matching, fixed effects, and panel GMM analysis.
+This design most directly instantiates the four-step causal credibility assessment process introduced in Chapter~\ref{chp:intro}: The causal theory is encoded in the DiD structure with matched controls; the causal estimand (ATT) is defined through the potential outcomes framework under the parallel trends assumption; the assumption's plausibility is assessed through pre-trend tests and strengthened by propensity score matching; and alternative explanations are systematically addressed through matching, fixed effects, and panel GMM analysis.
 
 \paragraph{Treatment Group Identification}
 I identify Cursor-adopting repositories through configuration files in git history.
@@ -366,7 +366,7 @@ Other AI Tool Usage represents potential contamination from tools like GitHub Co
 \end{figure}
 
 \paragraph{Causal Credibility Assessment}
-Of the three studies, this one most directly instantiates the four-step causal credibility framework, employing a quasi-experimental design from the econometrics literature.
+Of the three studies, this one most directly instantiates the four-step causal credibility assessment process, employing a quasi-experimental design from the econometrics literature.
 \emph{(1) Causal theory:} The causal theory is made explicit as a DAG in Figure~\ref{fig:cursor-dag}.
 Cursor adoption (treatment) has two direct causal paths: a transient positive effect on Development Velocity and a persistent direct effect on Technical Debt (code complexity and static analysis warnings).
 The dashed feedback arrow from Technical Debt to future Development Velocity---identified through panel GMM analysis---represents the key dynamic interaction: accumulated technical debt causally reduces subsequent velocity, creating the self-reinforcing cycle that explains why initial velocity gains dissipate.
@@ -400,10 +400,10 @@ Cross-sectional comparisons or short-term experiments would have produced mislea
 
 \section{Summary}
 
-These three empirical studies collectively demonstrate the value of the four-step causal credibility framework for developing trustworthy evidence that challenges software engineering myths and informs evidence-based practice.
+These three empirical studies collectively demonstrate the feasibility and value of explicit causal credibility assessments for developing trustworthy evidence that challenges software engineering myths and informs evidence-based practice.
 Each study targets a widely held belief---that dependency pinning improves security, that fake popularity signals provide sustainable promotional benefits, and that AI coding assistants produce unambiguous productivity improvements---and in each case, rigorous empirical analysis reveals a more nuanced reality than conventional wisdom suggests.
 
-Importantly, the studies illustrate all four steps of the causal credibility assessment framework articulated in the thesis statement, albeit at different levels of formality appropriate to each research context.
+Importantly, the studies illustrate all four steps of the causal credibility assessment process introduced in Chapter~\ref{chp:intro}, albeit at different levels of formality appropriate to each research context.
 Each makes its causal theory explicit as a DAG---whether encoding how version constraints interact with npm's dependency resolution through a counterfactual simulation (pinning, Figure~\ref{fig:pinning-dag}), contrasting the hypothesized promotional dynamics with the alternative confounding structure from unobserved maintainer quality (fake stars, Figure~\ref{fig:fake-stars-dag}), or encoding the treatment mechanism with its two direct causal paths and the dynamic feedback loop between technical debt and velocity identified through panel GMM (Cursor, Figure~\ref{fig:cursor-dag}).
 Each defines a causal estimand through the potential outcomes framework---the within-project ATT of pinning (pinning), the longitudinal effect of fake on real star acquisition (fake stars), or the ATT and horizon-specific effects of Cursor adoption---and specifies the identifying assumptions under which the estimate carries a causal interpretation.
 Each honestly acknowledges limitations in data collection, metric design, and model specification, allowing readers to calibrate their confidence accordingly.

@@ -533,7 +533,7 @@ Under that alternative structure, no amount of covariate adjustment would recove
 
 These disagreements are productive precisely because they are \emph{concrete and falsifiable}: Each alternative DAG implies specific conditional independence relations that can, at least in principle, be tested against observed data.
 When two researchers disagree about whether a study's findings are causally interpretable, the DAG framework channels the debate into questions about specific edges and paths rather than vague objections about ``lurking variables'' and ``untrustworthy methods.''
-This is the sense in which the thesis statement calls for researchers to ``make the causal theory explicit as DAGs'' and to ``thoughtfully navigate alternative explanations (i.e., alternative DAGs) that may also be supported with current results.''
+This is the sense in which the four-step process demonstrated in this thesis calls for researchers to ``make the causal theory explicit as DAGs'' and to ``thoughtfully navigate alternative explanations (i.e., alternative DAGs) that may also be supported with current results.''
 
 \subsection{Using the Two Frameworks Together}
 
@@ -550,13 +550,14 @@ Together, they provide the theoretical foundation upon which the specific method
 
 The preceding sections developed the technical foundations for causal credibility assessments: the potential outcomes framework for defining estimands and assumptions, and graphical causal models for encoding and scrutinizing those assumptions. %and a taxonomy of threats that can undermine any study.
 This section synthesizes these concepts into the pragmatic approach advocated by this thesis.
-We first show how the four steps of causal credibility assessment articulated in the thesis statement (Chapter~\ref{chp:intro}) map onto the concepts introduced in this chapter and illustrate each step using the programming language and defect-proneness example.
+We first show how the four steps of causal credibility assessment introduced in Chapter~\ref{chp:intro} map onto the concepts introduced in this chapter and illustrate each step using the programming language and defect-proneness example.
 We then discuss two broader considerations---the internal--external validity trade-off and the hierarchy of evidence---that guide researchers in situating their contributions within the landscape of causal evidence in empirical software engineering research.
 
 \subsection{Causal Credibility Assessments in Four Steps}
 
-The thesis statement argues that empirical software engineering research requires an explicit framework for \emph{causal credibility assessments}: a structured process for articulating why a study's findings should—or should not—be interpreted causally.
-I propose four necessary steps, each grounded in the formal tools introduced earlier, for software engineering research.
+As argued in the thesis statement, causal credibility assessments are feasible in empirical software engineering through an explicit articulation of causal theory and assumptions.
+The four-step process introduced in Chapter~\ref{chp:intro} operationalizes this idea as a structured process for articulating why a study's findings should---or should not---be interpreted causally.
+Each step is grounded in the formal tools introduced earlier in this chapter.
 
 \paragraph{Step 1: Make the causal theory explicit as a DAG.}
 Before fitting any model, the researcher should encode the assumed data-generating process as a directed acyclic graph (Section~\ref{sec:formalism}) so that every causal assumption is visible: Each arrow is a substantive claim; each absent arrow asserts the absence of a direct effect.
@@ -641,4 +642,4 @@ The pragmatic researcher chooses the strongest design that remains \emph{credibl
 This pragmatic stance recognizes that causal inference in observational settings is inherently imperfect.
 No study eliminates all confounding, no natural experiment is as clean as a randomized trial, and no finding generalizes to all contexts without qualification.
 Yet these limitations do not render causal inquiry futile.
-Imperfect evidence, accumulated thoughtfully across multiple studies and methods, guides decisions far better than intuition and conventional wisdom alone---and the four-step credibility assessment ensures that the strength and limitations of each piece of evidence are communicated honestly.
+Imperfect evidence, accumulated thoughtfully across multiple studies and methods, guides decisions far better than intuition and conventional wisdom alone---and explicit credibility assessments, such as the four-step process demonstrated in this thesis, help ensure that the strength and limitations of each piece of evidence are communicated honestly.
