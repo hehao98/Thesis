@@ -2,6 +2,8 @@
 
 **Thesis Proposal** by Hao He, Carnegie Mellon University, March 9, 2026.
 
+**Committee:** Bogdan Vasilescu (Co-Chair), Christian Kästner (Co-Chair), Rohan Padhye, Narayan Ramasubbu
+
 ## Overview
 
 Software engineering practice is filled with myths — widely held beliefs derived from intuition, experience, and conventional wisdom that have never been rigorously tested or, when tested, have produced inconclusive results. This thesis argues that causal credibility assessments are feasible in empirical software engineering through explicit articulation of causal theory and assumptions. Specifically, it demonstrates a four-step process applied consistently across empirical studies:
