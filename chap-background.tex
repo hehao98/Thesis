@@ -533,7 +533,8 @@ Under that alternative structure, no amount of covariate adjustment would recove
 
 These disagreements are productive precisely because they are \emph{concrete and falsifiable}: Each alternative DAG implies specific conditional independence relations that can, at least in principle, be tested against observed data.
 When two researchers disagree about whether a study's findings are causally interpretable, the DAG framework channels the debate into questions about specific edges and paths rather than vague objections about ``lurking variables'' and ``untrustworthy methods.''
-This is the sense in which the four-step process demonstrated in this thesis calls for researchers to ``make the causal theory explicit as DAGs'' and to ``thoughtfully navigate alternative explanations (i.e., alternative DAGs) that may also be supported with current results.''
+This is the sense in which the four-step process demonstrated in this thesis calls for researchers to ``make the causal theory explicit'' and to ``thoughtfully navigate alternative explanations (i.e., alternative causal structures) that may also be supported with current results.''
+DAGs are one particularly useful way to achieve this explicitness, as discussed in Section~\ref{sec:pragmatic}.
 
 \subsection{Using the Two Frameworks Together}
 
@@ -559,23 +560,34 @@ As argued in the thesis statement, causal credibility assessments are feasible i
 The four-step process introduced in Chapter~\ref{chp:intro} operationalizes this idea as a structured process for articulating why a study's findings should---or should not---be interpreted causally.
 Each step is grounded in the formal tools introduced earlier in this chapter.
 
-\paragraph{Step 1: Make the causal theory explicit as a DAG.}
-Before fitting any model, the researcher should encode the assumed data-generating process as a directed acyclic graph (Section~\ref{sec:formalism}) so that every causal assumption is visible: Each arrow is a substantive claim; each absent arrow asserts the absence of a direct effect.
+\paragraph{Step 1: Make the causal theory explicit.}
+Before fitting any model, the researcher should articulate the assumed data-generating process so that every causal assumption is visible and debatable.
 This step forces the researcher to confront questions that a regression specification or modeling approach leaves implicit: What potential confounders are there?
 Which variables are mediators that should not be conditioned on?
-What alternative DAG structures could generate the same observed associations?
+What alternative causal structures could generate the same observed associations?
 
-Crucially, the plausibility of a causal DAG rests on \emph{domain knowledge}~\cite{pearl2009causality}, and in software engineering, this is largely captured in the prior literature, especially descriptive and qualitative research.
-Surveys, case studies, ethnographies, and grounded-theory studies of development practice are what tell us \emph{which} factors shape language adoption, team behaviour, and defect introduction~\cite{DBLP:conf/icse/Devanbu0B16}; without this foundation, there is no principled basis for deciding which variables belong in the DAG and which edges connect them.
-A DAG whose structure cannot be traced back to substantive findings or well-documented domain expertise is little more than speculation dressed in formal notation.
-Prior descriptive and qualitative work, therefore, plays an indispensable role in causal inference: It supplies the substantive justification for the completeness of the graph and, by extension, for the validity of every downstream identification argument.
+In practice, software engineering papers that engage with causal reasoning typically embed their theoretical assumptions in textual discussions---describing potential confounders in prose, acknowledging threats to validity, and arguing informally about causal pathways.
+While such textual articulation can convey the researcher's causal reasoning, it makes assumptions difficult to evaluate systematically: Readers must reconstruct the assumed causal structure from prose scattered across sections, and it is easy to overlook inconsistencies, missing confounders, or implicit conditioning on mediators and colliders.
+A directed acyclic graph (DAG) provides a more disciplined alternative by encoding the assumed data-generating process as a formal structure (Section~\ref{sec:formalism}): Each arrow is a substantive claim; each absent arrow asserts the absence of a direct effect.
+This visual explicitness opens the assumptions to scrutiny in a way that prose alone cannot.
 
-For the language--defect problem, Figure~\ref{fig:pl-dag} encodes the theory that Language affects Defect Proneness through Tooling/Type Safety, while Domain, Team Skill, Org Culture, and Codebase Age confound the relationship.
+The importance of an explicit DAG varies with the research design.
+For studies relying on regression adjustment or selection-on-observables---where the credibility of causal claims hinges entirely on whether the correct set of variables is conditioned on---a DAG is particularly valuable, because the back-door criterion (Section~\ref{sec:formalism}) provides a formal basis for determining which covariates to include and which to exclude.
+Conditioning on a mediator, a collider, or an irrelevant variable can introduce bias that textual reasoning alone may not detect.
+For quasi-experimental designs such as difference-in-differences or regression discontinuity, where identification derives from the study design itself rather than from covariate selection, specifying a complete DAG is less critical: The key assumptions (e.g., parallel trends, continuity at the threshold) are properties of the research setting that can be argued and tested without fully enumerating every variable in the data-generating process.
+Even in these settings, however, a partial DAG can help clarify which confounders the design does and does not address, and what alternative explanations remain plausible.
+
+Crucially, the plausibility of any explicit causal theory---whether expressed as a DAG or articulated in prose---rests on \emph{domain knowledge}~\cite{pearl2009causality}, and in software engineering, this is largely captured in the prior literature, especially descriptive and qualitative research.
+Surveys, case studies, ethnographies, and grounded-theory studies of development practice are what tell us \emph{which} factors shape language adoption, team behaviour, and defect introduction~\cite{DBLP:conf/icse/Devanbu0B16}; without this foundation, there is no principled basis for deciding which variables belong in the causal theory and which relationships connect them.
+A causal theory whose structure cannot be traced back to substantive findings or well-documented domain expertise is little more than speculation, whether it is dressed in formal DAG notation or buried in prose.
+Prior descriptive and qualitative work, therefore, plays an indispensable role in causal inference: It supplies the substantive justification for the completeness of the assumed causal structure and, by extension, for the validity of every downstream identification argument.
+
+For the language--defect problem, Figure~\ref{fig:pl-dag} encodes the theory as a DAG: Language affects Defect Proneness through Tooling/Type Safety, while Domain, Team Skill, Org Culture, and Codebase Age confound the relationship.
 Each of these variables and edges should be grounded in prior evidence---for example, qualitative studies documenting how organisational culture shapes technology adoption, or descriptive analyses linking team experience to code quality~\cite{DBLP:journals/tse/Murphy-HillJSSP21,DBLP:journals/ese/ScholtesMS16}.
-Committing to this DAG---and presenting it to reviewers alongside the evidence that motivates its structure---opens the assumptions to scrutiny in a way that a regression table alone cannot.
+Because this example relies on a selection-on-observables identification strategy, the DAG is essential: It reveals precisely which confounders must be conditioned on (Domain, Team Skill, Org Culture, Codebase Age) and which variables must be excluded (Tooling/Type Safety as mediator, Project Complexity as non-confounder) for the regression coefficient to carry a causal interpretation.
 
 \paragraph{Step 2: Define the causal estimand, estimation method, and the identifying assumptions.}
-With the DAG in hand, the researcher defines the causal quantity of interest using the potential outcomes framework (Section~\ref{sec:formalism}).
+With the causal theory articulated, the researcher defines the causal quantity of interest using the potential outcomes framework (Section~\ref{sec:formalism}).
 In the language-defect setting, the estimand might be the ATE of adopting a statically-typed language with respect to defect density.
 The back-door criterion applied to Figure~\ref{fig:pl-dag} identifies the adjustment set $\{$Domain, Team Skill, Org Culture, Codebase Age$\}$ and thereby operationalizes the conditional ignorability assumption (Equation~\eqref{eq:cond-ignorability}): Within strata defined by these four variables, language choice is assumed to be as-if random.
 
@@ -586,7 +598,7 @@ Software engineering researchers who invest in this methodological literature ar
 
 For example, if the researcher has access to panel data where developers or repositories use multiple languages over time, developer and repository fixed effects can absorb time-invariant confounders---a strategy well understood in the panel-data econometrics literature~\cite{baltagi2008econometric}.
 If the setting features staggered language migration events, a difference-in-differences design can exploit within-project variation, but only under parallel-trends and no-anticipation assumptions whose plausibility must be argued on substantive grounds and, where possible, probed with pre-trend tests~\cite{roth2023s,marcus2021role}.
-Each method rests on specific assumptions that should be stated explicitly and connected back to the DAG, and the researcher should consult the methodological literature to understand when those assumptions are tenable and what diagnostics are available to assess them.
+Each method rests on specific assumptions that should be stated explicitly and connected back to the causal theory, and the researcher should consult the methodological literature to understand when those assumptions are tenable and what diagnostics are available to assess them.
 
 \paragraph{Step 3: Honestly acknowledge and mitigate limitations.}
 As discussed in the introduction to this chapter and elaborated in Section~\ref{sec:tradeoff}, no single study---however well-designed---achieves perfect identification, and this limitation is especially acute in software engineering, where treatments are complex, multi-dimensional, and entangled with the sociotechnical context in which they occur.
@@ -596,8 +608,8 @@ In the language--defect example, key limitations may include: Conditional ignora
 Where possible, limitations should be mitigated: Sensitivity analysis can bound the impact of omitted confounders (e.g., via $E$-values~\cite{vanderweele2017sensitivity} or Rosenbaum bounds~\cite{rosenbaum2002observational}), and triangulating across multiple outcome measures can guard against construct-dependent conclusions.
 
 \paragraph{Step 4: Navigate alternative explanations.}
-The researcher should consider rival causal structures---alternative DAGs---that could also explain the observed findings and assess whether the data can discriminate among them.
-Constructive engagement with alternatives means deriving \emph{testable implications} that differ across competing DAGs and checking them against the data.
+The researcher should consider rival causal structures---whether formalized as alternative DAGs or articulated as competing theoretical accounts---that could also explain the observed findings and assess whether the data can discriminate among them.
+Constructive engagement with alternatives means deriving \emph{testable implications} that differ across competing causal structures and checking them against the data.
 In the language--defect example, consider three plausible challenges:
 %
 \begin{enumerate}[leftmargin=15pt]
