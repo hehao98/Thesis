@@ -1,4 +1,4 @@
-The three empirical studies presented in Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, and~\ref{chp:cursor} demonstrate the feasibility of explicit causal credibility assessments in software engineering by applying the four-step process---making causal theory explicit, defining the estimand and identifying assumptions, honestly acknowledging limitations, and navigating alternative explanations---to produce trustworthy evidence that challenges widely held software engineering myths.
+The three empirical studies presented in Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, and~\ref{chp:cursor} demonstrate the feasibility of explicit causal credibility assessments in software engineering by applying the four-step process---deriving an explicit causal theory from domain knowledge, defining the causal estimate of interest and specifying the identifying assumption, honestly acknowledging and mitigating limitations and known caveats, and thoughtfully navigating alternative explanations---to produce trustworthy evidence that challenges widely held software engineering myths.
 In each study, the four-step process guided the research design from the outset, ensuring that causal claims were appropriately calibrated to the strength of the evidence.
 
 Building on these contributions, the proposed work extends the thesis by developing the causal credibility assessment framework into an accessible \emph{tutorial} aimed at the broader software engineering research community.
@@ -52,7 +52,7 @@ This worked example is intended to serve as an accessible tutorial for software 
 \subsection{Applying the Causal Credibility Assessment Framework}
 \label{sec:proposed-assessment}
 
-\paragraph{Step 1: Make the causal theory explicit.}
+\paragraph{Step 1: Derive an explicit causal theory from domain knowledge.}
 Consistent with their correlational framing, \citet{DBLP:conf/sigsoft/RayPFD14} do not present an explicit causal model.
 Their statistical approach---a negative binomial regression of defect-fixing commits on language, controlling for project age, project size, and number of developers---is designed to estimate conditional associations rather than causal effects.
 This choice is defensible on its own terms, but it leaves an important question unanswered: What \emph{would} the data-generating process need to look like for the reported associations to reflect genuine causal effects from the choice of programming languages?
@@ -67,7 +67,7 @@ The absence of an explicit DAG had concrete consequences for the subsequent deba
 Without a shared visual representation of the assumed data-generating process, neither the original authors nor the reproduction team could identify precisely \emph{which} confounding paths remained open, leading to vague disagreements about whether the findings ``adequately controlled for confounders'' rather than productive engagement with specific threats.
 A DAG would have channeled the debate into concrete questions---Is Team Skill adequately proxied by developer count? Is Domain a relevant confounder in this sample?---rather than the generic ``correlation versus causation'' impasse that ultimately resulted.
 
-\paragraph{Step 2: Define the causal estimand, estimation method, and identifying assumptions.}
+\paragraph{Step 2: Define the causal estimate of interest and specify the identifying assumption.}
 Ray et al.'s regression coefficient on language type is best understood as a conditional association: the average partial association between programming language and defect-fixing commit counts, conditional on the included covariates.
 The authors do not claim this coefficient is causal, and their correlational framing is appropriate given the design.
 However, the question that motivates the study and drives practitioner interest---whether choosing one language over another would reduce defects---is inherently causal.
@@ -80,7 +80,7 @@ Furthermore, the study's cross-sectional design limits identification to \emph{b
 The potential outcomes framework makes explicit why this is problematic for causal interpretation: The study estimates $E[Y | D = \text{Haskell}, X] - E[Y | D = \text{Python}, X]$, but this equals the causal effect only if selection bias (Equation~\eqref{eq:selection-bias}) vanishes conditional on $X$---which, given the unblocked back-door paths, it almost certainly does not.
 Making these assumptions explicit does not invalidate the correlational findings, but it precisely delineates the conditions under which they would---or would not---support the causal conclusions that practitioners seek.
 
-\paragraph{Step 3: Honestly acknowledge and mitigate limitations.}
+\paragraph{Step 3: Honestly acknowledge and mitigate limitations and known caveats.}
 Beyond the identification considerations, the study faces several data and measurement challenges that affect how strongly the findings---whether interpreted correlationally or causally---can be trusted.
 
 First, the treatment---``programming language''---is operationalized using GitHub's dominant-language classification, which assigns each repository a single language based on byte counts.
@@ -95,7 +95,7 @@ If Haskell developers write more descriptive commit messages that are less likel
 Third, the study does not conduct sensitivity analysis to assess how strong unmeasured confounding would need to be to explain away the reported effects.
 Tools such as $E$-values~\cite{vanderweele2017sensitivity} or Rosenbaum bounds~\cite{rosenbaum2002observational} would have provided readers with a quantitative assessment of the findings' robustness to unmeasured confounders, enabling more calibrated interpretation.
 
-\paragraph{Step 4: Navigate alternative explanations.}
+\paragraph{Step 4: Thoughtfully navigate alternative explanations.}
 Because the study does not frame its investigation in causal terms, it does not systematically consider alternative data-generating processes that could produce the same observed associations.
 An explicit causal framework would have enabled---and motivated---engagement with competing explanations, each of which implies a different DAG and different implications for the reported findings.
 Four prominent alternatives illustrate how such engagement would work:
