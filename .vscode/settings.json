@@ -1,0 +1,54 @@
+{
+    "latex-workshop.latex.tools": [
+        {
+            "name": "tectonic",
+            "command": "tectonic",
+            "args": [
+                "--synctex",
+                "--keep-logs",
+                "--keep-intermediates",
+                "%DOC%.tex"
+            ],
+            "env": {}
+        },
+        {
+            "name": "pdflatex",
+            "command": "pdflatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "%DOC%"
+            ]
+        },
+        {
+            "name": "bibtex",
+            "command": "bibtex",
+            "args": ["%DOCFILE%"]
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "pdflatex -> bibtex -> pdflatex x2",
+            "tools": ["pdflatex", "bibtex", "pdflatex", "pdflatex"]
+        },
+        {
+            "name": "pdflatex x2",
+            "tools": ["pdflatex", "pdflatex"]
+        },
+        {
+            "name": "pdflatex only",
+            "tools": ["pdflatex"]
+        },
+        {
+            "name": "tectonic",
+            "tools": ["tectonic"]
+        }
+    ],
+    "latex-workshop.latex.recipe.default": "lastUsed",
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "latex-workshop.latex.autoClean.run": "onBuilt",
+    "latex-workshop.latex.autoClean.cleanAndRetry.enabled": true,
+    "latex-workshop.view.pdf.viewer": "tab",
+    "codeQL.githubDatabase.download": "never"
+}
