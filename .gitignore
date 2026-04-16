@@ -1,8 +1,14 @@
-main.log
+# The thesis PDF output
 main.pdf
-main.aux
-main.out
-main.blg
-main.synctex.gz
-comment.cut
+
+# LaTeX generated files
+*.log
+*.aux
+*.out
+*.blg
+*.synctex.gz
+*.cut
 *.bbl
+*.bcf
+*.toc
+*.xml

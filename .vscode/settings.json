@@ -7,6 +7,8 @@
                 "--synctex",
                 "--keep-logs",
                 "--keep-intermediates",
+                "-Z",
+                "shell-escape",
                 "%DOC%.tex"
             ],
             "env": {}
@@ -18,6 +20,7 @@
                 "-synctex=1",
                 "-interaction=nonstopmode",
                 "-file-line-error",
+                "-shell-escape",
                 "%DOC%"
             ]
         },
