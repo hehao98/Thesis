@@ -7,8 +7,14 @@ main.pdf
 *.out
 *.blg
 *.synctex.gz
+*.synctex(busy)
 *.cut
 *.bbl
 *.bcf
 *.toc
 *.xml
+*.fdb_latexmk
+*.fls
+
+# minted package cache
+_minted-*/
