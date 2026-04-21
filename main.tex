@@ -128,8 +128,8 @@
 {\bf Dispelling Software Engineering Myths:\\A Pragmatic Causal Inference Approach
 }}
 \author{Hao He}
-\date{March 17, 2026}
-\Year{2026}
+\date{\today}
+\Year{\the\year}
 \trnumber{}
 
 \committee{
@@ -157,13 +157,18 @@ Narayan Ramasubbu
 
 \begin{abstract}
 Software engineering practice is filled with myths---beliefs derived from intuition, experience, and conventional wisdom---that lack empirical foundations.
-Unfortunately, empirical software engineering research often fails to rigorously test these beliefs when it relies on descriptive, correlational, and qualitative evidence without explicitly assessing the extent to which it supports a causal theory of interest.
-In this thesis, I argue that \emph{causal credibility assessments are feasible in empirical software engineering through explicit articulations of causal theory and assumptions}.
+Many of these myths are \emph{causal} in nature, concerning the consequences of decisions, interventions, and changes to practice.
+While empirical software engineering research frequently investigate these myths through descriptive, correlational, and qualitative evidence, it rarely engages with the challenging question of \emph{whether} the evidence can actually support the causal claims beneath these myths.
+In this thesis, I argue that \emph{causal credibility assessments are feasible in empirical software engineering research through explicit articulations of causal theory and assumptions}.
+
+To demonstrate this argument, this thesis starts with an accessible introduction to the modern causal inference toolkit for software engineering researchers.
+I will cover three conceptual pillars that would enable explicit articulations of causal theory and assumptions in empirical settings: potential outcomes framework, graphical causal models, and design-based identification.
+I will walk through
 
 Across three empirical studies, I demonstrate how causal credibility assessments can reveal systematic gaps between practitioner beliefs and empirical reality. 
 First, using counterfactual analysis and simulations on npm dependency data, I challenge the myth that pinning dependency versions improves project security, showing that it paradoxically increases attack exposure unless upstream packages pin their own dependencies. 
 Second, through a longitudinal analysis of GitHub starring patterns with panel regression models, I challenge the myth that fake GitHub stars provide sustainable promotional benefits, showing instead that these artificial signals become long-term liabilities. 
-Finally, using a difference-in-differences framework with staggered adoption, I challenge the myth that AI coding tools unambiguously improve developer productivity, finding that Cursor's initial velocity gains are offset by sustained accumulation of technical debt.
+Finally, using a difference-in-differences design with staggered adoption, I challenge the myth that AI coding tools unambiguously improve developer productivity, finding that Cursor's initial velocity gains are offset by sustained accumulation of technical debt.
 In each study, I assess the credibility of causal claims through the following four-step framework: (1) deriving an explicit causal theory from software engineering domain knowledge, (2) defining the causal estimate of interest and specifying the assumption under which the estimate carries a causal interpretation, (3) honestly acknowledging and mitigating limitations and known caveats, and (4) thoughtfully navigating alternative explanations.
 
 Building on these contributions, I propose an accessible tutorial chapter that revisits the programming language and defect proneness debate as a running example throughout, demonstrating that explicit causal credibility assessments can serve as both a diagnostic tool for evaluating existing research and a principled design guide for future studies.
