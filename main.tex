@@ -3,6 +3,7 @@
 \usepackage{newtxtext, newpxmath}
 \usepackage[T1]{fontenc} 
 \usepackage{graphicx}
+\graphicspath{{./}{tutorial/plots/}}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
 \usepackage{enumitem}
@@ -117,7 +118,8 @@
 \addbibresource{references.bib}
 \addbibresource{references-pinning.bib}
 \addbibresource{references-fake-stars.bib}
-\addbibresource{references-cursor.bib} 
+\addbibresource{references-cursor.bib}
+\addbibresource{tutorial/paper/references.bib}
 
 \begin{document} 
 \frontmatter
@@ -139,13 +141,10 @@ Rohan Padhye \\
 Narayan Ramasubbu
 }
 
-\support{}
-\disclaimer{}
+%\support{This work was supported in part by the National Science Foundation (award 2206859).}
+%\disclaimer{The views expressed in this work are those of the author and do not necessarily reflect the views of the sponsoring agencies.}
 
-% copyright notice generated automatically from Year and author.
-% permission added if \permission{} given.
-
-%\keywords{Stuff, More Stuff}
+\keywords{causal inference, empirical software engineering, mining software repositories, research methodology, quasi-experimental design, observational studies, AI coding tools, software supply chain security, GitHub, developer productivity, open-source software}
 
 \maketitle
 
@@ -173,9 +172,9 @@ In each study, I assess the credibility of causal claims through the following f
 Collectively, this thesis provides a methodological blueprint for future empirical software engineering research, illustrating how to balance rigor with practicality to generate actionable, trustworthy evidence for software engineering myths.
 \end{abstract}
 
-%\begin{acknowledgments}
-%My advisor is cool.
-%\end{acknowledgments}
+\begin{acknowledgments}
+My advisor is cool.
+\end{acknowledgments}
 
 \tableofcontents
 
@@ -190,21 +189,33 @@ Collectively, this thesis provides a methodological blueprint for future empiric
 
 \include{chap-intro}
 
-\chapter{A Primer on Causal Credibility}
+\chapter{Causal Inference for Empirical Software Engineering: A Tutorial}
 \label{chp:background}
 
-\include{chap-background}
+\input{tutorial/paper/1-introduction}
 
-\chapter{Completed Work}
+\input{tutorial/paper/2-primer}
 
-\include{chap-finished-work}
+\input{tutorial/paper/3-worked-example}
 
-\chapter{Proposed Work}
-\label{chp:proposed-work}
+\input{tutorial/paper/4-discussion}
 
-\include{chap-proposed-work}
+\chapter{Empirical Study I: The Impact of Dependency Pinning on Supply Chain Security}
+\label{chp:pinning}
 
-%\chapter{Conclusion}
+\include{main-pinning}
+
+\chapter{Empirical Study II: The Impact of Fake GitHub Stars on Repository Promotion}
+\label{chp:fake-stars}
+
+\include{main-fake-stars}
+
+\chapter{Empirical Study III: The Impact of Cursor AI on Open-Source Projects}
+\label{chp:cursor}
+
+\include{main-cursor}
+
+\chapter{Conclusion}
 
 %1. Summary of Contributions    
 %2. Revisiting the Thesis Statement    
@@ -215,19 +226,6 @@ Collectively, this thesis provides a methodological blueprint for future empiric
 
 %\appendix
 
-%\chapter{Empirical Study I: The Impact of Dependency Pinning on Supply Chain Security}
-%\label{chp:pinning}
 
-%\include{main-pinning}
-
-%\chapter{Empirical Study II: The Impact of Fake GitHub Stars on Repository Promotion}
-%\label{chp:fake-stars}
-
-%\include{main-fake-stars}
-
-%\chapter{Empirical Study III: The Impact of Cursor AI on Open-Source Projects}
-%\label{chp:cursor}
-
-%\include{main-cursor}
 
 \end{document}

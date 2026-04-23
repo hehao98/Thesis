@@ -17,4 +17,4 @@ main.pdf
 *.fls
 
 # minted package cache
-_minted-*/
+_minted*/
