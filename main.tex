@@ -200,7 +200,15 @@ My advisor is cool.
 
 \input{tutorial/paper/4-discussion}
 
+\section{Appendix}
+
+\let\origsection\section
+\let\origsubsection\subsection
+\let\section\subsection
+\let\subsection\subsubsection
 \input{tutorial/paper/appendix}
+\let\section\origsection
+\let\subsection\origsubsection
 
 \chapter{Empirical Study I: The Impact of Dependency Pinning on Supply Chain Security}
 \label{chp:pinning}
