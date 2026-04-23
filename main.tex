@@ -163,16 +163,14 @@ In this thesis, I argue that \emph{causal credibility assessments are feasible i
 
 To demonstrate this argument, this thesis starts with an accessible introduction to the modern causal inference toolkit for software engineering researchers.
 I will cover three conceptual pillars that would enable explicit articulations of causal theory and assumptions in empirical settings: potential outcomes framework, graphical causal models, and design-based identification.
-I will walk through
+I will walk through AI coding tool adoption as a running example throughout, demonstrating how progressively stronger causal research designs can be made through articulating a causal theory and inspecting the plausibility of assumptions beneath each statistical method used.
 
-Across three empirical studies, I demonstrate how causal credibility assessments can reveal systematic gaps between practitioner beliefs and empirical reality. 
+Then, across three empirical studies, I demonstrate how causal credibility assessments can reveal systematic gaps between practitioner beliefs and empirical reality. 
 First, using counterfactual analysis and simulations on npm dependency data, I challenge the myth that pinning dependency versions improves project security, showing that it paradoxically increases attack exposure unless upstream packages pin their own dependencies. 
 Second, through a longitudinal analysis of GitHub starring patterns with panel regression models, I challenge the myth that fake GitHub stars provide sustainable promotional benefits, showing instead that these artificial signals become long-term liabilities. 
 Finally, using a difference-in-differences design with staggered adoption, I challenge the myth that AI coding tools unambiguously improve developer productivity, finding that Cursor's initial velocity gains are offset by sustained accumulation of technical debt.
 In each study, I assess the credibility of causal claims through the following four-step framework: (1) deriving an explicit causal theory from software engineering domain knowledge, (2) defining the causal estimate of interest and specifying the assumption under which the estimate carries a causal interpretation, (3) honestly acknowledging and mitigating limitations and known caveats, and (4) thoughtfully navigating alternative explanations.
-
-Building on these contributions, I propose an accessible tutorial chapter that revisits the programming language and defect proneness debate as a running example throughout, demonstrating that explicit causal credibility assessments can serve as both a diagnostic tool for evaluating existing research and a principled design guide for future studies.
-Consequently, this thesis provides a methodological blueprint for future empirical software engineering research, illustrating how to balance rigor with practicality to generate actionable, trustworthy evidence.
+Collectively, this thesis provides a methodological blueprint for future empirical software engineering research, illustrating how to balance rigor with practicality to generate actionable, trustworthy evidence for software engineering myths.
 \end{abstract}
 
 %\begin{acknowledgments}
