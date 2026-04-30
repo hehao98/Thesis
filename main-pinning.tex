@@ -97,7 +97,7 @@ We formulate attack models and defense strategies in the dependency network, def
 Our findings indicate that it is possible to reduce the average spread of malicious package updates in the npm dependency network by nearly 30\% if we pin in 100 intentionally selected important packages.
 However, as we will quantify, this intervention could be substantially more effective (up to 75\%) if npm implements a new \textit{transitive pinning} feature to allow packages to pass their entire pinned dependency graphs downstream.
 
-\paragraph{Summary of Our Contributions} This study contributes novel quantitative evidence on the security and maintenance impact of version constraints in a packaging ecosystem, especially in light of recent concerns about malicious package updates.
+\paragraph{Summary of Our Contributions.} This study contributes novel quantitative evidence on the security and maintenance impact of version constraints in a packaging ecosystem, especially in light of recent concerns about malicious package updates.
 Our findings align with the opinions of npm developers~\cite{DBLP:journals/tse/JafariCAST22} but contradict the views of security practitioners~\cite{DBLP:conf/sp/LadisaPMB23, DBLP:journals/ieeesp/ZahanKHSW23}, suggesting that pinning direct dependencies is futile (and can be even counter-productive) as protection against malicious package updates.
 In addition, we contribute evidence that a new ecosystem-wide intervention, along with tooling changes and ecosystem-wide allocation of collectively pooled resources, can be an effective intervention against malicious package updates.
 Our findings lead to concrete advice for developers and ecosystem policy makers to improve the state of software supply chain security (Section~\ref{sec:pinning-discussion}). 
@@ -105,7 +105,7 @@ Our findings lead to concrete advice for developers and ecosystem policy makers 
 \section{Background and Related Work}
 \label{sec:background}
 
-\paragraph{Dependency Management in npm}
+\paragraph{Dependency Management in npm.}
 
 \begin{figure}[b]
     \scriptsize
@@ -168,7 +168,7 @@ As a workaround, npm (as many other ecosystems) provides functionality to \texti
 A lock file ensures the reproducibility of npm builds, but
 it has two limitations: (1)~it is restricted to applications (the root of the dependency graph) whereas components used as dependencies cannot pass their lock decisions to downstream applications; it is hence not very useful for packages; (2)~it is not designed (hence very difficult) to be manually maintained, so floating version constraints in \Code{package.json} will still cause automatic updates every time a lock file is generated.
 
-\paragraph{Software Supply Chain Security}
+\paragraph{Software Supply Chain Security.}
 
 The term \textit{software supply chain} is an umbrella term referring to all the software components, processes, and tools that a software project relies on~\cite{software-supply-chain-guide}.
 For a project using npm, all packages in its dependency graph are part of its supply chain.
@@ -305,7 +305,7 @@ Our results indicate that although projects sometimes make deliberate decisions 
 \subsection{Method}
 \label{sec:method-rq1}
 
-\paragraph{Overview}
+\paragraph{Overview.}
 At a high level, we take a \emph{counterfactual analysis} approach~\cite{morgan2015counterfactuals}---that is, estimating the causal effect of pinning by comparing the ``what-if'' differences with not pinning in each project.
 This leads to our design of comparing metrics %(one for each of the five trade-offs commonly raised in favor or against pinning, previously summarized in Table~\ref{tab:trade-offs}), 
 between a \emph{control} condition consisting of our observed projects, and a (simulated) \emph{treatment} condition wherein we alter each of the project's \Code{package.json} to pin all its direct dependencies.
@@ -319,7 +319,7 @@ separately for each of the five outcome metrics.
 Panel regression is a statistically sound econometric technique to model double-dimensional data (data collected from multiple units across different time periods) robustly to unobserved heterogeneity (i.e., project/time-specific characteristics that affect the outcome metric but are not directly measured or included in the model)~\cite{bruderl2015fixed, hanck2021introduction}.
 Next, we give more details on the simulation setup and regression analysis.
 
-\paragraph{Simulation Setup}
+\paragraph{Simulation Setup.}
 To implement the above design, we get the latest revision between September 2021 and September 2022 for each project in our dataset.
 Then, we use September 12, 2022 as a starting time point for simulations (denoted $t_0$). 
 We recreate the state of each project at this timestamp $t_0$, including the \Code{package.json} files, and resolve the corresponding dependency graphs (denoted as $G_{t0}$). 
@@ -330,7 +330,7 @@ This step results in two observations for each project, that feed into our ``con
 Similarly, we check out four additional versions of the \Code{package.json} file, at four evenly-spaced fixed 90-day intervals from December 11, 2022 to September 7, 2023 (denoted $t_1 \ldots t_4$). At each time point, we resolve the corresponding original and simulated (all-pinning) dependency graphs, which adds four additional observations per project into each of our ``control''  and ``treatment'' groups.
 Note that for each project and treatment condition, we intentionally resolve dependency graphs at different time points from the same \Code{package.json} file; this setting, combined with our outcome metrics below, provides a framework to estimate the costs of action (or risks of not taking action) over the observation period, independent of the actual project actions taken during that period.
 
-\paragraph{Outcome Metrics}
+\paragraph{Outcome Metrics.}
 For each of the five original and simulated dependency graphs resolved for a given project, we compute five security- and maintenance-related metrics, each corresponding to one dimension of trade-offs in Table~\ref{tab:trade-offs}.
 Their definitions are as follows:
 \begin{enumerate}[leftmargin=20pt]
@@ -343,7 +343,7 @@ Their definitions are as follows:
 Intuitively,  \Code{n\_floating} and \Code{n\_auto\_updates} should decrease with pinning and increase with floating;
 \Code{n\_vuln}, \Code{n\_outdated\_deps} and \Code{n\_bloated} should decrease with floating and increase with pinning. We designed all metrics such that lower values are generally better (e.g., lower costs or risk).
 
-\paragraph{Panel Regression}
+\paragraph{Panel Regression.}
 %\emph{Panel Regression}
 For each metric $M$, we fit the following panel regression model: %
 \begin{equation}
@@ -356,7 +356,7 @@ The main variable of interest is the \textit{pinning} flag, whose estimated coef
 Finally, we model an explicit interaction with the size of the dependency graph $size(G)$ (i.e., number of nodes), to test whether the effect of pinning varies with $size(G)$---one can expect, e.g., that having more direct and transitive dependencies increases the attack surface of a downstream project.
 The models are fitted using the R \Code{plm} package~\cite{r-plm}.
 
-\paragraph{Limitations and Threats to Validity}
+\paragraph{Limitations and Threats to Validity.}
 
 Our model design should allow reliable estimates of the impact of pinning, but it relies on accurate dependency resolution at past points in time.
 While we believe that our solution is accurate, simulations can still deviate from the realities in the past due to npm behavior changes, configuration differences, etc. 
@@ -483,7 +483,7 @@ This leads to our RQ2 of exploring how coordinated pinning in select upstream pa
 \subsection{Method}
 \label{sec:method-rq3}
 
-\paragraph{Overview}
+\paragraph{Overview.}
 In a nutshell, we quantify the effect a few maintainers can have on %security outcomes 
 the risk of (simulated) malicious package updates on the entire npm ecosystem.
 We assume that we have the ability and budget to convince $n$ package maintainers of our choice to change their dependency management practices as follows: They pin each of their dependencies, review all dependency updates to catch malicious updates, and rapidly update all non-malicious updates.
@@ -494,14 +494,14 @@ We also assume that reporting and taking down a malicious package takes some tim
 } 
 Finally, we assume all other developers are floating all their dependencies, as they already mostly do. 
 
-\paragraph{Dependency Network}
+\paragraph{Dependency Network.}
 We simulate attacks on a snapshot of the package-level npm dependency network constructed from dependency relationships specified in the latest version of each package (cut-off in September 2023), using the same npm-follower dataset~\cite{DBLP:conf/sigsoft/PinckneyCG023} in Section~\ref{sec:data-collection}. 
 The network has 1,566,434 packages (nodes) and 7,873,239 dependency edges.
 
-\paragraph{Attack Selection Strategy}
+\paragraph{Attack Selection Strategy.}
 In practice, attackers might target specific applications (e.g., specifically attacking cryptocurrency packages~\cite{crypto-attack}) or they may try to compromise whatever package they can to opportunistically cause damage (e.g., as common for untargeted ransomware attacks). Since we do not know what exact strategy attackers may pursue and since their strategy may change over time, we make the simplifying assumption that attackers will try to compromise high-impact targets by (randomly) selecting any of the top-$m$ packages (denoted as $A$) on npm as ranked by the downloads adjusted impact defined in Equation~\ref{eq:impact} (i.e., impact-based strategy).
 
-\paragraph{Risk Metric}
+\paragraph{Risk Metric.}
 Given the set $P$ of all packages in the network, we quantify the impact of compromising a package $a\in P$ as the download-weighted coverage of its reachable dependents within the entire npm network, where every package that depends directly or indirectly on package $a$ is considered reachable of the edge to $a$ in its dependency graph is floating:
 \begin{equation}
 \label{eq:impact}
@@ -536,7 +536,7 @@ Intuitively, $risk(A) \in [0, 1]$ is an estimation of the expected average perce
 \end{figure}
 
 
-\paragraph{Pinning Mechanism}
+\paragraph{Pinning Mechanism.}
 With npm's existing mechanisms, the maintainers of the $n$  defending packages can only pin their direct dependencies (\textit{local pinning}), but not their transitive ones. 
 While maintainers can freeze their dependency graph with a \Code{package-lock.json} file, it only affects their own package, not anyone importing their package, with npm's current design.
 
@@ -544,17 +544,17 @@ To give maintainers more power (at a higher maintenance cost), we imagine an alt
 % relatively local changes
 change to npm that allows (a)~package maintainers to upload their \Code{package-lock.json} as part of the deployed package and (b)~npm to consider that file in each package during dependency resolution. We illustrate the difference in Figure~\ref{fig:example-transitive-pinning}.
 
-\paragraph{Defense Selection Strategy}
+\paragraph{Defense Selection Strategy.}
 Finally, we need to decide which $n$ packages to defend with local or transitive pinning.
 Unfortunately, the problem of choosing an optimal package set of size $n$ that minimizes $risk(A)$ is equivalent to the Influence Minimization problem, which is NP-hard~\cite{DBLP:conf/icde/0002ZW0023}.
 Hence, we focus on evaluating simple heuristics to choose the defended packages and leave the optimization as future work.
 Specifically, we choose top-$n$ packages with (1) highest downloads, (2) highest out degrees (i.e., the packages with the most \textit{direct} dependencies), (3) highest betweenness centrality (i.e., the packages on most dependency \textit{paths}), (4) highest downloads $\times$ out degrees (i.e., popular packages with many direct dependencies), and (5) highest downloads $\times$ betweenness centrality (i.e., popular packages on many dependency paths).
 Intuitively, we expect defense selection strategies based on out degree to work best for local pinning as they emphasize direct dependencies, and strategies based on betweenness to work best for transitive pinning as transitive pinning interrupts paths.
 
-\paragraph{Simulation}
+\paragraph{Simulation.}
 For each combination of pinning mechanism, defense selection strategy, and number of defended packages from 0 to $n$, we measure the impact of the defense on the risk metric. To compute the impact, we compute \textit{risk(A)} with a modified \textit{reachable} function (Equation~\ref{eq:impact}, different from the standard notion of graph reachability) by breaking propagation of the attack when the final edge is pinned (local pinning) or if the path contains a defended package (transitive pinning).
 
-\paragraph{Limitations and Threats to Validity}
+\paragraph{Limitations and Threats to Validity.}
 To make the simulation feasible, we make several simplifying assumptions described above.
 Notably, we assume that  attacks happen uniformly randomly on a fixed number of attack targets, while real attack selection strategies may be more targeted, more opportunistic, and may adapt in response to defense strategies.
 Therefore, we additionally explored two different attack selection strategies: (1) attacking any actively maintained projects randomly, and (2) attacking the most fragile or under-maintained packages (e.g., as the \Code{xz} attack, which focused on a dependency with a single overworked maintainer~\cite{xz-utils}) defined as the bottom-1000 packages in our package dataset, ranked by the number of core maintainers estimated in World of Code~\cite{DBLP:journals/ese/MaDBAVTKZM21}. For space and since our results are generally robust under the different attack selection strategies, we only report results under the impact-based attack selection strategy (the remaining are in the replication package, Section~\ref{sec:data-availability}).

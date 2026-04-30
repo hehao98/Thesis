@@ -87,7 +87,7 @@ The three empirical studies (Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, a
 
 In this section, I summarize the organization and main contributions of this thesis.
 
-\paragraph{A Tutorial on Causal Inference for Empirical Software Engineering (Chapter~\ref{chp:background})}
+\paragraph{A Tutorial on Causal Inference for Empirical Software Engineering (Chapter~\ref{chp:background}).}
 The thesis begins with a self-contained tutorial on causal inference for empirical software engineering researchers.
 The chapter opens by tracing the origins and scope of the modern causal inference toolkit, surveying existing methodological guides in software engineering, and documenting the toolkit's limited adoption in the field to date.
 It then develops a primer that articulates the fundamental problem of causal inference---the impossibility of observing both potential outcomes for a single unit---and explains why descriptive and correlational evidence, including multivariate regression, cannot on its own establish causal claims.
@@ -95,7 +95,7 @@ The primer introduces the three conceptual frameworks that have shaped modern ca
 To demonstrate the toolkit in practice, the chapter then walks through a worked example reanalyzing the impact of AI coding tools on open-source projects, contrasting cross-sectional and longitudinal designs and showing how each design's identifying assumptions shape the credibility of its conclusions.
 The chapter closes by drawing lessons from the worked example, discussing implications for empirical software engineering, articulating the structural advantages that software engineering offers for causal inference relative to other disciplines, and identifying limitations and open frontiers.
 
-\paragraph{Three Cases of Empirical Studies}
+\paragraph{Three Cases of Empirical Studies.}
 Then, the thesis dives deep into three empirical studies I published in the past that challenged well-known software engineering myths through a pragmatic causal inference with explicit causal credibility assessments---each study deriving an explicit causal theory from domain knowledge, defining the causal estimate of interest and specifying the identifying assumption, honestly acknowledging and mitigating limitations and known caveats, and thoughtfully navigating alternative explanations~\cite{DBLP:journals/corr/abs-2502-06662, DBLP:journals/corr/abs-2412-13459, DBLP:journals/corr/abs-2511-04427}.
 
 \begin{itemize}[leftmargin=15pt]
@@ -122,7 +122,7 @@ Then, the thesis dives deep into three empirical studies I published in the past
     This study carries implications for software engineering practitioners, LLM agent assistant designers, and researchers. 
 \end{itemize}
 
-\paragraph{Summary of Contributions} This thesis makes the following contributions:
+\paragraph{Summary of Contributions.} This thesis makes the following contributions:
 
 \begin{itemize}[leftmargin=15pt]
    \item \textbf{Conceptual Contribution:} I introduce the notion of \emph{software engineering myths}---widely held beliefs about best practices that lack rigorous empirical validation---and argue that the prevalence of such myths stems from the field's over-reliance on descriptive evidence and inability to draw causal claims. I demonstrate the feasibility of \emph{explicit causal credibility assessments} in software engineering through a pragmatic approach that prioritizes transparency over perfection, operationalized as a four-step process: (1) derivation of an explicit causal theory from existing software engineering domain knowledge (e.g., as DAGs, which is especially valuable for regression-based studies where variable selection determines the credibility of causal claims), (2) definition of the causal estimate of interest through the potential outcomes framework and specification of the assumption under which the estimate carries a causal interpretation, (3) honest acknowledgment and mitigation of limitations and known caveats in data collection, metric design, measurement infrastructure, and model specifications, and (4) thoughtful navigation of alternative explanations (i.e., alternative causal structures or causal DAGs) that may also be supported with the current results. This conceptual framing provides a path for incremental accumulation of trustworthy evidence for software engineering practitioners, a lens for critically evaluating existing empirical software engineering research, and a principled guideline for future empirical software engineering research.

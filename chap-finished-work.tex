@@ -21,17 +21,17 @@ Neither approach provides the quantitative, causal evidence necessary to substan
 To move beyond prior correlational and qualitative evidence, this study employs a \emph{counterfactual analysis} approach~\cite{morgan2015counterfactuals}---estimating the causal effect of pinning by comparing observed outcomes with simulated ``what-if'' scenarios where each project pins all its direct dependencies.
 This design directly embodies the four-step causal credibility assessment process demonstrated in this thesis: The causal theory is derived from domain knowledge and made explicit through the counterfactual simulation structure, the causal estimate of interest is defined through potential outcomes reasoning and the identifying assumption is specified, limitations and known caveats are honestly acknowledged and mitigated, and alternative explanations for the surprising findings are thoughtfully navigated.
 
-\paragraph{Data Collection}
+\paragraph{Data Collection.}
 The study curates a dataset of 10,000 npm packages and 10,000 GitHub repositories, ensuring representation of both libraries and applications.
 Projects are selected based on popularity (top 5\% of package downloads, top 1\% of repository stars), active maintenance (commits within 2 years), and having production dependencies to analyze.
 This sampling strategy ensures findings apply to actively maintained projects that practitioners care about, while avoiding toy projects and obsolete codebases that would introduce noise.
 
-\paragraph{Simulation Setup}
+\paragraph{Simulation Setup.}
 The key methodological innovation involves leveraging an undocumented time-traveling feature of the npm dependency resolver~\cite{DBLP:conf/msr/PinckneyCGB23} to reconstruct historical dependency graphs.
 For each project, I resolve dependency graphs at five time points spanning 12 months (September 2022 to September 2023), under two conditions: (1) the \emph{control} condition using actual version constraints from each project's \texttt{package.json}, and (2) the \emph{treatment} condition where all direct dependencies are pinned to specific versions.
 This creates a balanced panel dataset with repeated observations under both conditions.
 
-\paragraph{Outcome Metrics}
+\paragraph{Outcome Metrics.}
 Five metrics capture the security and maintenance trade-offs commonly debated around the use of pinning and floating version constraints:
 \begin{enumerate}[leftmargin=15pt]
     \item \emph{Number of floating dependencies}: The attack surface for malicious updates---packages where a compromised version would be automatically installed.
@@ -41,7 +41,7 @@ Five metrics capture the security and maintenance trade-offs commonly debated ar
     \item \emph{Number of bloated dependencies}: Packages with multiple versions simultaneously present, indicating dependency conflicts.
 \end{enumerate}
 
-\paragraph{Statistical Analysis}
+\paragraph{Statistical Analysis.}
 The study employs \emph{fixed-effects panel regression}~\cite{bruderl2015fixed} to estimate the causal impact of pinning, controlling for unobserved project- and time-specific heterogeneity.
 The model specification includes project-fixed effects ($\alpha$), time-fixed effects ($\beta$), and an interaction term with dependency graph size to test whether pinning's effects vary with project complexity:
 \begin{equation}
@@ -95,7 +95,7 @@ Its interaction with npm's deduplication heuristics drives the counterintuitive 
 \label{fig:pinning-dag}
 \end{figure}
 
-\paragraph{Causal Credibility Assessment}
+\paragraph{Causal Credibility Assessment.}
 Following the four-step process demonstrated in this thesis, I assess the causal credibility of this study's findings.
 \emph{(1) Causal theory:} The causal theory is made explicit as a DAG in Figure~\ref{fig:pinning-dag} and operationalized through the counterfactual simulation structure.
 The treatment (pinning all direct dependencies) affects security and maintenance outcomes through the mediating mechanism of npm's dependency resolution, which also takes as input the upstream versioning practices that the project cannot control.
@@ -142,7 +142,7 @@ Prior reports from gray literature document repositories buying stars for growth
 This study presents the first systematic, global, and longitudinal measurement of fake GitHub stars, combining scalable anomaly detection with causal analysis of promotional effectiveness.
 The methodological approach exemplifies the causal credibility assessment process demonstrated in this thesis---the detection tool makes explicit assumptions about what constitutes anomalous behavior, validates performance against known ground truth, and the causal analysis of promotional effectiveness employs panel regression with fixed effects while explicitly deriving a causal theory from domain knowledge, specifying the identifying assumption, honestly acknowledging limitations and known caveats, and thoughtfully navigating alternative explanations.
 
-\paragraph{Detection Tool Design}
+\paragraph{Detection Tool Design.}
 I developed \SystemName, a scalable detection tool that identifies two signatures of anomalous starring behavior across the entire GitHub event archive (63.9 million users, 331 million repositories, 326 million stars from 2019--2024):
 
 \begin{itemize}[leftmargin=15pt]
@@ -157,13 +157,13 @@ I developed \SystemName, a scalable detection tool that identifies two signature
 A postprocessing step identifies repositories with \emph{fake star campaigns}---those where fake stars constitute a substantial portion of total stars (at least one month with $>$50 fake stars comprising $>$50\% of that month's stars, and $>$10\% of all-time stars).
 This distinguishes repositories that likely purchased fake stars from legitimate repositories that may have been incidentally starred by fake accounts.
 
-\paragraph{Validation}
+\paragraph{Validation.}
 The detection tool's assumptions require empirical validation.
 I assessed recall against the Stargazer Ghost Network dataset~\cite{stargazer-goblin}, a confirmed malware campaign using fake stars: \SystemName detected 81\% of the 847 repositories and 76\% of the 15,672 involved accounts.
 For precision, I compared deletion rates between detected repositories/accounts and random samples: 90.42\% of detected repositories and 57.07\% of detected accounts had been deleted by GitHub at the time of analysis, compared to baseline deletion rates of 5.03\% and 3.54\%, respectively.
 This 16x elevation in deletion rates provides strong evidence that detections correspond to genuinely problematic activity.
 
-\paragraph{Causal Analysis of Promotional Effect}
+\paragraph{Causal Analysis of Promotional Effect.}
 To test whether fake stars achieve their purported promotional benefits, I employ \emph{panel autoregression} models~\cite{hanck2021introduction}, estimating the longitudinal effect of gaining fake stars on attracting real stars in subsequent months.
 For each repository $i$ in each month $t$, I collect: fake stars gained ($\textit{fake}_{i,t}$), cumulative fake stars ($\textit{all\_fake}_{i,t}$), real stars gained ($\textit{real}_{i,t}$), cumulative real stars ($\textit{all\_real}_{i,t}$), repository age, release status, and authentic development activity.
 
@@ -220,7 +220,7 @@ Dev Activity, Age, and Releases serve as observable control variables that parti
 \label{fig:fake-stars-dag}
 \end{figure}
 
-\paragraph{Causal Credibility Assessment}
+\paragraph{Causal Credibility Assessment.}
 Following the four-step framework, I assess the causal credibility of this study's findings regarding the promotional effectiveness of fake stars.
 \emph{(1) Causal theory:} The causal theory is made explicit as a DAG in Figure~\ref{fig:fake-stars-dag}.
 The hypothesized causal mechanism is that acquiring fake stars inflates the displayed star count, which in turn attracts genuine attention and real stars through the ``rich get richer'' dynamic prevalent in social platforms.
@@ -267,12 +267,12 @@ This study provides the first large-scale empirical investigation of how LLM age
 The research design employs a \emph{difference-in-differences} (DiD) approach with staggered adoption~\cite{borusyak2024revisiting}---a state-of-the-art causal inference technique that exploits natural variation in when repositories adopted Cursor to identify causal effects.
 This design most directly instantiates the four-step causal credibility assessment process introduced in Chapter~\ref{chp:intro}: The causal theory is derived from domain knowledge and encoded in the DiD structure with matched controls; the causal estimate of interest (ATT) is defined through the potential outcomes framework and the identifying assumption (parallel trends) is specified; the assumption's plausibility is assessed through pre-trend tests and strengthened by propensity score matching; and alternative explanations are thoughtfully navigated through matching, fixed effects, and panel GMM analysis.
 
-\paragraph{Treatment Group Identification}
+\paragraph{Treatment Group Identification.}
 I identify Cursor-adopting repositories through configuration files in git history.
 Using the GitHub code search API with adaptive partitioning to circumvent result limits, I discovered repositories with \texttt{.cursorrules} files or \texttt{.cursor} folders.
 After filtering for non-fork repositories with $\geq$10 stars (a threshold achieving 97\% precision in identifying engineered projects~\cite{DBLP:journals/ese/MunaiahKCN17}), this yields \numtreated repositories with adoption dates between January 2024 and March 2025.
 
-\paragraph{Control Group Construction via Propensity Score Matching}
+\paragraph{Control Group Construction via Propensity Score Matching.}
 A causal interpretation of DiD requires that treatment and control groups would follow similar outcome trajectories absent treatment (the parallel trends assumption).
 To strengthen this assumption's plausibility, I construct a matched control group using \emph{propensity score matching}~\cite{austin2011introduction}.
 
@@ -285,7 +285,7 @@ where $T_{i,t-1}$ captures repository maturity, $\sum_{j=1}^{6}\Gamma_j X_{i,t-j
 Matching additionally requires the same primary programming language.
 This yields a matched control group of 1,380 repositories with similar conditional treatment probabilities (AUC 0.83--0.91).
 
-\paragraph{Outcome Metrics}
+\paragraph{Outcome Metrics.}
 For each repository-month, I collect two velocity metrics (commits, lines added) and three quality metrics measured via SonarQube static analysis:
 \begin{itemize}[leftmargin=15pt]
     \item \emph{Static analysis warnings}: Total reliability, maintainability, and security issues detected.
@@ -293,7 +293,7 @@ For each repository-month, I collect two velocity metrics (commits, lines added)
     \item \emph{Code complexity}: Cognitive complexity~\cite{DBLP:conf/icse/Campbell18}, quantifying code understandability.
 \end{itemize}
 
-\paragraph{DiD Estimation}
+\paragraph{DiD Estimation.}
 I employ the \citet{borusyak2024revisiting} imputation estimator, designed for staggered adoption settings where traditional two-way fixed effects may produce biased estimates.
 The estimator proceeds in two steps:
 \begin{enumerate}[leftmargin=20pt]
@@ -308,7 +308,7 @@ The estimator proceeds in two steps:
 
 The repository-fixed effects control all time-invariant confounders (team culture, domain, language), while month-fixed effects control all repository-invariant temporal factors (industry trends, platform changes, seasonal patterns).
 
-\paragraph{Testing Velocity-Quality Interactions}
+\paragraph{Testing Velocity-Quality Interactions.}
 To investigate whether velocity and quality outcomes interact dynamically---potentially explaining why initial velocity gains might dissipate---I employ \emph{panel generalized method of moments} (GMM)~\cite{arellano1991some}.
 GMM uses lagged values as instrumental variables to identify causal relationships when variables may be endogenous:
 \begin{equation}
@@ -365,7 +365,7 @@ Industry Trends are controlled by month-fixed effects ($\lambda_t$).
 Other AI Tool Usage represents potential contamination from tools like GitHub Copilot present in both treatment and control groups; estimates thus reflect Cursor's \emph{additional} impact relative to current practice.}\label{fig:cursor-dag}
 \end{figure}
 
-\paragraph{Causal Credibility Assessment}
+\paragraph{Causal Credibility Assessment.}
 Of the three studies, this one most directly instantiates the four-step causal credibility assessment process, employing a quasi-experimental design from the econometrics literature.
 \emph{(1) Causal theory:} The causal theory is made explicit as a DAG in Figure~\ref{fig:cursor-dag}.
 Cursor adoption (treatment) has two direct causal paths: a transient positive effect on Development Velocity and a persistent direct effect on Technical Debt (code complexity and static analysis warnings).
