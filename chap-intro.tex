@@ -14,8 +14,15 @@ As a result, the field abounds with what I may call \textbf{software engineering
 
 This state of affairs persists despite decades of empirical research in software engineering. 
 The field has generated thousands of studies examining key software engineering topics, including developer productivity, code quality, security practices, and the effectiveness of developer tools. 
+It has also embraced a vast body of empirical methodological frameworks over the past decades, such as randomized controlled experiments~\cite{DBLP:books/sp/WohlinRHORW24}, discussion of internal/external validity and its trade-offs~\cite{DBLP:conf/icse/SiegmundSA15, DBLP:journals/tosem/RobillardAEGLNNSSS24}, open-science~\cite{DBLP:books/sp/20/0001G0S20}, registered reports~\cite{DBLP:journals/ese/ErnstB23}, qualitative synthesis~\cite{DBLP:conf/esem/CruzesD11}, and more.
+This diversity is most apparent in the ACM SIGSOFT Empirical Standards, offering method-specific checklists for 19 major software engineering research methods~\cite{DBLP:journals/corr/abs-2010-03525}.
+
 Despite this substantial body of work, software engineering remains a field with a high degree of folklore, intuition, and conventional wisdom, rather than an evidence-based discipline.
-The problem lies not in the quantity of research but in its methodological limitations, particularly the pervasive reliance on (a) descriptive and correlational evidence from software repository data, and (b) qualitative evidence synthesizing practitioner opinions.
+Why is this the case?
+There are for sure many unique challenges in the field of empirical software engineering, such as the lack of accurate measurements for key constructs~\cite{DBLP:conf/ease/RalphT18}, the vast ecological diversity of software systems~\cite{DBLP:conf/sigsoft/NagappanZB13}, and the rapid moving nature of software engineering practices in general.
+Apart from these challenges, I want to note one important blocker: Many of the software engineering myths we see in practice are \emph{causal in nature}---concerning the effect of an intervention on an outcome of interest---but empirical SE research rarely engages with the challenging question of \emph{whether the presented evidence can actually support a causal claim, and to what extent}.
+Instead, researchers often approach software engineering myths with either: (a) descriptive and statistical modeling from software repository data, with a blanket disclaimer that the observed correlation does not imply causation, or (b) qualitative evidence synthesizing and interpreting practitioner opinions on the topic of interest.
+Neither would provide sufficient evidence to support or dispel a software engineering myth, especially when it is contested.
 
 For example, consider the following problem: Should software projects allow flexibility in the versions of their dependencies, and to what extent?
 A descriptive mining software repository study~\cite{DBLP:conf/msr/0001PSTB19} may conclude that the Java/Maven ecosystem is extensively pinning dependency versions while the JavaScript/npm ecosystem is extensively using semantic versioning, without providing any concrete guidance or discussions of the trade-offs around them.
@@ -32,10 +39,11 @@ Putting the controversy around the specific research design aside, the counter-r
 \emph{I fundamentally do not believe that the question the FSE authors set out to answer, namely, whether some languages are more defect-prone than others, can be meaningfully answered by scraping GitHub...An analysis of GitHub is necessarily measuring correlation and not establishing causation, as it does not constitute an experiment.}
 \end{quote}
 
-The problem extends beyond individual studies to create a broader crisis of confidence in empirical software engineering research. 
-When studies merely repeat and synthesize practitioner opinion, practitioners justifiably will not pay attention to the research findings.
-Even worse, when studies reach contradictory conclusions and fail to rule out confounding factors or alternative explanations, practitioners will justifiably become skeptical of the research findings altogether. 
-The result is a field that produces voluminous research but limited actionable knowledge.
+The problem extends beyond individual studies and renders empirical software engineering research particularly unproductive on contested problems in which practitioners have strong and conflicting intuitions and beliefs.
+When studies only repeat and synthesize practitioner opinions, it may be biased towards a specific perspective and may not be sufficient to shift the posterior beliefs of others.
+When studies finds certain correlations from observational data, practitioners will naturally want to read the study as causal without considering the limitations of the study design and the potential confounding factors.
+Even worse, when studies reach controversial conclusions (which may be extremely valuable if carefully justified) but fail to rule out important confounding factors or alternative explanations, practitioners may become skeptical of the field altogether. 
+The result is a field with prevalent myths despite plentiful empirical research.
 
 Modern causal inference methods offer a principled approach to addressing this problem~\cite{cunningham2021causal, pearl2009causality, hansen2022econometrics}. 
 Developed primarily in econometrics and epidemiology over the past several decades, these methods provide frameworks for distinguishing genuine causal effects from spurious correlations in observational data---precisely the kind of data investigated in repository mining studies.
@@ -58,7 +66,7 @@ The three empirical studies in this thesis (Chapter~\ref{chp:pinning}, \ref{chp:
 \section{Thesis Statement}
 
 \begin{framed}
-Software engineering practice is characterized by \emph{myths}---widely held beliefs about best practices derived from intuition, experience, and conventional wisdom that have never been rigorously tested or, when tested, have produced inconclusive results.
+%Software engineering practice is characterized by \emph{myths}---widely held beliefs about best practices derived from intuition, experience, and conventional wisdom that have never been rigorously tested or, when tested, have produced inconclusive results.
 In this thesis, I argue that \emph{causal credibility assessments is feasible in empirical software engineering through an explicit articulation of causal theory and assumptions}.
 \end{framed}
 
@@ -73,17 +81,19 @@ Drawing on these traditions, this thesis demonstrates the feasibility of causal 
 This four-step process is not the only way to conduct causal credibility assessments, nor does this thesis claim it is superior to alternative approaches.
 Other operationalizations---emphasizing different combinations of formal sensitivity analysis~\cite{rosenbaum2002observational, vanderweele2017sensitivity}, structured reporting guidelines, or pre-registered analysis plans---may be equally valid depending on the research context.
 The contribution of this thesis is to demonstrate that the proposed form of explicit causal credibility assessment is both feasible and productive in the software engineering research context, where such assessments have been largely absent.
-The three empirical studies (Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, and~\ref{chp:cursor}) illustrate this feasibility by applying these four steps to three distinct research problems, each challenging a widely held software engineering belief.
+The three empirical studies (Chapters~\ref{chp:pinning}, \ref{chp:fake-stars}, and~\ref{chp:cursor}) illustrate this feasibility by applying these four steps to three distinct research problems, each challenging a widely held software engineering myths.
 
 \section{Organization and Contributions}
 
 In this section, I summarize the organization and main contributions of this thesis.
 
-\paragraph{A Primer on Causal Credibility (Chapter~\ref{chp:background})}
-The thesis starts with a self-contained introduction to causal credibility assessments for software engineering researchers. 
-The chapter begins by articulating the fundamental problem of causal inference---the impossibility of observing both potential outcomes for a single unit---and introduces three conceptual frameworks that have shaped modern causal reasoning: the potential outcomes framework, graphic causal models, and the design-based approach.
-It then examines common pitfalls in descriptive and correlational research, explaining why correlation does not imply causation, why multivariate regression alone cannot establish causal claims, and when regression can support causal claims under explicitly stated assumptions.
-After formalizing the key concepts through the potential outcomes framework and graphical causal models, the chapter concludes with a pragmatic approach to causal credibility assessments in empirical software engineering research---operationalizing the four-step process introduced in the thesis statement, discussing the internal--external validity trade-off, and presenting a hierarchy of evidence for situating causal claims.
+\paragraph{A Tutorial on Causal Inference for Empirical Software Engineering (Chapter~\ref{chp:background})}
+The thesis begins with a self-contained tutorial on causal inference for empirical software engineering researchers.
+The chapter opens by tracing the origins and scope of the modern causal inference toolkit, surveying existing methodological guides in software engineering, and documenting the toolkit's limited adoption in the field to date.
+It then develops a primer that articulates the fundamental problem of causal inference---the impossibility of observing both potential outcomes for a single unit---and explains why descriptive and correlational evidence, including multivariate regression, cannot on its own establish causal claims.
+The primer introduces the three conceptual frameworks that have shaped modern causal reasoning---the potential outcomes framework, graphical causal models, and the design-based approach---and synthesizes them into a pragmatic stance on causal credibility, operationalizing the four-step process introduced in the thesis statement and articulating the internal--external validity trade-off that any identification strategy must navigate.
+To demonstrate the toolkit in practice, the chapter then walks through a worked example reanalyzing the impact of AI coding tools on open-source projects, contrasting cross-sectional and longitudinal designs and showing how each design's identifying assumptions shape the credibility of its conclusions.
+The chapter closes by drawing lessons from the worked example, discussing implications for empirical software engineering, articulating the structural advantages that software engineering offers for causal inference relative to other disciplines, and identifying limitations and open frontiers.
 
 \paragraph{Three Cases of Empirical Studies}
 Then, the thesis dives deep into three empirical studies I published in the past that challenged well-known software engineering myths through a pragmatic causal inference with explicit causal credibility assessments---each study deriving an explicit causal theory from domain knowledge, defining the causal estimate of interest and specifying the identifying assumption, honestly acknowledging and mitigating limitations and known caveats, and thoughtfully navigating alternative explanations~\cite{DBLP:journals/corr/abs-2502-06662, DBLP:journals/corr/abs-2412-13459, DBLP:journals/corr/abs-2511-04427}.
@@ -111,12 +121,6 @@ Then, the thesis dives deep into three empirical studies I published in the past
     Further panel generalized method of moments estimation reveals that the increase in static analysis warnings and code complexity acts as a major factor causing long-term velocity slowdown.
     This study carries implications for software engineering practitioners, LLM agent assistant designers, and researchers. 
 \end{itemize}
-
-\paragraph{Proposed Work (Chapter~\ref{chp:proposed-work})}
-The proposed work extends the thesis by developing the causal credibility assessment framework into an accessible \emph{tutorial} aimed at the broader software engineering research community.
-Using the longstanding debate on programming languages and defect proneness~\cite{DBLP:conf/sigsoft/RayPFD14, DBLP:journals/cacm/RayPDF17, DBLP:journals/toplas/BergerHMVV19} as a worked example, I apply the four-step framework to the debate surrounding the seminal study by \citet{DBLP:conf/sigsoft/RayPFD14}, showing that when studies investigate causal questions using correlational methods without explicit causal reasoning---even when findings are carefully framed as correlational---the resulting ambiguity invites confusion, unproductive controversy, and downstream causal misinterpretation by citing work.
-Informed by this assessment, I propose a panel fixed effects analysis exploiting within-developer and within-repository variation as a concrete illustration of how the framework guides the design of improved studies.
-Together, these contributions illustrate how the framework can serve as both a diagnostic tool for evaluating existing research and a design guide for future studies, while the tutorial format aims to lower the barrier for adoption by the software engineering research community.
 
 \paragraph{Summary of Contributions} This thesis makes the following contributions:
 
