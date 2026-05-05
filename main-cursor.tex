@@ -91,7 +91,7 @@ Second, we provide a comprehensive analysis of the impact of LLM agent assistanc
 
 \section{Research Design and Methods}
 
-In this study, we estimate the causal effects of adopting the Cursor agentic IDE on \emph{development velocity} and \emph{software quality}, both of which are considered important project outcomes, commonly measured in prior research, and are closely tied to perceived overall project productivity~\cite{DBLP:journals/queue/ForsgrenSMZHB21, DBLP:journals/ese/OliveiraFSCCG20, DBLP:conf/sigsoft/ChengMCJGKZ022}.
+In this chapter, we estimate the causal effects of adopting the Cursor agentic IDE on \emph{development velocity} and \emph{software quality}, both of which are considered important project outcomes, commonly measured in prior research, and are closely tied to perceived overall project productivity~\cite{DBLP:journals/queue/ForsgrenSMZHB21, DBLP:journals/ese/OliveiraFSCCG20, DBLP:conf/sigsoft/ChengMCJGKZ022}.
 %Development velocity is a commonly measured outcome in software projects~\cite{DBLP:journals/corr/abs-2410-02091, DBLP:conf/icis/YeverechyahuMO24} and represents an important dimension of productivity~\cite{DBLP:journals/queue/ForsgrenSMZHB21, DBLP:journals/ese/OliveiraFSCCG20}. 
 We start by building a dataset with: (1) repositories adopting Cursor at different times, and (2) comparable repositories that never adopted Cursor (Section~\ref{sec:cursor-data-collection}).
 Then, we define our specific outcomes of interest and additional covariates (Section~\ref{sec:metrics}).
@@ -211,7 +211,7 @@ Both metrics have been used as productivity proxies~\cite{DBLP:journals/tosem/Mo
 
 Software quality is multi-faceted and difficult to capture with a single metric~\cite{DBLP:journals/sigmetrics/CavanoM78, DBLP:journals/software/KitchenhamP96, DBLP:journals/csur/Osterweil96}. Quality can be pivoted on defect density~\cite{DBLP:journals/cacm/Grady93}, specification rigor~\cite{farbey1990software}, user satisfaction~\cite{denning1992software}, or technical debt~\cite{DBLP:conf/sigsoft/ErnstBONG15}. 
 However, many metrics cannot be reliably and scalably collected from version control data.
-In this study, we take the technical debt perspective~\cite{martin2009clean} and test three source code maintainability metrics reasonably estimable from static analysis: \emph{static analysis warnings}, \emph{duplicate line density}, and \emph{code complexity}. 
+In this chapter, we take the technical debt perspective~\cite{martin2009clean} and test three source code maintainability metrics reasonably estimable from static analysis: \emph{static analysis warnings}, \emph{duplicate line density}, and \emph{code complexity}.
 All three are arguably positively correlated with project-level technical debt and negatively correlated with perceived code quality. 
 Specifically, we use a local SonarQube Community server~\cite{sonarqube} to compute these outcome metrics for repository $i$ at month $t$:
 \begin{itemize}[leftmargin=15pt]
@@ -286,7 +286,7 @@ It is also important to note that all repository-invariant confounders (e.g., te
 \textit{Step 2: Compare actual to counterfactual.} For each repository-month post-adoption ($it\in\Omega_1$), the estimator predicts the potential outcome from the counterfactual outcome model: $\hat{Y}_{it}(0) = \hat{\mu}_i + \hat{\lambda}_t + \hat{\Gamma}' X_{it}$ and replace the $Y_{it}(0)$  in Equation~\ref{eq:att} and~\ref{eq:atth} with the estimated $\hat{Y}_{it}(0)$, to get the final $ATT$ and $ATT_h$ estimations.
 
 Finally, to assess the plausibility of the parallel trend assumption, \citet{borusyak2024revisiting} advises fitting an alternative model of $Y_{it}$ for untreated observations $\Omega_0$ with additional observables.
-In our paper, we follow the most typical convention and fit the following model with additional dummies before the onset of treatment:
+We follow the most typical convention and fit the following model with additional dummies before the onset of treatment:
 \begin{equation}
 \label{eq:parallel-trend}
     Y_{it}=\hat{\mu}_i + \hat{\lambda}_t + \hat{\Gamma}' Z_{it} + \sum_{h=-k}^{-2}\hat\tau_h\mathbf{1}[t=E_i + h] + \epsilon_{it}
@@ -297,7 +297,7 @@ We drop $h=-1$ due to potential anticipation concerns (the developer may try to 
 One way of viewing the above pre-trend testing procedure is a placebo test, in which $\tau_h$ estimates $ATT_h$ for $h < 0$, which should be zero if the treatment has not yet happened.
 The estimated $\hat\tau_h$ for $h<0$ and $ATT_h$ for $h>0$ are often combined into \emph{event study plots} (e.g., Figure~\ref{fig:dynamic-te}), in which the dynamic effect of treatment is visualized.
 
-Note that the \citet{borusyak2024revisiting} imputation estimator has many alternative specifications with varying assumptions, and we merely describe the version we used in our paper.
+Note that the \citet{borusyak2024revisiting} imputation estimator has many alternative specifications with varying assumptions, and we merely describe the version used in this chapter.
 We refer interested readers to the original paper~\cite{borusyak2024revisiting} regarding alternative specifications and the mathematical assumptions behind them.
 The \citet{borusyak2024revisiting} estimator is also not the only option, and we present results from alternative DiD estimators (TWFE and \citet{callaway2021difference}) in the Appendix as additional robustness checks.
 
@@ -314,7 +314,7 @@ To test such dynamic relationships and bidirectional causality, we employ \emph{
 The key insight is to use \emph{instrumental variables}---correlated with endogenous regressors but uncorrelated with errors---to identify causal effects.
 In panel data, lagged values serve as natural instruments, assuming past values influence current values but are uncorrelated with current shocks~\cite{arellano1991some}.
 
-In our study, we use Arellano-Bond dynamic panel GMM~\cite{arellano1991some}, suited for: (1)~dynamic dependence (current outcomes depend on past); (2)~potential bidirectional causality; (3)~short time series with many entities. 
+In this chapter, we use Arellano-Bond dynamic panel GMM~\cite{arellano1991some}, suited for: (1)~dynamic dependence (current outcomes depend on past); (2)~potential bidirectional causality; (3)~short time series with many entities.
 To test a causality direction $X_t \to Y_t$ while accounting for Cursor adoption $D$, we estimate the following regression:
 \begin{equation}
 \label{eq:dynamic-gmm}
@@ -553,9 +553,9 @@ To summarize, the above robustness checks reassure our main causal findings agai
     \label{fig:theory}
 \end{figure}
 
-Our study contributes to the rapidly growing literature regarding the impact of AI assistance on developer productivity~\cite{DBLP:conf/pldi/0001KLRRSSA22, DBLP:conf/chi/Vaithilingam0G22, DBLP:conf/icse/Imai22, dohmke2023sea, DBLP:journals/corr/abs-2302-06590, hoffmann2024generative, DBLP:conf/icis/YeverechyahuMO24, DBLP:journals/corr/abs-2410-02091, cui2024effects, DBLP:journals/corr/abs-2406-17910, kumar2025intuition,
+This chapter contributes to the rapidly growing literature regarding the impact of AI assistance on developer productivity~\cite{DBLP:conf/pldi/0001KLRRSSA22, DBLP:conf/chi/Vaithilingam0G22, DBLP:conf/icse/Imai22, dohmke2023sea, DBLP:journals/corr/abs-2302-06590, hoffmann2024generative, DBLP:conf/icis/YeverechyahuMO24, DBLP:journals/corr/abs-2410-02091, cui2024effects, DBLP:journals/corr/abs-2406-17910, kumar2025intuition,
 stray2025developer, DBLP:journals/corr/abs-2507-09089}.
-More importantly, our study provides a novel longitudinal lens into project-level macro-outcomes, effectively connecting our findings to the existing software engineering literature around development velocity and software quality~\cite{DBLP:conf/sigsoft/ChengMCJGKZ022, storey2022developers, DBLP:journals/tse/Murphy-HillJSSP21, besker2018technical, kruchten2012technical}.
+More importantly, the analysis provides a novel longitudinal lens into project-level macro-outcomes, effectively connecting the findings to the existing software engineering literature around development velocity and software quality~\cite{DBLP:conf/sigsoft/ChengMCJGKZ022, storey2022developers, DBLP:journals/tse/Murphy-HillJSSP21, besker2018technical, kruchten2012technical}.
 In this section, we connect our findings with prior research and discuss our theory around how LLM agent assistants may impact software development (Figure~\ref{fig:theory}).
 
 \subsubsection{The Transient Velocity Gains and Possible Causes Behind It}
@@ -619,44 +619,25 @@ This suggests LLMs may be generating structurally valid but semantically opaque 
 Addressing this requires both technical innovation (e.g., readability-aware fine-tuning, post-hoc simplification passes) and empirical investigation into what specifically makes LLMs generate overly complicated implementations. 
 Until these complexities are addressed, teams should treat AI-generated code as requiring extra scrutiny during review, with particular attention to whether simpler implementations exist that achieve the same functionality.
 
-\section{Conclusion}
-
-This study presents the first large-scale empirical investigation of how LLM agent assistants impact real-world software development projects. 
-Through a rigorous difference-in-differences design comparing Cursor-adopting repositories with matched control group repositories, complemented by dynamic panel GMM analysis, we provide evidence that challenges both unbridled optimism and categorical pessimism surrounding AI-assisted coding: 
-Cursor adoption produces substantial but transient velocity gains alongside persistent increases in technical debt; such technical debt accumulation subsequently dampens future development velocity.
-Ultimately, our results suggest a self-reinforcing cycle where initial productivity surges give way to maintenance burdens.
-
-However, several considerations suggest this picture may not be as bleak as it initially appears. First, our study captures a snapshot of rapidly evolving technology during 2024-2025. 
-LLM capabilities, agent architectures, and developer practices are improving at unprecedented rates---future tools will likely be able to address the quality concerns we observed. 
-Second, our quality metrics, while well-established in software engineering research, may not fully capture the multidimensional nature of code quality in AI-augmented development. 
-For example, complexity metrics were designed for human-written code; whether they appropriately penalize AI-generated patterns that are mechanically verifiable yet syntactically complex remains an open question. 
-Third, the open-source context of our study may amplify both the abandonment dynamics and quality concerns compared to enterprise settings with mandatory and dedicated quality assurance processes.
-
-Looking forward, our findings point to clear research and practice directions (Section~\ref{sec:cursor-discussion}).
-Ultimately, this study demonstrates that realizing the promise of AI-assisted software development requires a holistic understanding of how AI assistance reshapes the fundamental trade-offs between development velocity, code quality, and long-term project sustainability. 
-The age of AI coding has arrived---our challenge now is to harness it wisely.
-
-\subsection*{Data Availability}
+\section{Chapter Summary}
 \label{sec:cursor-data-avail}
 
-We provide a replication package %, including all the datasets and scripts to replicate findings presented in the study,
-at: 
-\begin{quote}
-    \url{https://github.com/hehao98/CursorStudy}
-\end{quote}
+This chapter has presented a large-scale empirical investigation of how LLM agent assistants impact real-world software development projects.
+Through a difference-in-differences design comparing Cursor-adopting repositories with matched control group repositories, complemented by dynamic panel GMM analysis, the chapter offers evidence that challenges both unbridled optimism and categorical pessimism surrounding AI-assisted coding:
+Cursor adoption produces substantial but transient velocity gains alongside persistent increases in technical debt; such technical debt accumulation subsequently dampens future development velocity.
+The findings suggest a self-reinforcing cycle where initial productivity surges give way to maintenance burdens.
 
-The Appendix is available in the latest arXiv version at:
+However, several considerations suggest this picture may not be as bleak as it initially appears.
+First, the analysis captures a snapshot of rapidly evolving technology during 2024-2025.
+LLM capabilities, agent architectures, and developer practices are improving at unprecedented rates---future tools will likely be able to address the quality concerns observed here.
+Second, the quality metrics used, while well-established in software engineering research, may not fully capture the multidimensional nature of code quality in AI-augmented development.
+For example, complexity metrics were designed for human-written code; whether they appropriately penalize AI-generated patterns that are mechanically verifiable yet syntactically complex remains an open question.
+Third, the open-source context of the analysis may amplify both the abandonment dynamics and quality concerns compared to enterprise settings with mandatory and dedicated quality assurance processes.
 
-\begin{quote}
-    \url{https://arxiv.org/abs/2511.04427}
-\end{quote}
+Looking forward, these findings point to clear research and practice directions (Section~\ref{sec:cursor-discussion}).
+Realizing the promise of AI-assisted software development requires a holistic understanding of how AI assistance reshapes the fundamental trade-offs between development velocity, code quality, and long-term project sustainability.
 
-\subsection*{Acknowledgements}
-He's and Kästner's work was supported in part by the National Science Foundation (award 2206859).
-Miller's work was supported by the National Science Foundation Graduate Research Fellowship Program under Grant Number DGE214073.
-Vasilescu's and Agarwal's work was supported in part by the National Science Foundation (award 2317168) and research awards from Google and the Digital Infrastructure Fund.
-We would also like to thank Narayan Ramasubbu for providing valuable methodological feedback at the early stage of this research, and S3C2 Quarterly Meeting attendees for their insightful discussions around the early results of this study.
-Finally, we would like to thank Google Cloud for offering research credits to cover BigQuery-based analysis in this research.
+A replication package is available at \url{https://github.com/hehao98/CursorStudy}, and a supplementary appendix is available in the arXiv version at \url{https://arxiv.org/abs/2511.04427}.
 
 \section{Appendix}
 
@@ -785,7 +766,7 @@ where $w_{g,t}^h$ are weights proportional to the size of each group satisfying 
 As with the other two estimators, this aggregation allows us to test the parallel trends assumption (where $h < 0$) and estimate ``horizon-average'' treatment effects (where $h \geq 0$).
 
 The \citet{callaway2021difference} framework provides multiple approaches to estimate $ATT(g, t)$. 
-In our study, we use the \emph{outcome regression} estimator with covariate adjustment.
+In this chapter, we use the \emph{outcome regression} estimator with covariate adjustment.
 Specifically, for each group-time pair $(g, t)$, we first estimate an outcome regression model on the comparison group $C$:
 \begin{equation}
 \label{eq:cs-outcome-reg}
@@ -868,7 +849,7 @@ We acknowledge that the lack of large cohorts and clear theoretical guidance on 
 \begin{table*}[t]
 \centering
 \scriptsize
-\caption{Summary statistics for all alternative dataset settings explored in this study. The results from Rust repositories are dropped in Figure~\ref{fig:robustness-checks-all} because of insufficient observations, causing insignificant results and extremely large confidence intervals.}
+\caption{Summary statistics for all alternative dataset settings explored in this chapter. The results from Rust repositories are dropped in Figure~\ref{fig:robustness-checks-all} because of insufficient observations, causing insignificant results and extremely large confidence intervals.}
 \begin{tabular}{lrrrr}
 \toprule
 Setting & \# Treatment Repos & \# Control Repos & \# Total Observations & \# Post-Treatment Observations \\
@@ -954,7 +935,7 @@ It is merely a convenience sample, as an architectural limitation in our SonarQu
 Thus, we only use this sample for descriptive explorations rather than for causal inference (e.g., using a DiD design as in the main paper).
 
 In total, we collected 195,010 warnings generated from 933 SonarQube analysis rules.
-The first author of the paper iteratively works with Claude Opus 4.5 to generate a taxonomy of these rules with 20 categories (Table~\ref{tab:warning-taxonomy}).
+We iteratively work with Claude Opus 4.5 to generate a taxonomy of these rules with 20 categories (Table~\ref{tab:warning-taxonomy}).
 Using this taxonomy, we estimate the average number of new static analysis warnings introduced per repository per month in each SonarQube warning category pre-/post-Cursor adoption (Table~\ref{tab:warnings-by-category}) using the available warnings and months.
 We only focus on newly introduced warnings in each month where data is still available as of January 2026, as SonarQube may routinely clean up resolved warnings in older project versions. 
 

@@ -78,11 +78,10 @@ In the latter case, we show that fake stars, while increasing the displayed star
 From a security perspective, our results call for future research into malicious activities happening on GitHub (e.g., fake stars, fake accounts, spam, phishing).
 From a practitioner's perspective, our results further demonstrate the limitation of star counts as a popularity signal, provide counter-evidence to the effectiveness of fake stars for growth hacking, and call for the design of better popularity signals for GitHub repositories.
 
-In summary, this study makes the following contributions:
+In summary, this chapter:
 \begin{itemize}[leftmargin=15pt]
-    \item We design and implement \SystemName, a scalable tool to scan for anomalous starring behavior across all of GitHub.
-    This leads to a novel large-scale dataset regarding fake GitHub stars.
-    \item Our measurement study discovers novel findings regarding the prevalence, characteristics, and effectiveness of fake stars, leading to practical insights for platform moderators, open-source practitioners, and supply chain security researchers.
+    \item Designs and implements \SystemName, a scalable tool to scan for anomalous starring behavior across all of GitHub, leading to a novel large-scale dataset regarding fake GitHub stars.
+    \item Reports a measurement study with novel findings regarding the prevalence, characteristics, and effectiveness of fake stars, leading to practical insights for platform moderators, open-source practitioners, and supply chain security researchers.
 \end{itemize}
 
 \section{Background and Related Work}
@@ -814,8 +813,8 @@ routinely take down known fake accounts or malware repositories, %can easily app
 but may not link them together.
 We suggest that a platform provider could use internal signals of suspicious activity, including fake stars, to direct malware detection efforts.
 
-Finally, our study provides an example of \emph{how platform transparency enables large-scale independent studies of fraud and malicious activities}.
-We could not have conducted this study without GitHub's high level of openness, which unfortunately, is not common in many other online platforms.
+Finally, this work provides an example of \emph{how platform transparency enables large-scale independent studies of fraud and malicious activities}.
+The investigation reported in this chapter would not have been possible without GitHub's high level of openness, which unfortunately, is not common in many other online platforms.
 \emph{We call for the same level of openness in others to enable ``the scrutiny of a thousand eyes.''}
 
 \subsection{Third-Party Tool Providers}
@@ -847,15 +846,14 @@ This arguably creates an emerging and important battleground, especially conside
 Also, software supply chain attacks are becoming increasingly diverse and sophisticated, evolving from simple typosquatting~\cite{DBLP:conf/dimva/OhmPS020} to complex social engineering attacks as in the \textit{xz} attack~\cite{xz-attack} and reputation farming~\cite{reputation-farm}.
 \emph{Although our study does not find any evidence of fake stars being used for social engineering attacks, we call for continuous research and monitoring into this potential threat.}
 
-\section{Conclusion}
+\section{Chapter Summary}
 
-In this study, we have presented a systematic, global, and longitudinal measurement study of fake stars in GitHub.
-Our study sheds light on this prevalent and escalating threat happening in a platform central to modern open-source software development. 
-Despite its wide prevalence and rising popularity, our findings have also revealed its shady nature: 
+This chapter has presented a systematic, global, and longitudinal measurement study of fake stars in GitHub, shedding light on this prevalent and escalating threat happening in a platform central to modern open-source software development.
+Despite the wide prevalence and rising popularity of fake stars, the findings reveal their shady nature:
 Fake stars are, at worst, used to spread malware in short-lived repositories, and at best, used as a short-term promotional tool, which does not bring long-term returns.
-Our work emphasizes a critical need for vigilance in assessing other repository signals beyond star counts, and calls for the design of better popularity signals.
-Our study also shows a need for further research on spam, fraudulent, and malicious activities in the software supply chain, especially regarding the risk of social engineering attacks.
-Future research could expand upon our findings through better fake star detection approaches, exploring additional data (e.g., analyzing fake accounts in GitHub from a social network perspective), and examining similar spam, fraudulent, or malicious activities in other platforms related to software supply chain security.
+The findings emphasize a critical need for vigilance in assessing other repository signals beyond star counts, and call for the design of better popularity signals.
+They also point to a need for further research on spam, fraudulent, and malicious activities in the software supply chain, especially regarding the risk of social engineering attacks.
+Future research could expand upon these findings through better fake star detection approaches, exploring additional data (e.g., analyzing fake accounts in GitHub from a social network perspective), and examining similar spam, fraudulent, or malicious activities in other platforms related to software supply chain security.
 
 \section*{Responsible Disclosure}
 
@@ -894,20 +892,12 @@ Still, we reached out to the GitHub Security team to inform them of our research
 \label{sec:data-avail}
 \label{sec:conclusion}
 
-We provide the appendix of this study, the source code of \SystemName, and the data and scripts used in our measurement study at:
+The source code of \SystemName, the data and scripts used in the measurement study, and supplementary appendix material are available at:
 \begin{quote}
 \centering
 \url{https://doi.org/10.5281/zenodo.17009693}
 \end{quote}
-The appendix is also available in the arXiv version of this study~\cite{DBLP:journals/corr/abs-2412-13459}.
-
-\subsection*{Acknowledgements}
-
-He's and Kästner's work was supported in part by the National Science Foundation (award 2206859).
-Kapravelos's work was supported in part by the National Science Foundation (award 2207008).
-Bogdan's work was supported in part by the National Science Foundation (award 2317168) and in part by research awards from Google and the Digital Infrastructure Fund.
-We would also like to thank Socket Inc (\url{https://socket.dev}) and its CEO, Feross Aboukhadijeh, for providing collaboration opportunities, general support, and computational resources for this project.
-Additionally, we would like to thank Google Cloud for Researchers program for offering credits to fund the use of Google BigQuery for this research.
+The supplementary appendix is also available in the arXiv version~\cite{DBLP:journals/corr/abs-2412-13459}.
 
 \section{Appendix}
 
@@ -1019,7 +1009,7 @@ It also has a very high level of fake star retention (175 out of 197 fake stars 
 
 For all the $AR(k)$ panel autoregression models with random or fixed effects, we summarize their $R^2$ values, Bayesian Information Criterion (BIC), and Akaike Information Criterion (AIC) in Table~\ref{tab:ic}.
 They are common model selection criteria for regression models, in which $R^2$ measures goodness-of-fit and AIC/BIC penalizes model overfitting.
-While in general, models with higher $R^2$ and lower AIC/BIC~\cite{kuha2004aic} are preferred, all twelve models lead to consistent findings regarding our hypotheses, so we only report the $AR(2)$ random- and fixed-effects model in the paper (Table~\ref{tab:regression}) for the sake of simplicity.
+While in general, models with higher $R^2$ and lower AIC/BIC~\cite{kuha2004aic} are preferred, all twelve models lead to consistent findings regarding our hypotheses, so we only report the $AR(2)$ random- and fixed-effects model in the chapter (Table~\ref{tab:regression}) for the sake of simplicity.
 The Hausman test~\cite{amini2012fixed} indicates that the unique errors are correlated with the regressors, so results from the fixed-effects model are preferable.
 We present the remaining regression results from other $AR(k)$ ($k = 1, 3, 4, 5, 6$) models in appendix Table~\ref{tab:all-regressions}.
 We can see that the coefficients of $real_{i, t-k}$ and $all\_real_{i, t-k-1}$ are consistently positive and significant, which supports our \textbf{H$_{1}$}, with only a few exceptions when $k$ is large (Section~\ref{sec:rq4}).
