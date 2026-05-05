@@ -172,6 +172,35 @@ Do **not** capitalize after a colon when it introduces a list, fragment, or math
 - "The methods include: matching, DiD, and IV."
 - "Define the effect as: $Y^1 - Y^0$."
 
+### Em-Dash Spacing
+
+Em-dashes (`---`) MUST be written with no surrounding spaces.
+This applies whether the em-dash separates a parenthetical remark, introduces an aside, or stands at the boundary between clauses.
+
+#### Why
+
+Tight em-dashes match the typographic convention used by most academic publishers and produce the correct spacing in the rendered PDF.
+Spaces around `---` cause LaTeX to insert extra glue around the dash, which is visually inconsistent with the rest of the document.
+
+#### Rules
+
+- Always write `word---word` rather than `word --- word`, `word ---word`, or `word--- word`.
+- Do not break a line immediately before or after `---`. The dash should stay on the same line as at least one of the words it joins.
+
+#### Examples
+
+##### BAD
+```latex
+The credibility of the causal claim therefore rests on A1 and A4 --- the two assumptions that the design's construction does not guarantee.
+Project maturity --- expressed through age, release history, and contributor count --- predicts versioning strategy and outcome levels independently.
+```
+
+##### GOOD
+```latex
+The credibility of the causal claim therefore rests on A1 and A4---the two assumptions that the design's construction does not guarantee.
+Project maturity---expressed through age, release history, and contributor count---predicts versioning strategy and outcome levels independently.
+```
+
 ### Tone and Register
 
 - Use a **declarative, measured** academic tone. Write with confidence but without superlatives or enthusiasm markers ("remarkably powerful," "crucially important").
