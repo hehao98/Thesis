@@ -84,8 +84,9 @@ All nodes are classified as *controlled* (by the study design), *explicit covari
 - Effect on outcomes: High-release-frequency dependencies generate more automatic updates (`n_auto_updates`) and stay fresher (`n_outdated_deps` is lower). Zerouali et al. (ICSR 2018) establish that technical lag is partly driven by upstream release cadence.
 - Not controlled. A **residual threat** to `n_auto_updates` and `n_outdated_deps` estimates.
 
-**L — Lockfile adoption (`package-lock.json` committed to repo)**
-- *Note: Lockfile adoption affects real-world deployment but NOT the simulation.* The study's outcome metrics are computed from simulated dependency graph resolutions, not from actual installations. Whether a project commits its lockfile and uses `npm ci` is irrelevant to the simulation outcomes. However, lockfile adoption conflates with the *treatment definition* in the real world: a project floating in `package.json` but using `npm ci` is effectively pinned in practice. This is a measurement validity concern for the treatment variable's external interpretation, not an identification threat within the simulation.
+#### Deliberately Excluded from the DAG
+
+**Lockfile adoption** (whether `package-lock.json` is committed and `npm ci` is used) is a real-world consideration but is not part of the causal structure relevant to the study. The outcome metrics are computed from simulated dependency graph resolutions, not from actual installations, so lockfile commit decisions do not affect any simulated outcome. Lockfile adoption is mentioned in the discussion section of the paper as a practical recommendation, but it is a nuance about how practitioners interpret the treatment in deployment, not a node in the causal DAG that governs the simulation. The DAG should not include it; the prose around the discussion may.
 
 ---
 
@@ -162,61 +163,52 @@ graph TD
 
 ## Step 2 — Causal Estimand and Identifying Assumptions
 
-**Goal:** State the estimand formally in potential-outcomes notation with expectation operators, name each identifying assumption explicitly, and use the formal framework to analyze the impact of each known limitation on the causal interpretation.
+**Goal:** Define the causal estimands precisely, name the assumptions under which the panel regression coefficients admit a causal interpretation, and use this framework to analyze how each known limitation affects the credibility of the causal claim.
 
-### Formal Setup (RQ1)
+### Estimands
 
-Let $(i, t)$ denote project $i$ at time $t \in \{t_0, t_1, t_2, t_3, t_4\}$.
-For each metric $M$, define the potential outcomes as:
+For each outcome metric $M$, let $Y_{it}(d)$ denote the value of $M$ for project $i$ at time $t$ under versioning strategy $d$, where $d=1$ denotes all-pinning and $d=0$ denotes the observed (predominantly floating) strategy.
 
-$$Y_{it}(d) = \text{value of metric } M \text{ for project } i \text{ at time } t \text{ if its direct dependencies are versioned under strategy } d$$
+The study targets two causal estimands:
 
-where $d = 1$ denotes all-pinning and $d = 0$ denotes the observed (predominantly floating) strategy.
+- **Average Treatment Effect (ATE):** $\tau_{\text{ATE}} = E[Y_{it}(1) - Y_{it}(0)]$
+- **Conditional Average Treatment Effect by graph size (CATE):** $\tau(G) = E[Y_{it}(1) - Y_{it}(0) \mid \text{size}(G_{it}) = G]$
 
-The study estimates the **Conditional Average Treatment Effect (CATE)** as a function of dependency graph size $G$:
-
-$$\tau(G) = E\bigl[Y_{it}(1) - Y_{it}(0) \;\big|\; \ln(\text{size}(G_{it})) = G\bigr]$$
-
-and the **Average Treatment Effect (ATE)**:
-
-$$\tau_{\text{ATE}} = E\bigl[Y_{it}(1) - Y_{it}(0)\bigr]$$
-
-The panel regression (Equation 1 in the paper) estimates $\tau_{\text{ATE}}$ and $\tau(G)$ simultaneously via the main coefficient on *pinning* and the interaction coefficient on *pinning* $\times \ln(\text{size}(G))$.
-
-Because the simulation produces $\hat{Y}_{it}(0)$ (original resolution) and $\hat{Y}_{it}(1)$ (all-pinning resolution) for every unit, the design is structurally a **within-project paired experiment**. The regression estimator is thus:
-
-$$\hat{\tau}(G) = \hat{E}\bigl[\hat{Y}_{it}(1) - \hat{Y}_{it}(0) \;\big|\; G_{it}\bigr]$$
-
-where $\hat{Y}_{it}(d)$ denotes the simulated potential outcome. The project and time fixed effects $\alpha_i$ and $\beta_t$ ensure that the estimate is robust to time-invariant project heterogeneity and common time shocks, conditions that would otherwise bias a naive comparison between pinning and floating projects in observational data.
+The panel regression estimates the ATE through the main coefficient on *pinning* and traces the CATE through the *pinning* $\times \ln(\text{size}(G))$ interaction.
+Because the simulation produces both potential outcomes for every project-time unit from the same `package.json`, the design is structurally a within-project paired experiment, and the project and time fixed effects absorb time-invariant project heterogeneity and common time shocks.
 
 ### Identifying Assumptions
 
-**A1. Simulation Fidelity:**
-$$E\bigl[\hat{Y}_{it}(d)\bigr] = E\bigl[Y_{it}(d)\bigr] \quad \text{for } d \in \{0, 1\}$$
-The npm `--before` time-travel argument faithfully reconstructs the dependency graph that would have been produced by resolving the project's `package.json` at time $t$. Violations arise if npm's resolver algorithm changed between time $t$ and the simulation date, or if configuration files (`.npmrc`, workspace settings) differ between historical and simulated environments. This is the primary identifying assumption: unlike in a standard observational study, selection-into-treatment confounding is not the main threat. Instead, measurement validity of the simulated potential outcomes is.
+**A1. Simulation fidelity.**
+The simulated counterfactual outcomes have the same expected value as the actual potential outcomes would have had under the corresponding versioning strategy.
+This is the primary identifying assumption: unlike in a standard observational study, selection-into-treatment confounding is not the main threat — measurement validity of the simulated counterfactual is.
+Violations arise if npm's resolver algorithm changed between the historical timestamp and the simulation date, or if local environment configurations (e.g., `.npmrc`, workspace settings) differ between historical and simulated environments.
 
-**A2. No Interference (SUTVA Part 1):**
-$$Y_{it}(d_i) \perp D_{jt} \quad \text{for all } j \neq i$$
-Project $i$'s outcomes under pinning strategy $d$ are not affected by what other projects do. This holds at the project level because npm resolves each project's dependency graph independently. It is deliberately violated in RQ2, which is why RQ2 uses a network propagation simulation rather than a panel regression.
+**A2. No interference (SUTVA Part 1).**
+A project's outcomes under its assigned versioning strategy do not depend on the strategies adopted by other projects.
+This holds at the project level because npm resolves each project's dependency graph independently of other projects.
+RQ2 deliberately violates this assumption by design — ecosystem-level interference is the entire point — which is why RQ2 uses a network propagation simulation rather than a panel regression.
 
-**A3. Consistent Treatment Value (SUTVA Part 2):**
-There exists a single well-defined version of the treatment $D = 1$ ("all-pinning"). In practice, "pinning" is a spectrum: projects may pin all direct dependencies, pin only a subset, or use a lockfile with floating constraints. The simulation imposes the most extreme version of the treatment (pin all direct dependencies to the minimum specified version). This means the estimated effect $\hat{\tau}(G)$ corresponds to the effect of the most aggressive pinning intervention, not to the partial pinning that practitioners typically adopt.
+**A3. Consistent treatment value (SUTVA Part 2).**
+There exists a single well-defined version of the treatment "all-pinning."
+In practice, pinning is a spectrum: projects may pin all direct dependencies, pin only a subset, or use a lockfile with floating constraints.
+The simulation imposes the most extreme variant.
+The estimated effect therefore corresponds to maximally aggressive pinning, not to the partial pinning that practitioners typically adopt.
 
-**A4. No Residual Time-Varying Confounding:**
-After conditioning on project fixed effects $\alpha_i$, time fixed effects $\beta_t$, and $\ln(\text{size}(G_{it}))$, no remaining time-varying confounder $W_{it}$ satisfies $W_{it} \not\perp (Y_{it}(0), Y_{it}(1))$ and $W_{it} \not\perp D_{it}$ conditional on $(\alpha_i, \beta_t, G_{it})$. From the DAG analysis, the main candidate for violating this assumption is **Dependabot/Renovate adoption** (DT), which can change within the study window and affects both the effective treatment (DT determines actual update behavior) and the outcomes $Y_2$, $Y_3$, $Y_4$.
+**A4. No residual time-varying confounding.**
+After conditioning on project fixed effects, time fixed effects, and $\ln(\text{size}(G_{it}))$, no time-varying confounder remains that affects both the effective treatment and the outcomes.
+From the DAG analysis, the main candidate violator is Dependabot/Renovate adoption, which can change within the study window and affects both the effective treatment definition (via Renovate's `rangeStrategy`) and the outcomes for vulnerabilities, outdated dependencies, and automatic updates.
 
-### How Limitations Formally Affect the Estimand
-
-The formal framework allows us to specify precisely which assumption each limitation threatens, whether the threat is to internal or external validity, and the likely direction of bias:
+### How Each Limitation Threatens the Causal Claim
 
 | Limitation | Assumption Threatened | Type | Direction of Bias | Analysis |
 |---|---|---|---|---|
-| Simulation failures (12–16%) | A1 (simulation fidelity) | Internal | Underestimation of `n_bloated` | Let $R_{it}^{(d)} = 1$ if resolution under treatment $d$ succeeds. The study estimates $E[\hat{Y}_{it}(1) - \hat{Y}_{it}(0) \mid R_{it}^{(1)}=1, R_{it}^{(0)}=1]$. Pinning introduces more version conflicts → $P(R^{(1)}=1) < P(R^{(0)}=1)$. Projects with the most severe conflicts — the ones where $Y_5(1)$ (bloat) would be highest — are disproportionately excluded. The reported $\hat{\tau}$ for `n_bloated` is therefore a lower bound on the true cost of pinning. |
-| All-or-nothing treatment | A3 (consistent treatment) | External | Effect size upper bound | The estimated $\hat{\tau}$ corresponds to $E[Y(d=\text{all-pin}) - Y(d=\text{observed})]$, not to the effect of typical partial pinning. Since the treatment is maximally aggressive, the estimated costs of pinning (higher `n_vuln`, `n_outdated_deps`, `n_bloated`) are upper bounds on the costs practitioners actually face. Conversely, the estimated benefits (lower `n_floating`) may understate what a more targeted pinning strategy could achieve. |
-| No behavioral response modeled | A3 (consistent treatment) | External | Overestimation of pinning costs for `n_vuln` and `n_outdated_deps` | The simulated potential outcome $\hat{Y}_{it}(1)$ models all-pinning with zero developer response (no manual updates). The policy-relevant estimand is $E[Y_{it}(1, B^*) - Y_{it}(0)]$ where $B^*$ is the behavioral response developers would actually adopt when pinning. Since $B^* > 0$ (developers who pin actively manage updates), and active management reduces `n_vuln` and `n_outdated_deps`, the study overestimates the costs for these two metrics. Critically, this limitation does **not** affect the `n_floating` estimate, since attack surface is determined by version constraints in `package.json`, not by developer update behavior. |
-| Uniform random attack assumption | Not an identifying assumption | Measurement validity | Conservative if attacks are targeted | The uniform assumption affects the *interpretation* of $Y_1$ = `n_floating` as a proxy for actual attack risk, not the identification of $E[Y_1(1) - Y_1(0)]$. The estimate of how pinning changes the number of floating dependencies remains causally valid; the question is whether reducing floating dependencies reduces actual attack probability in proportion. If attackers target floating-heavy packages (plausible, since they have larger reachable sets), the risk reduction from pinning is overestimated by `n_floating` as a proxy. |
-| Dependabot/Renovate adoption (DT) | A4 (no residual time-varying confounding) | Internal | Direction unclear | DT confounds the treatment-outcome relationship for `n_vuln`, `n_outdated_deps`, and `n_auto_updates`. Projects adopting Renovate in pin mode have a different effective treatment from their `package.json`, and DT independently reduces `n_vuln` and `n_outdated_deps`. The direction of bias depends on whether DT adoption is positively or negatively correlated with G: if security-conscious projects are both more likely to adopt DT and have larger dependency graphs, the G interaction term partially absorbs this. |
-| npm-specific deduplication | External validity | External | Not a bias — a scope limitation | The crossover finding at G ≥ 498 nodes depends entirely on npm's deduplication heuristic of installing multiple versions to resolve conflicts. In ecosystems using a single-version constraint solver (pip, Maven, Cargo), pinning increases `n_bloated` costs but does not produce negative `n_floating` effects. The study's causal claims are valid within npm; generalization requires separate analysis. |
+| Simulation failures (12–16%) | A1 | Internal | Lower bound on `n_bloated` cost | Resolution failures are not random: pinning introduces more version conflicts, so success rates differ between treatment and control conditions. Projects with the most severe conflicts — where the bloat cost of pinning would be highest — are disproportionately excluded from the analysis sample. The reported pinning effect on `n_bloated` is therefore a lower bound on the true cost. |
+| All-or-nothing treatment | A3 | External | Upper bound on effect magnitude | The estimated effect corresponds to switching all direct dependencies to pinning, not to the typical partial pinning practitioners adopt. The estimated costs of pinning (`n_vuln`, `n_outdated_deps`, `n_bloated`) are therefore upper bounds on costs practitioners face, while the estimated benefits (lower `n_floating`) may understate what a more targeted pinning strategy could achieve. |
+| No behavioral response modeled | A3 | External | Overestimation of pinning costs for `n_vuln` and `n_outdated_deps` | The simulated all-pinning outcome assumes no developer response to accumulating outdated or vulnerable dependencies. The policy-relevant counterfactual is all-pinning *with* the active dependency management that pinning developers would actually adopt. Since active management reduces both metrics, the study overestimates pinning costs here. Critically, this limitation does not affect the `n_floating` estimate — attack surface is determined by the constraints in `package.json`, not by developer update behavior. |
+| Uniform random attack assumption | Not an identifying assumption | Measurement validity | Risk reduction overstated if attacks are targeted | The uniform assumption affects the interpretation of `n_floating` as a proxy for actual attack risk, not the identification of the pinning effect on `n_floating` itself. The estimate of how pinning changes the count of floating dependencies remains causally valid. The open question is whether reducing floating dependencies reduces actual attack probability in proportion; if attackers preferentially target floating-heavy packages, the implied operational risk reduction is overstated. |
+| Dependabot/Renovate adoption (DT) | A4 | Internal | Direction unclear | DT confounds the relationship between the declared versioning strategy and `n_vuln`, `n_outdated_deps`, and `n_auto_updates`. Projects using Renovate in pin mode have an effective treatment that differs from their `package.json` alone, and DT independently reduces vulnerability lag. Direction of bias depends on whether DT adoption correlates with $G$: if security-conscious projects both adopt DT and have larger graphs, the $G$ interaction term partially absorbs this. |
+| npm-specific deduplication | External validity | External | Not a bias — scope limitation | The crossover finding at $G \geq 498$ nodes depends entirely on npm's deduplication heuristic of installing multiple versions to resolve conflicts. In single-version-constraint ecosystems (pip, Maven, Cargo), pinning increases bloat costs but does not produce negative effects on `n_floating`. The causal claims are valid within npm; generalization to other ecosystems requires a separate study. |
 
 ### For RQ2
 
