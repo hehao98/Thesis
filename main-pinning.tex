@@ -581,7 +581,9 @@ As visible in Figure~\ref{fig:intervention}, one would expect 1.93\% of npm down
 Most defense strategies can reduce ecosystem-wide risk (from  doing nothing at $n=0$) with targeted defenses at 10 to 100 packages, but their effectiveness varies widely. The best local pinning strategy can reduce ecosystem-wide risk against the 1000 most popular packages by 12.21\% with defending only 20 packages and 30.09\% when defending 100 packages. 
 The best transitive pinning strategy can reduce ecosystem-wide risk against the 1000 most popular packages by 51.34\% when defending only 20 packages and 75.81\% when defending 100 packages.
 For both pinning mechanisms, selecting packages with betweenness weighted by downloads is most effective,
-but transitive pinning is usually two to three times more effective than local pinning. 
+but transitive pinning is usually two to three times more effective than local pinning.
+
+\input{analysis-pinning}
 
 \section{Discussion}
 \label{sec:pinning-discussion}
