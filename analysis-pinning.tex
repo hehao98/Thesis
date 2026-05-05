@@ -152,7 +152,7 @@ The counter-intuitive result that pinning increases \Code{n\_floating} for large
 The design is defensible against this alternative: the mechanism---deduplication producing additional transitive version copies when pinning forces version conflicts---is structurally documented in npm's resolver implementation~\cite{how-npm3-works} and is illustrated with a minimal worked example in Figure~\ref{fig:rq2-example}.
 The crossover point at 498 nodes is consistent with the mechanism activating only once enough version conflicts accumulate in the transitive graph, a continuous rather than discontinuous process.
 The finding replicates across four robustness checks---npm packages only, GitHub repositories only, $t_0$ only, and development dependencies included---each representing a distinct subpopulation.
-A simulation artefact would need to produce the same spurious crossover point in all four populations, which is implausible.
+A simulation artefact would need to produce the same spurious crossover point in all four populations, which is unlikely.
 
 \paragraph{Alternative 2: Time-varying confounding by automated tool adoption inflates the cost estimates.}
 Projects that adopted Dependabot or Renovate during the study window have lower \Code{n\_vuln} and \Code{n\_outdated\_deps} regardless of their pinning strategy.
