@@ -255,7 +255,7 @@ In the postprocessing step, \SystemName identified 18,617 repositories with fake
 \label{sec:evaluation}
 
 It is challenging to evaluate a fake activity detector like \SystemName.
-While honeypots are often used in prior research (e.g., \cite{DBLP:conf/acsac/DuYZDWH0020, DBLP:conf/imc/CristofaroFJKS14, DBLP:journals/dss/CresciPPST15}), they raise ethical concerns~~\cite{DBLP:conf/icissp/WeipplSR16, DBLP:conf/uss/KohnoAL23}: If we were to buy fake stars for a honeypot repository, we would be effectively funding malicious actors and creating spam for other developers.
+While honeypots are often used in prior research (e.g., \cite{DBLP:conf/acsac/DuYZDWH0020, DBLP:conf/imc/CristofaroFJKS14, DBLP:journals/dss/CresciPPST15}), they raise ethical concerns~\cite{DBLP:conf/icissp/WeipplSR16, DBLP:conf/uss/KohnoAL23}: If we were to buy fake stars for a honeypot repository, we would be effectively funding malicious actors and creating spam for other developers.
 %Plus, there is no guarantee that fake stars from a few easy-to-find merchants would be representative---it was reported that attackers may use much more sophisticated methods to generate fake stars
 %that need to be assessed in the specific research context~\cite{DBLP:conf/icissp/WeipplSR16, DBLP:conf/uss/KohnoAL23}
 To alleviate this concern, we evaluate the recall of \SystemName using an alternative ground truth malware phishing campaign arguably powered by fake stars.
@@ -263,7 +263,7 @@ Specifically, we use the Stargazer Ghost Network dataset~\cite{stargazer-goblin}
 %The accounts 
 %where the attackers likely promoted their malware phishing repositories using fake GitHub stars.
 We find that \SystemName can detect 688 (81.23\%) of the 847 repositories and 11,903 (75.95\%) of the 15,672 involved GitHub accounts.
-\emph{In other words, \SystemName can achieve up to 82.23\% recall for repositories and 75.95\% recall for accounts when it comes to the detection of fake-star-powered malware campaigns.}
+\emph{In other words, \SystemName can achieve up to 81.23\% recall for repositories and 75.95\% recall for accounts when it comes to the detection of fake-star-powered malware campaigns.}
 We believe this recall performance is satisfactory, especially considering that the algorithm we use for detecting the lockstep signature, \textsf{CopyCatch}, is a randomized greedy algorithm with no completeness guarantees~\cite{DBLP:conf/www/BeutelXGPF13}.
 
 % While the above evaluation provides evidence regarding the \emph{recall} of \SystemName's detections, it does not provide any evidence regarding \emph{precision}.
@@ -697,7 +697,7 @@ we collect the following variables for each repository $i$ in each month $t$: % 
 The first four variables are intended to test our hypotheses; the remaining three are control variables that have been shown to correlate with star increases in prior work~\cite{DBLP:conf/icse/FangLHV22}. 
 We fit $AR(k)$ (i.e., $k$-th order) models for $k = 1, 2, ..., 6$, defined as follows:
 \begin{align*}
-    \textit{real}_{i,t} \sim &\sum_{j=1}^k \textit{real}_{i, t-k} + \textit{all\_real}_{i, t - k - 1} + \sum_{j=1}^k \textit{fake}_{i, t-k} \\& + \textit{all\_fake}_{i, t - k - 1} + \textit{age}_{i,t} + \textit{release}_{i,t} + \textit{activity}_{i,t}\\
+    \textit{real}_{i,t} \sim &\sum_{j=1}^k \textit{real}_{i, t-j} + \textit{all\_real}_{i, t - k - 1} + \sum_{j=1}^k \textit{fake}_{i, t-j} \\& + \textit{all\_fake}_{i, t - k - 1} + \textit{age}_{i,t} + \textit{release}_{i,t} + \textit{activity}_{i,t}\\
 \end{align*}
 The last three control variables are for random effect models only; unobserved heterogeneity in fixed effect models is controlled by the per-time and per-repository %invariant
 fixed-effect terms.

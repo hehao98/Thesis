@@ -106,32 +106,33 @@ Violations arise if npm's resolver algorithm changed between the historical time
 \paragraph{A2. No interference (SUTVA, Part 1).}
 A project's outcomes under its assigned versioning strategy do not depend on the strategies adopted by other projects.
 A2 is \emph{satisfied by construction}: dependency resolution is deterministic given the \Code{package.json} and a snapshot of the registry, so project $i$'s simulated treatment has no causal pathway to project $j$'s simulated outcome --- the registry state is fixed by the time-travel mechanism, and resolution does not consult other projects' configurations.
-RQ2 deliberately violates A2 by design --- ecosystem-level interference is the entire point --- which is why RQ2 uses a network propagation simulation rather than a panel regression.
+RQ2 deliberately violates A2 by design --- ecosystem-level interference is the entire point --- which is why RQ2 uses a network propagation simulation method rather than a panel regression on simulated experiment data.
 
 \paragraph{A3. Consistent treatment value (SUTVA, Part 2).}
 There exists a single well-defined version of the treatment ``all-pinning.''
 A3 is \emph{satisfied by construction}: the treatment is imposed by a deterministic transformation of the \Code{package.json} --- removing every caret and tilde from direct production dependencies and resolving to the minimum specified version --- yielding a single, operationally well-defined version of all-pinning.
-The fact that real-world pinning is a spectrum bears on which estimand is policy-relevant, not on whether the simulated estimand is causally identified; that concern belongs to external validity and is addressed in the existing Limitations subsection (Section~\ref{sec:method-rq1}).
+The fact that real-world pinning behavior is a spectrum rather than a binary decision bears on whether the presented estimand is policy-relevant, not on whether the simulated estimand is causally identified; that concern belongs to external validity and is addressed in the existing Limitations subsection (Section~\ref{sec:method-rq1}).
 
 \paragraph{A4. No residual time-varying confounding.}
 After conditioning on project fixed effects, time fixed effects, and $\ln(\text{size}(G_{it}))$, no time-varying confounder remains that affects both the effective treatment and the outcomes.
 A4 \emph{requires empirical argument}.
-The main candidate violator is automated dependency-update tool adoption (Dependabot, Renovate), which can change within the study window and affects the effective treatment definition (via Renovate's \Code{rangeStrategy}) and the outcomes for vulnerabilities, outdated dependencies, and automatic updates simultaneously.
+Upon careful review of the literature, we find that one possible candidate violator is automated dependency-update tool adoption (Dependabot, Renovate), which can change within the study window and affects the effective treatment definition (via Renovate's \Code{rangeStrategy}) and the outcomes for vulnerabilities, outdated dependencies, and automatic updates simultaneously.
 
 The credibility of the causal claim therefore rests on A1 and A4 --- the two assumptions that the design's construction does not guarantee.
-RQ2 is identified through a separate network propagation simulation rather than through the potential-outcomes framework above; its assumptions and their direction of bias are addressed in the existing limitations subsection of the RQ2 method section (Section~\ref{sec:method-rq3}).
+RQ2 is identified through a separate network propagation simulation rather than through the potential-outcomes framework above; its assumptions and known limitations are addressed in the existing limitations subsection of the RQ2 method section (Section~\ref{sec:method-rq3}).
 
 \subsection{Limitations and Known Caveats}
 \label{sec:pinning-credibility-limitations}
 
-The simulation design eliminates the standard observational confounders identified in the DAG --- selection into the pinning strategy by project type, maturity, security-consciousness, CI adoption, and downstream dependents --- and the panel fixed effects absorb time-invariant project heterogeneity and common time shocks.
+The simulation design eliminates the standard observational confounders identified in the DAG---selection into the pinning strategy by project type, maturity, security-consciousness, CI adoption, and downstream dependents---and the panel fixed effects absorb time-invariant project heterogeneity and common time shocks.
 Two threats to the internal causal validity of the RQ1 estimate remain.
 
 \paragraph{Differential simulation failures.}
 Resolution failures occurred for 12--16\% of project-time observations and are not random.
-Pinning introduces additional version conflicts, so success rates differ between the treatment and control conditions: projects whose dependency constraints already conflict are more likely to fail under pinning than under the observed (predominantly floating) configuration.
-The projects with the most severe latent conflicts --- precisely those for which the bloat cost of pinning would be highest --- are disproportionately excluded from the analysis sample, which threatens A1.
-The reported pinning effect on \Code{n\_bloated} is therefore a lower bound on the true cost of pinning, and the magnitude of the underestimation increases with $G$.
+Pinning introduces additional version conflicts, so projects whose dependency constraints already conflict are more likely to fail under pinning than under the observed (predominantly floating) configuration, and the analysis sample therefore disproportionately excludes the projects with the most severe latent conflicts.
+This threatens A1, and the direction of the resulting bias on each outcome depends on whether the magnitude of the pinning effect correlates with conflict severity.
+The excluded projects are precisely those for which pinning would force the most duplicates, the strongest crossover in floating versions, the most update lock-in, and the most unpatched vulnerabilities, so the reported effects on \Code{n\_bloated}, \Code{n\_floating}, \Code{n\_outdated\_deps}, and \Code{n\_vuln} are lower bounds on the true costs of pinning, with the magnitude of the underestimation increasing in dependency graph size $G$.
+The effect on \Code{n\_auto\_updates} is structural---pinning sets direct-dependency auto-updates to zero by construction---so the bias on this outcome is plausibly small and of indeterminate sign.
 
 \paragraph{Time-varying confounding by automated dependency-update tool adoption.}
 Adoption of Dependabot or Renovate is not uniformly time-invariant within the 12-month panel; some projects adopt these tools mid-window.

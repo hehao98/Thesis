@@ -209,7 +209,7 @@ This forms the main motivation of our study.
 
 As we discussed above, dependency pinning is often acknowledged as a security best practice to reduce the attack surface for malicious package updates~\cite{DBLP:conf/sp/LadisaPMB23, DBLP:journals/ieeesp/ZahanKHSW23}, but controversies remain on whether the security benefits of pinning outweigh its maintenance drawbacks~\cite{facts-vs-feelings, renovate-discussion, pinning-only-work, DBLP:conf/sp/LadisaPMB23, DBLP:journals/tse/JafariCAST22}.
 Importantly, a project only has control over the version constraints of its direct dependencies, but the impact of pinning direct dependencies is complicated and unclear, contingent upon upstream practices and dependency management tools.
-Hence, the goal of RQ1 is to empirically measure the actual security and maintenance impact of this intervention (i.e., pinning direct dependencies).
+Hence, the goal of RQ1 is to empirically measure the actual security and maintenance impact of this intervention.
 
 \subsection{Data Collection}
 \label{sec:data-collection}
@@ -307,8 +307,8 @@ Our results indicate that although projects sometimes make deliberate decisions 
 
 \paragraph{Overview.}
 At a high level, we take a \emph{counterfactual analysis} approach~\cite{morgan2015counterfactuals}---that is, estimating the causal effect of pinning by comparing the ``what-if'' differences with not pinning in each project.
-This leads to our design of comparing metrics %(one for each of the five trade-offs commonly raised in favor or against pinning, previously summarized in Table~\ref{tab:trade-offs}), 
-between a \emph{control} condition consisting of our observed projects, and a (simulated) \emph{treatment} condition wherein we alter each of the project's \Code{package.json} to pin all its direct dependencies.
+This leads to our design of comparing metrics (one for each of the five trade-offs commonly raised in favor or against pinning, previously summarized in Table~\ref{tab:trade-offs}) 
+between a \emph{control} condition consisting of our observed projects and a (simulated) \emph{treatment} condition wherein we alter each of the project's \Code{package.json} to pin all its direct dependencies.
 We design a set of five outcome metrics in the project dependency graph to measure the five trade-offs raised in favor or against pinning, previously summarized in Table~\ref{tab:trade-offs}.
 However, the comparison of these metrics is challenging as we would need to simulate how pinning would change the dependency graph of a focal project.
 What's more, the values of metrics may change over time as the focal project and the ecosystem continuously evolves.
@@ -341,7 +341,7 @@ Their definitions are as follows:
     \item \textsf{\# of bloated dependencies} (\Code{n\_bloated}):   The number of packages with more than one version simultaneously present in the dependency graph (i.e., bloated). This metric captures the maintenance cost introduced by \emph{dependency conflicts} because npm resolves such conflicts by allowing different versions of the same package at different levels~\cite{how-npm3-works}.
 \end{enumerate}
 Intuitively,  \Code{n\_floating} and \Code{n\_auto\_updates} should decrease with pinning and increase with floating;
-\Code{n\_vuln}, \Code{n\_outdated\_deps} and \Code{n\_bloated} should decrease with floating and increase with pinning. We designed all metrics such that lower values are generally better (e.g., lower costs or risk).
+\Code{n\_vuln}, \Code{n\_outdated\_deps} and \Code{n\_bloated} should decrease with floating and increase with pinning. We designed all metrics such that lower values are generally better (e.g., corresponding to lower costs or risk).
 
 \paragraph{Panel Regression.}
 %\emph{Panel Regression}
@@ -387,10 +387,9 @@ For breaking changes, it could be possible to get more accurate estimations from
 Specifically, (1) static analysis only works well on TypeScript packages, (2) regression testing is only applicable to projects with a running test suite and prior regression testing studies collected at most a few hundred JavaScript projects with breaking changes~\cite{DBLP:conf/ecoop/MezzettiMT18, kong2024towards}.
 In fact, we believe that breaking changes are so hard to avoid---even in well-managed projects (see Hyrum's Law~\cite{hyrum-law})---and well-tolerated in the npm ecosystem~\cite{DBLP:journals/tosem/BogartKHT21} that the uniformly random assumption is actually a reasonable approximation to quantify the expected risk (or cost) of breaking changes on a large scale npm based dataset.
 
-In terms of external validity, it is important to note that our study are specific to the npm ecosystem and the results may not generalize to other ecosystems that adopt different baseline practices.
+In terms of external validity, it is important to note that our study is specific to the npm ecosystem and the results may not generalize to other ecosystems that adopt different baseline practices.
 For example, the Maven ecosystem (Java) is smaller~\cite{module-counts}, conducts pinning extensively~\cite{DBLP:conf/msr/0001PSTB19}, and handles dependency conflicts differently~\cite{DBLP:conf/sigsoft/WangWLWWYYZC18}, so the trade-off between pinning and floating could manifest in a different manner.
-In addition, generalizations to closed-source applications should also be careful as they may have different characteristics compared with our dataset. %(e.g., some sources suggest that they have more dependencies and larger dependency graphs~\cite{sonatype-report}).
-
+In addition, generalizations to closed-source applications should also be careful as they may have different characteristics compared with our dataset (e.g., some sources suggest that they have more dependencies and larger dependency graphs~\cite{sonatype-report}).
 
 \subsection{Results}
 \label{sec:results-rq2}
@@ -434,7 +433,7 @@ The results are highly consistent and available in the replication package (Sect
 \caption{The fixed-effect panel regression results. 
 We obtain a high goodness-of-fit for \texttt{n\_floating} (R$^{2}$$\ge$0.6), acceptable goodness-of-fit for \texttt{n\_vuln}, \texttt{n\_outdated\_deps}, and \texttt{n\_bloated} (R$^{2}$$\ge$0.1), and low goodness-of-fit for \texttt{n\_auto\_updates} (R$^{2}$$<$0.1).
 The R$^{2}$ values are comparable with similar prior studies~\cite[see, e.g.,][]{DBLP:conf/sigsoft/ValievVH18, DBLP:conf/icse/ZahanSHW23}. 
-Note that since our goal is explanatory (not predictive), we do not evaluate models based on on R$^{2}$ values, but conduct a series of robustness checks to see whether the findings are robust over different settings (Section~\ref{sec:results-rq2}).
+Note that since our goal is explanatory (not predictive), we do not evaluate models based on R$^{2}$ values, but conduct a series of robustness checks to see whether the findings are robust over different settings (Section~\ref{sec:results-rq2}).
 We report local effect sizes computed using Cohen's $f^2$~\cite{selya2012practical}.
 }
 \label{tab:pinning-regression} 
@@ -502,7 +501,7 @@ The network has 1,566,434 packages (nodes) and 7,873,239 dependency edges.
 In practice, attackers might target specific applications (e.g., specifically attacking cryptocurrency packages~\cite{crypto-attack}) or they may try to compromise whatever package they can to opportunistically cause damage (e.g., as common for untargeted ransomware attacks). Since we do not know what exact strategy attackers may pursue and since their strategy may change over time, we make the simplifying assumption that attackers will try to compromise high-impact targets by (randomly) selecting any of the top-$m$ packages (denoted as $A$) on npm as ranked by the downloads adjusted impact defined in Equation~\ref{eq:impact} (i.e., impact-based strategy).
 
 \paragraph{Risk Metric.}
-Given the set $P$ of all packages in the network, we quantify the impact of compromising a package $a\in P$ as the download-weighted coverage of its reachable dependents within the entire npm network, where every package that depends directly or indirectly on package $a$ is considered reachable of the edge to $a$ in its dependency graph is floating:
+Given the set $P$ of all packages in the network, we quantify the impact of compromising a package $a\in P$ as the download-weighted coverage of its reachable dependents within the entire npm network, where every package that depends directly or indirectly on package $a$ is considered reachable if the edge to $a$ in its dependency graph is floating:
 \begin{equation}
 \label{eq:impact}
     \textit{impact}(a)=\frac{\sum_{p \in \textit{reachable}(a)}\textit{downloads}(p)}{\sum_{p \in P}{\textit{downloads}(p)}}
@@ -629,7 +628,7 @@ Also, projects that pin their dependencies are, as expected, much more likely to
 \textbf{Pinning direct dependencies is futile and (surprisingly) can be even counter-productive as a security intervention if floating is the mainstream practice in the ecosystem.}
 Our RQ1 results regarding the expected security benefits of pinning are surprising and counter-intuitive to practitioners (based on our experience when sharing the results).
 The first reason is that in many projects, direct dependencies are far outnumbered by transitive dependencies for which version declarations are controlled by upstream packages (Table~\ref{tab:dataset}). 
-Thus, the action of a single project has a relatively small impact on the total number of floating dependencies in its dependency graph, explaining the small effective size and the diminishing return of pinning as the dependency graph grow larger (as confirmed by the interaction term $\text{\emph{pinning}} \times \ln(size(G))$ in our panel regression model and illustrated visually in Figure~\ref{fig:n-floating}).
+Thus, the action of a single project has a relatively small impact on the total number of floating dependencies in its dependency graph, explaining the small effective size and the diminishing return of pinning as the dependency graph grows larger (as confirmed by the interaction term $\text{\emph{pinning}} \times \ln(size(G))$ in our panel regression model and illustrated visually in Figure~\ref{fig:n-floating}).
 Importantly, the security benefit of pinning does not only diminish, but it \textit{reverses} and pinning becomes actually counterproductive in large dependency graphs ($\ge$498 nodes according to our model, also visible as a crossover point in Figure~\ref{fig:n-floating}), to the point that \textit{pinning direct dependencies leads to more floating dependencies in the entire dependency graph.}  
 In other words, an attacker may be able to attack the same dependencies in more version ranges or may even be able to attack additional dependencies that are only (indirectly) included in some versions of some dependency.
 More generally speaking, the perceived security trade-off between pinning (to reduce the risk of malicious updates) and floating (to get fewer security vulnerabilities) does not hold in practice if the upstream packages are mainly floating (e.g., in npm and PyPI). 
@@ -653,7 +652,7 @@ Therefore, \textbf{we suggest changes to npm infrastructure and tooling to enabl
 
 However, we must note that these kinds of interventions would probably still experience pushback and be costly to implement from such an established ecosystem (as of pushing any organizational change~\cite{schein2010organizational}).
 To make the process easier, \textbf{we encourage foundations, security companies, or companies using open source to dedicate resources (labor, funds) to such efforts}.
-Even if only a small number of maintainers opt to purse this (i.e., transitive pinning and extensively review their updates), it can have a large impact on the ecosystem.
+Even if only a small number of maintainers opt to pursue this (i.e., transitive pinning and extensively review their updates), it can have a large impact on the ecosystem.
 
 Finally, it is worth noting that the whole debate around version constraints relies on one critical assumption: \emph{malicious package updates will go undetected in the ecosystem for a significant amount of time}, which is probably still the case as of now (as evidenced by the \Code{xz} attack~\cite{xz-utils}).
 If malicious package updates are taken down faster or even stopped before being published in the package registry, their impact  will be much smaller.
