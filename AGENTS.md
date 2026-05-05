@@ -238,3 +238,74 @@ Ray et al.'s study is a central case study in this paper. The authors carefully 
 - Always acknowledge that the authors used appropriately hedged language.
 - Frame the reanalysis as "applying new tools to an existing dataset to demonstrate the toolkit" rather than "correcting errors in the original study."
 - The lesson is about what the *field* can learn from applying causal methods, not about what the *authors* did wrong (they did nothing wrong --- they presented associational findings as associational findings).
+
+## Drafting Causal Credibility Analysis Sections
+
+When drafting a causal credibility analysis section for an empirical chapter (e.g., `analysis-pinning.tex`, `analysis-fake-stars.tex`, `analysis-cursor.tex`) following the four-step framework introduced in Chapter~1, adhere to the following principles. These reflect lessons from prior drafting iterations and are intended to keep the section tightly focused on identification rather than drifting into other forms of validity.
+
+### Justify Every DAG Node from Literature
+
+Each confounder, mediator, and outcome node in the causal DAG must be supported by published evidence (academic papers, tool documentation, or gray literature) demonstrating that the node affects both the treatment and the outcome. Nodes derived from intuition alone do not belong in the DAG.
+
+- Conduct a literature review *before* drawing the DAG. Search for studies that empirically link each candidate node to the treatment, to the outcome, or to both.
+- For each node, cite at least one source. If the support is gray literature (vendor blog, OpenSSF documentation, Renovate docs), explicitly mark it as such rather than passing it off as peer-reviewed.
+- If a candidate node has no clear literature support, leave it out and flag it as a possible omission rather than fabricating a justification.
+
+### Exclude Nodes That Do Not Enter the Data-Generating Process
+
+A factor is a confounder only if it affects the data the study analyzes. When the study analyzes simulated data, factors that operate only outside the simulation (e.g., real-world deployment behavior) do not belong in the causal DAG.
+
+- Test before adding a node: "If this factor changed for unit $i$, would the analyzed outcome change?" If the answer is no, exclude the node.
+- Real-world nuances that do not affect the simulated data belong in the discussion section, not the causal theory.
+- Example (pinning chapter): lockfile commit decisions affect real-world deployment but do not affect a study that analyzes simulated dependency resolutions, so the lockfile node is excluded from the DAG and surfaces only as a deployment-level nuance in the discussion.
+
+### Use Formal Notation Sparingly
+
+Reserve potential-outcomes notation ($Y(d)$, expectation operators, ATE/CATE/ATT) for **defining the causal estimand**. For identifying assumptions and limitations, prose is almost always clearer for statistically literate readers.
+
+#### Acceptable
+
+- Defining the estimand: $\tau_{\text{ATE}} = E[Y_i(1) - Y_i(0)]$ or the CATE as $\tau(X) = E[Y_i(1) - Y_i(0) \mid X]$.
+- A short equation naming a key identification condition (e.g., simulation fidelity stated as $E[\hat{Y}_i(d)] = E[Y_i(d)]$) when genuinely clearer than prose.
+
+#### Avoid
+
+- Independence operators in prose (e.g., $W \not\perp Y \mid X$).
+- Conditional probability expressions for sample selection (e.g., $E[\hat{Y}(1) \mid R^{(1)}=1, R^{(0)}=1]$) --- describe the selection mechanism in words.
+- Verbose SUTVA expressions ($Y_i(d_i) \perp D_j$ for $j \neq i$) --- state in plain language.
+
+Heuristic: if a formal expression takes longer to parse than the prose equivalent, the prose wins.
+
+### Scope the Section to Internal Validity Threats Only
+
+A causal credibility analysis examines whether the estimated quantity matches the true causal effect *for the population and treatment definition the study analyzes*. The following are not causal credibility limitations and belong in the chapter's existing "Limitations and Threats to Validity" subsection:
+
+- **External validity**: does the result generalize to other ecosystems, populations, or contexts?
+- **Measurement validity**: is the outcome metric a valid proxy for the construct of interest?
+- **Treatment generalizability**: does the simulated or imposed treatment match what practitioners typically adopt?
+- **Scope limitations**: is the mechanism specific to one platform (npm, Cursor, etc.)?
+
+Briefly note these in the causal credibility section with a `\ref{}` pointer to the existing subsection. Do not re-litigate them.
+
+### Justify Every Named Identifying Assumption
+
+For every identifying assumption listed (A1, A2, ..., An), explicitly state whether the assumption is satisfied by the design's construction or requires empirical argument:
+
+- *Satisfied by construction*: explain why the design enforces it (e.g., SUTVA holds because the simulation resolves each unit independently against a fixed snapshot). Such assumptions do not surface as Step 3 limitations, but the reasoning must be given so the reader can verify the claim.
+- *Requires empirical argument*: discuss in Step 3 with the direction of bias if the assumption fails.
+
+Never list an assumption only to leave it undiscussed. The reader should be able to identify exactly which assumptions the credibility of the claim ultimately depends on.
+
+### Map Each Limitation to a Named Assumption
+
+Each limitation in Step 3 should be tied to a specific assumption it threatens (or labeled "not an identifying assumption" if it concerns measurement validity). For each limitation, state:
+
+- Which assumption is threatened.
+- Direction of bias (upper bound, lower bound, unclear, conservative).
+- Which outcome metrics are affected and which are not.
+
+Avoid presenting limitations as a generic catalog; the framework's value comes from precise mapping.
+
+### Avoid Redundant Comparison with the Existing Limitations Subsection
+
+Once the causal credibility section is scoped to internal validity, a side-by-side comparison or "overlap analysis" with the chapter's existing Limitations subsection is redundant: the two sections address different concerns by construction. Resist including such tables.
