@@ -380,7 +380,7 @@ Our results may not generalize to other LLM agent assistants, proprietary softwa
 \section{Results}
 \label{sec:results}
 
-\begin{table}[t]
+\begin{table}
 \centering
 \small
 \caption{The \citet{borusyak2024revisiting} estimated average treatment effects on treated ($ATT$ in Equation~\ref{eq:att}) post Cursor adoption. 
@@ -503,7 +503,7 @@ To summarize, the dynamic panel GMM models suggest that: (1) \emph{The adoption 
     \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_confidence_main.pdf}
     \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_activity_main.pdf}
     \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_other_tools_main.pdf}
-    \caption{The estimated ``horizon-average'' treatment effects in alternative robustness check dataset settings. We only display three outcome variables (lines added, static analysis warnings, and code complexity) due to space constraints (full results in the Appendix).
+    \caption{The estimated ``horizon-average'' treatment effects in robustness check dataset settings. We only display three outcome variables (lines added, static analysis warnings, and code complexity) due to space constraints (full results in the Appendix).
     \emph{Row 1}: Robustness check on subsets with higher Cursor adoption confidence, showing generally stronger effects in high-confidence adoption observations. 
     \emph{Row 2}: Robustness check on subsets of different activity levels, showing the persistence of our findings even in very active repositories. 
     \emph{Row 3}: Robustness check between repositories with/without observable use of other AI tools, showing that the potential use of other AI tools weakens Cursor effect estimations, but only by a small margin.}
@@ -525,14 +525,14 @@ To test whether our findings are driven by repositories with genuine, sustained 
 Results from the two subsets (Figure~\ref{fig:robustness-checks}, Row 1) show that our quality-related findings are robust and amplified in subsamples with higher sustained usage: The accumulation of static analysis warnings and code complexity is stronger---not weaker---among repositories with continued configuration refinement and where Cursor users dominated activity. 
 This strengthens causal interpretation: Effects are attributable to Cursor adoption rather than spurious correlation with other changes, and our main ITT estimates likely understate effects among repositories with intensive, sustained usage.
 Interestingly, while the velocity gain is still on average transient among repositories with high contributor adoption, we still observe a velocity increase in observations in which developers are still actively modifying Cursor files.
-This indicates that abandonments of Cursor post-adoption likely nullify at least part of the velocity gains (more discussions in Section~\ref{sec:cursor-discussion}).
+This indicates that abandonments of Cursor post-adoption likely nullify at least part of the velocity gains (see Section~\ref{sec:cursor-discussion}).
 
 Another alternative explanation for the transient velocity gain is that our DiD setting still does not sufficiently control for the macro-trend that many open-source repositories become inactive very fast (e.g., within two months).
 To test against this alternative explanation, we build two subset observations, the first one keeping only repository-months in which there is at least one commit in that month, and the second one keeping repository-months with at least 10 commits.
 The results (Figure~\ref{fig:robustness-checks}, Row 2) show that our main findings persist even in very active repositories, albeit being weaker than our main ITT estimates, which is expected because it would be more difficult to achieve the same percentage change in repositories with higher baseline sizes and activity levels.
 
 Finally, we assess the impact of dataset contamination from alternative AI coding tools in our study setting (Section~\ref{sec:cursor-limitations}).
-For this purpose, we take an overly conservative approach and identify all repositories where alternative AI coding tools may have been used based on repository files (e.g., those with \Code{.vscode} folder may have used GitHub Copilot).
+We take an overly conservative approach and identify all repositories where alternative AI coding tools may have been used based on repository files (e.g., those with \Code{.vscode} folder may have used GitHub Copilot).
 We find 382 repositories from the treatment group with possible use of other AI tools in our observation period: 345 with GitHub Copilot, 63 with Claude Code, 37 with Windsurf, 13 with Cline, and 2 with OpenHands (note that they heavily overlap).
 We build a \emph{Cursor and Other} subset for these repositories and an \emph{Only Cursor} subset for the remaining repositories, along with their own matched controls.
 The results (Figure~\ref{fig:robustness-checks}, Row 3) show that while contamination weakens our main ITT estimates (e.g., some repositories may be using GitHub Copilot before Cursor), all of our main findings are persistent through all three settings and amplified in settings where prior AI tool usage is less likely. 
@@ -637,7 +637,7 @@ Third, the open-source context of the analysis may amplify both the abandonment 
 Looking forward, these findings point to clear research and practice directions (Section~\ref{sec:cursor-discussion}).
 Realizing the promise of AI-assisted software development requires a holistic understanding of how AI assistance reshapes the fundamental trade-offs between development velocity, code quality, and long-term project sustainability.
 
-A replication package is available at \url{https://github.com/hehao98/CursorStudy}, and a supplementary appendix is available in the arXiv version at \url{https://arxiv.org/abs/2511.04427}.
+A replication package is available at \url{https://github.com/hehao98/CursorStudy}.
 
 \section{Appendix}
 
@@ -846,7 +846,7 @@ We acknowledge that the lack of large cohorts and clear theoretical guidance on 
 
 \subsection{Full Robustness Check Results}
 
-\begin{table*}[t]
+\begin{table*}
 \centering
 \scriptsize
 \caption{Summary statistics for all alternative dataset settings explored in this chapter. The results from Rust repositories are dropped in Figure~\ref{fig:robustness-checks-all} because of insufficient observations, causing insignificant results and extremely large confidence intervals.}

@@ -16,16 +16,17 @@ Figure~\ref{fig:dag-cursor} shows the directed acyclic graph (DAG) governing the
 
 \begin{figure}
     \centering
+    \resizebox{\linewidth}{!}{%
     \begin{tikzpicture}[
         >=latex, font=\scriptsize,
-        confbox/.style={draw, rounded corners, fill=gray!12, align=left, text width=4.6cm, inner sep=4pt},
+        confbox/.style={draw, rounded corners, fill=gray!12, align=left, text width=4.2cm, inner sep=4pt},
         tnode/.style={draw, rounded corners, fill=green!20, very thick, minimum height=0.7cm, minimum width=2.6cm, align=center, font=\bfseries\scriptsize},
         mnode/.style={draw, rounded corners, fill=yellow!25, minimum height=0.6cm, minimum width=2.6cm, align=center, font=\scriptsize},
         gnode/.style={draw, rounded corners, fill=orange!15, minimum height=0.65cm, minimum width=2.4cm, align=center, font=\scriptsize},
         ynode/.style={draw, rounded corners, fill=blue!10, minimum height=0.5cm, minimum width=2.6cm, align=center, inner sep=2pt},
         ynodeQ/.style={draw, rounded corners, fill=blue!18, minimum height=0.5cm, minimum width=2.6cm, align=center, inner sep=2pt},
         ynodeF/.style={draw, rounded corners, dashed, fill=blue!10, minimum height=0.5cm, minimum width=2.6cm, align=center, inner sep=2pt},
-        rbox/.style={draw, rounded corners, dashed, fill=red!8, align=left, text width=4.6cm, inner sep=4pt},
+        rbox/.style={draw, rounded corners, dashed, fill=red!8, align=left, text width=5cm, inner sep=4pt},
         cedge/.style={->, gray, dashed, semithick},
         medge/.style={->, black, semithick},
         gmmedge/.style={->, blue!55!black, dashed, thick},
@@ -40,17 +41,17 @@ Figure~\ref{fig:dag-cursor} shows the directed acyclic graph (DAG) governing the
         $\bullet$ General AI-tool prevalence\\
         $\bullet$ Repo age, stars, contributors, \dots
     };
-    \node[tnode, right=1.4cm of Conf] (D) {Treatment $D_{it}$\\ Cursor adoption};
+    \node[tnode, right=1.5cm of Conf] (D) {Treatment $D_{it}$\\ Cursor adoption};
     \node[mnode, below=0.9cm of D] (Mprod) {Code production rate};
     \node[mnode, below=0.3cm of Mprod] (Mcompl) {Per-line complexity};
-    \node[ynode, right=1.4cm of D] (V1) {$Y_1$: commits$_{it}$};
+    \node[ynode, right=1cm of D] (V1) {$Y_1$: commits$_{it}$};
     \node[ynode, below=4pt of V1] (V2) {$Y_2$: lines added$_{it}$};
     \node[gnode, below=0.6cm of V2] (LoC) {Lines of code$_{it}$\\ (cumulative)};
     \node[ynodeQ, below=0.6cm of LoC] (Q1) {$Y_3$: SonarQube warnings$_{it}$};
-    \node[ynodeQ, below=4pt of Q1] (Q2) {$Y_4$: cognitive complexity$_{it}$};
-    \node[ynodeQ, below=4pt of Q2] (Q3) {$Y_5$: dup.\ line density$_{it}$};
-    \node[ynodeF, right=0.35cm of Q2] (Vnext) {$Y_2$: lines added$_{i,t+1}$};
-    \node[rbox, below=0.9cm of Mcompl] (Resid) {%
+    \node[ynodeQ, below=0.3cm of Q1] (Q2) {$Y_4$: cognitive complexity$_{it}$};
+    \node[ynodeQ, below=0.3cm of Q2] (Q3) {$Y_5$: dup.\ line density$_{it}$};
+    \node[ynodeF, below right=0.35cm and 0.6cm of Q2] (Vnext) {$Y_2$: lines added$_{i,t+1}$};
+    \node[rbox, below left=0.5cm and 0.5cm of Mcompl] (Resid) {%
         \textbf{Residual threats (not absorbed)}\\[1pt]
         $\bullet$ Time-varying other-AI-tool adoption\\
         $\bullet$ Anticipation pre-$h{=}{-}1$ experimentation\\
@@ -59,21 +60,23 @@ Figure~\ref{fig:dag-cursor} shows the directed acyclic graph (DAG) governing the
     };
     \draw[cedge] (Conf.east) -- (D.west) node[midway, above, align=center, font=\tiny\itshape] {(blocked by\\FE/matching)};
     \draw[medge] (D.south) -- (Mprod.north);
-    \draw[medge] (Mprod.east) to[bend left=5] (V1.west);
-    \draw[medge] (Mprod.east) to[bend left=2] (V2.west);
+    \draw[medge] (D.south west) to[bend right=25] (Mcompl.west);
+    \draw[medge] (Mprod.east) to[bend left=15] (V1.west);
+    \draw[medge] (Mprod.east) to[bend left=15] (V2.west);
     \draw[medge] (Mcompl.east) to[bend right=8] (Q2.west);
     \draw[medge] (V2.south) -- (LoC.north);
     \draw[medge] (LoC.south) -- (Q1.north);
-    \draw[medge] (LoC.south west) to[bend right=10] (Q2.west);
-    \draw[medge] (LoC.south east) to[bend left=10] (Q3.east);
+    \draw[medge] (LoC.south west) to[bend right=30] (Q2.west);
+    \draw[medge] (LoC.south east) to[bend left=35] (Q3.east);
     \draw[cedge] (Resid.east) to[bend right=5] (Q1.west);
     \draw[cedge] (Resid.east) to[bend right=10] (Q2.west);
     \draw[gmmedge] (V2.east) to[bend left=40] node[right, font=\tiny\itshape] {GMM: $L_t{\to}C_t$} (Q2.east);
-    \draw[gmmedge] (Q2.east) to[bend right=15] node[below, font=\tiny\itshape] {GMM: $C_t{\to}L_{t+1}$} (Vnext.west);
-    \end{tikzpicture}
+    \draw[gmmedge] (Q2.east) to[bend left=20] node[right, font=\tiny\itshape] {GMM: $C_t{\to}L_{t+1}$} (Vnext.north);
+    \end{tikzpicture}%
+    }
     \caption{Causal DAG for the effect of Cursor adoption on the five velocity and quality outcomes.
     Repository-invariant characteristics, calendar-time shocks, and observable scale dynamics (gray box) are absorbed by repository fixed effects $\mu_i$, month fixed effects $\lambda_t$, and time-varying covariates $Z_{it}$; selection on the observable six-month pre-adoption trajectory is mitigated by propensity-score matching (Section~\ref{sec:matching}).
-    Cumulative codebase size (orange) is promoted to an explicit moderator: the chapter's GMM analysis (Section~\ref{sec:finding-interaction}, Table~\ref{tab:causal-paths}) shows that the volume-mediated path $V_t \to \mathrm{LoC}_t \to Q_t$ absorbs most of the warnings effect and a large share of the complexity effect, while a direct $D \to$ per-line-complexity $\to C_t$ path remains after this control.
+    Cumulative codebase size (orange) is an explicit moderator: The chapter's GMM analysis (Section~\ref{sec:finding-interaction}, Table~\ref{tab:causal-paths}) shows that the volume-mediated path $V_t \to \mathrm{LoC}_t \to Q_t$ absorbs most of the warnings effect and a large share of the complexity effect, while a direct $D \to$ per-line-complexity $\to C_t$ path remains after this control.
     The DiD estimand identifies the marginal effect of $D$ on each outcome through these paths.
     The GMM estimand identifies two further causal arrows beyond the DiD's reach (dashed blue): the contemporaneous within-period effect $L_t \to C_t$ and the lagged feedback $C_t \to L_{t+1}$ from quality back to next-period velocity; analogous arrows on the warnings side are tested in Table~\ref{tab:causal-paths} but omitted from the figure for legibility.
     Three residual threats remain after fixed effects and matching: time-varying adoption of other AI tools, anticipatory pre-commit experimentation earlier than $h{=}{-}1$, and time-varying unobservables coincident with adoption.
@@ -221,12 +224,12 @@ The remaining two are flagged here because the existing chapter does not explici
 \paragraph{Alternatives already addressed in the existing chapter.}
 Table~\ref{tab:cursor-alternatives-pointers} maps each alternative to the existing analysis that addresses it; the credibility section does not re-litigate them.
 
-\begin{table}[t]
+\begin{table}
 \centering
-\small
+\footnotesize
 \caption{Alternative causal structures already addressed by the existing chapter, with pointers to the analysis that resolves each.}
 \label{tab:cursor-alternatives-pointers}
-\begin{tabular}{p{6.4cm}p{6.6cm}}
+\begin{tabular}{p{6.5cm}p{8.3cm}}
 \toprule
 \textbf{Alternative} & \textbf{Addressed by} \\
 \midrule
