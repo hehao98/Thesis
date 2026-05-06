@@ -1,0 +1,260 @@
+\section{Causal Credibility Assessment}
+\label{sec:cursor-credibility}
+
+Chapter~\ref{chp:background} argued that empirical software engineering research advances most effectively when causal claims are accompanied by an explicit assessment of their credibility.
+This section instantiates the four-step framework for the present study: derive a causal theory from existing literature, define the estimands and the assumptions under which they admit a causal interpretation, honestly acknowledge the limitations that bear on those assumptions, and navigate the alternative causal structures a careful reader would consider.
+The goal is not to claim that the study's causal interpretation is beyond doubt, but to make the load-bearing assumptions transparent so that the strength of the evidence can be calibrated against them.
+
+Unlike the pinning study (Chapter~\ref{chp:pinning}), identification here is not by construction.
+The study targets two distinct estimands on the same data: the difference-in-differences (DiD) average effect of Cursor adoption on each outcome, and the dynamic feedback between velocity and quality outcomes identified by panel generalized method of moments (GMM).
+Each estimand rests on its own set of assumptions, and the section makes the dependencies between the two estimands visible alongside the assumptions each requires.
+
+\subsection{Causal Theory}
+\label{sec:cursor-credibility-theory}
+
+Figure~\ref{fig:dag-cursor} shows the directed acyclic graph (DAG) governing the chapter's causal claims.
+
+\begin{figure}[t]
+    \centering
+    \begin{tikzpicture}[
+        >=latex, font=\scriptsize,
+        confbox/.style={draw, rounded corners, fill=gray!12, align=left, text width=4.6cm, inner sep=4pt},
+        tnode/.style={draw, rounded corners, fill=green!20, very thick, minimum height=0.7cm, minimum width=2.6cm, align=center, font=\bfseries\scriptsize},
+        mnode/.style={draw, rounded corners, fill=yellow!25, minimum height=0.6cm, minimum width=2.6cm, align=center, font=\scriptsize},
+        gnode/.style={draw, rounded corners, fill=orange!15, minimum height=0.65cm, minimum width=2.4cm, align=center, font=\scriptsize},
+        ynode/.style={draw, rounded corners, fill=blue!10, minimum height=0.5cm, minimum width=2.6cm, align=center, inner sep=2pt},
+        ynodeQ/.style={draw, rounded corners, fill=blue!18, minimum height=0.5cm, minimum width=2.6cm, align=center, inner sep=2pt},
+        ynodeF/.style={draw, rounded corners, dashed, fill=blue!10, minimum height=0.5cm, minimum width=2.6cm, align=center, inner sep=2pt},
+        rbox/.style={draw, rounded corners, dashed, fill=red!8, align=left, text width=4.6cm, inner sep=4pt},
+        cedge/.style={->, gray, dashed, semithick},
+        medge/.style={->, black, semithick},
+        gmmedge/.style={->, blue!55!black, dashed, thick},
+    ]
+    \node[confbox] (Conf) {%
+        \textbf{Absorbed by $\mu_i$, $\lambda_t$, $Z_{it}$, matching}\\[1pt]
+        $\bullet$ Project type, domain, language\\
+        $\bullet$ Team composition, expertise\\
+        $\bullet$ Governance and review practice\\
+        $\bullet$ Repo lifecycle stage (matched on)\\
+        $\bullet$ Frontier-model release cycle\\
+        $\bullet$ General AI-tool prevalence\\
+        $\bullet$ Repo age, stars, contributors, \dots
+    };
+    \node[tnode, right=1.4cm of Conf] (D) {Treatment $D_{it}$\\ Cursor adoption};
+    \node[mnode, below=0.9cm of D] (Mprod) {Code production rate};
+    \node[mnode, below=0.3cm of Mprod] (Mcompl) {Per-line complexity};
+    \node[ynode, right=1.4cm of D] (V1) {$Y_1$: commits$_{it}$};
+    \node[ynode, below=4pt of V1] (V2) {$Y_2$: lines added$_{it}$};
+    \node[gnode, below=0.6cm of V2] (LoC) {Lines of code$_{it}$\\ (cumulative)};
+    \node[ynodeQ, below=0.6cm of LoC] (Q1) {$Y_3$: SonarQube warnings$_{it}$};
+    \node[ynodeQ, below=4pt of Q1] (Q2) {$Y_4$: cognitive complexity$_{it}$};
+    \node[ynodeQ, below=4pt of Q2] (Q3) {$Y_5$: dup.\ line density$_{it}$};
+    \node[ynodeF, right=0.35cm of Q2] (Vnext) {$Y_2$: lines added$_{i,t+1}$};
+    \node[rbox, below=0.9cm of Mcompl] (Resid) {%
+        \textbf{Residual threats (not absorbed)}\\[1pt]
+        $\bullet$ Time-varying other-AI-tool adoption\\
+        $\bullet$ Anticipation pre-$h{=}{-}1$ experimentation\\
+        $\bullet$ Time-varying unobservables coincident\\
+        \quad with adoption (e.g., new contributor)
+    };
+    \draw[cedge] (Conf.east) -- (D.west) node[midway, above, font=\tiny\itshape] {(blocked by FE/matching)};
+    \draw[medge] (D.south) -- (Mprod.north);
+    \draw[medge] (Mprod.east) to[bend left=5] (V1.west);
+    \draw[medge] (Mprod.east) to[bend left=2] (V2.west);
+    \draw[medge] (Mcompl.east) to[bend right=8] (Q2.west);
+    \draw[medge] (V2.south) -- (LoC.north);
+    \draw[medge] (LoC.south) -- (Q1.north);
+    \draw[medge] (LoC.south west) to[bend right=10] (Q2.west);
+    \draw[medge] (LoC.south east) to[bend left=10] (Q3.east);
+    \draw[cedge] (Resid.east) to[bend right=5] (Q1.west);
+    \draw[cedge] (Resid.east) to[bend right=10] (Q2.west);
+    \draw[gmmedge] (V2.east) to[bend left=40] node[right, font=\tiny\itshape] {GMM: $L_t{\to}C_t$} (Q2.east);
+    \draw[gmmedge] (Q2.east) to[bend right=15] node[below, font=\tiny\itshape] {GMM: $C_t{\to}L_{t+1}$} (Vnext.west);
+    \end{tikzpicture}
+    \caption{Causal DAG for the effect of Cursor adoption on the five velocity and quality outcomes.
+    Repository-invariant characteristics, calendar-time shocks, and observable scale dynamics (gray box) are absorbed by repository fixed effects $\mu_i$, month fixed effects $\lambda_t$, and time-varying covariates $Z_{it}$; selection on the observable six-month pre-adoption trajectory is mitigated by propensity-score matching (Section~\ref{sec:matching}).
+    Cumulative codebase size (orange) is promoted to an explicit moderator: the chapter's GMM analysis (Section~\ref{sec:finding-interaction}, Table~\ref{tab:causal-paths}) shows that the volume-mediated path $V_t \to \mathrm{LoC}_t \to Q_t$ absorbs most of the warnings effect and a large share of the complexity effect, while a direct $D \to$ per-line-complexity $\to C_t$ path remains after this control.
+    The DiD estimand identifies the marginal effect of $D$ on each outcome through these paths.
+    The GMM estimand identifies two further causal arrows beyond the DiD's reach (dashed blue): the contemporaneous within-period effect $L_t \to C_t$ and the lagged feedback $C_t \to L_{t+1}$ from quality back to next-period velocity; analogous arrows on the warnings side are tested in Table~\ref{tab:causal-paths} but omitted from the figure for legibility.
+    Three residual threats remain after fixed effects and matching: time-varying adoption of other AI tools, anticipatory pre-commit experimentation earlier than $h{=}{-}1$, and time-varying unobservables coincident with adoption.
+    The principal load-bearing assumptions are A1 (parallel trends) for the DiD estimand and B1 (sequential exogeneity) for the GMM estimand.}
+    \label{fig:dag-cursor}
+\end{figure}
+
+The treatment is the discrete event of a repository committing a Cursor configuration file (\Code{.cursorrules} or a \Code{.cursor/} directory) to its default branch, operationalized as the first month such a commit appears (Section~\ref{sec:find-cursor-repo}).
+The chapter's primary causal claims fall along two distinct mediator paths.
+The velocity path runs from $D$ through the code production rate that Cursor enables, generating the immediate uptick in commits and lines added documented across prior generations of AI coding assistants~\cite{DBLP:journals/corr/abs-2302-06590, cui2024effects, DBLP:journals/corr/abs-2406-17910, hoffmann2024generative, DBLP:conf/icis/YeverechyahuMO24, DBLP:journals/corr/abs-2410-02091, daniotti2025using}.
+The quality path runs partly through the volume mechanism---more lines added accumulate into a larger codebase, which mechanically accrues more warnings and complexity~\cite{DBLP:conf/sigsoft/ChengMCJGKZ022, besker2018technical}---and partly through a direct per-line channel, in which the structural properties of LLM-generated code differ from human-written code~\cite{DBLP:journals/tse/LiuTLZZ24, DBLP:conf/icse/Liang0M24}.
+Cumulative lines of code is promoted to an explicit moderator on the DAG because the chapter's GMM decomposition (Table~\ref{tab:causal-paths}) shows that the volume path absorbs most of the warnings effect and a large share of the complexity effect, while a residual direct effect on complexity survives the lines-of-code control and motivates the chapter's headline interpretation.
+
+The DAG also names the confounders that, in an unstructured observational comparison of Cursor-adopting and non-adopting repositories, would bias the estimated effect.
+Project type, domain, and primary programming language shape both the propensity to adopt new tooling and the baseline structure of the codebase~\cite{DBLP:journals/corr/abs-2410-02091, daniotti2025using}; LLM performance varies systematically across languages~\cite{DBLP:journals/pacmpl/CassanoGLSFAF0J24, DBLP:journals/corr/abs-2503-17181}, and the matching procedure already enforces same-language pairs (Section~\ref{sec:matching}).
+Team composition and contributor expertise predict both adoption and outcomes, with documented heterogeneity in how developers of different skill levels benefit from AI assistance~\cite{DBLP:journals/jss/DakhelMNKDJ23, DBLP:journals/corr/abs-2302-06590, cui2024effects}.
+Governance maturity and code-review practice independently shape both the willingness to adopt new tooling and the post-adoption quality trajectory~\cite{DBLP:conf/sigsoft/ChengMCJGKZ022, besker2018technical}.
+Open-source projects exhibit characteristic activity decay independent of any external event~\cite{DBLP:journals/ese/KalliamvakouGBS16, DBLP:journals/corr/abs-2412-13459, DBLP:journals/ese/MunaiahKCN17}, so adopters and random non-adopters differ in lifecycle stage; this is the principal motivation for the propensity-score model on six-month dynamics rather than static snapshots.
+Calendar time matters because the 2024--2025 window spans rapid evolution in frontier-model capability (Claude 3.5 Sonnet, GPT-4o, Claude 3.7 Sonnet, GPT-5) and a substantial rise in general AI-tool adoption~\cite{stackoverflow-survey-ai, daniotti2025using, DBLP:journals/corr/abs-2507-09089, kumar2025intuition}; these are common shocks affecting both groups and are absorbed by month fixed effects $\lambda_t$.
+Repository scale dynamics---lines of code, age, contributors, stars, issues---enter explicitly as time-varying covariates $Z_{it}$ (Section~\ref{sec:covariates}).
+
+Three residual threats are not absorbed by the design.
+First, adoption of competing AI tools (GitHub Copilot, Claude Code, Windsurf, Cline, OpenHands) can change within the study window for a given repository, and project fixed effects only absorb a control project that always uses or never uses such tools---not one that adopts mid-window~\cite{DBLP:journals/corr/abs-2507-09089, watanabe2025use, kumar2025intuition}.
+Second, developers may experiment with Cursor locally for weeks before committing a configuration file; the Borusyak estimator drops $h=-1$ from the pre-trend specification, mechanically absorbing one month of anticipation but not earlier experimentation.
+Third, time-varying unobservables coincident with adoption---a senior contributor joining who simultaneously brings Cursor and a different coding style---cannot be separated from the treatment effect by any observational design, and constitute the canonical residual threat to parallel trends.
+
+The GMM estimand sits on the same DAG but identifies two further causal arrows that the DiD design does not directly target: the contemporaneous within-period effect of velocity on quality ($L_t \to C_t$, $L_t \to W_t$), which the volume-mediated path of the DiD already implies but does not separately quantify, and the lagged feedback from quality back to next-period velocity ($C_t \to L_{t+1}$, $W_t \to L_{t+1}$), which lies outside the DiD's single-arrow reduced-form structure entirely.
+Identification of these two arrows relies on lagged outcomes serving as instruments for contemporaneous regressors, which is a different identification strategy from the DiD's parallel trends.
+The next subsection makes both sets of assumptions precise.
+
+\subsection{Causal Estimands and Identifying Assumptions}
+\label{sec:cursor-credibility-estimand}
+
+For each outcome metric $M$, let $Y_{it}(d)$ denote the value of $M$ for repository $i$ in month $t$ under adoption status $d$, where $d=1$ denotes Cursor adoption and $d=0$ denotes non-adoption.
+Let $E_i$ denote the adoption month for repository $i$, with $E_i = \infty$ for never-adopters.
+The DiD analysis targets two estimands.
+The Average Treatment Effect on the Treated, $\tau_{\text{ATT}} = E[Y_{it}(1) - Y_{it}(0) \mid \text{adopter}, t \geq E_i]$, captures the population-average effect of adopting Cursor among repositories that did adopt; this is the quantity reported in Equation~\ref{eq:att} and Table~\ref{tab:average-te}.
+The horizon-average treatment effect, $\tau_{\text{ATT}}(h) = E[Y_{it}(1) - Y_{it}(0) \mid \text{adopter}, t = E_i + h]$ for $h \geq 0$, captures how that effect evolves with months elapsed since adoption; this is the quantity reported in Equation~\ref{eq:atth} and Figure~\ref{fig:dynamic-te}.
+The \citet{borusyak2024revisiting} estimator imputes $Y_{it}(0)$ for treated units from a counterfactual outcome regression fitted on the untreated sample (Equation~\ref{eq:imputation}); repository fixed effects $\mu_i$ absorb time-invariant project heterogeneity, month fixed effects $\lambda_t$ absorb common time shocks, and $Z_{it}$ absorbs observable scale dynamics.
+
+The GMM analysis targets the contemporaneous causal effect of one outcome on another conditional on Cursor adoption, repository identity, and calendar time, plus the lagged effect of one outcome on next-period values of another.
+The four estimands of interest are listed in Equation~\ref{eq:temporal} and the corresponding regression in Equation~\ref{eq:dynamic-gmm}.
+
+Five identifying assumptions support the causal interpretation of the DiD coefficients.
+
+\paragraph{A1. Parallel trends.}
+In the absence of treatment, the average outcome trajectory of treated and matched-control repositories would have evolved in parallel.
+A1 \emph{requires empirical argument}.
+The pre-period placebo test in Equation~\ref{eq:parallel-trend} provides indirect evidence: all five outcomes pass the heteroscedasticity- and cluster-robust Wald test at the 0.05 level under the \citet{borusyak2024revisiting} estimator, and the propensity-score model on six-month pre-adoption dynamics (Section~\ref{sec:matching}) further strengthens the assumption's plausibility by aligning observable trajectories before adoption.
+The assumption nevertheless remains untestable in the post-period and is the principal load-bearing condition for the DiD estimate.
+
+\paragraph{A2. No anticipation.}
+Outcomes for treated repositories before $E_i$ are unaffected by future treatment status.
+A2 is \emph{partially satisfied by construction, partially requires empirical argument}.
+The Borusyak specification drops $h=-1$ from the pre-trend test, mechanically isolating the placebo from short-horizon anticipation; this absorbs the case where developers experiment with Cursor in the month immediately before committing a configuration file.
+Anticipatory experimentation earlier than $h=-1$ cannot be ruled out from configuration-file evidence alone and remains a residual threat, addressed in Step~3.
+
+\paragraph{A3. SUTVA / no interference.}
+A repository's outcomes under its own adoption status do not depend on adoption decisions made by other repositories.
+A3 is \emph{plausibly satisfied with caveats}.
+Most repositories are independent codebases, and ecosystem-level common shocks (e.g., a Cursor model upgrade that lifts adoption everywhere) are absorbed by month fixed effects.
+The borderline cases---repositories with shared maintainers, organisation-level rollouts where a developer adopts Cursor across several projects simultaneously---do not admit a clean construction-based argument and are discussed under Step~3.
+
+\paragraph{A4. Stable treatment definition.}
+The treatment ``Cursor adoption'' has a single, well-defined operationalisation across the panel.
+A4 is \emph{satisfied by construction at the level of the simulated estimand} but with the caveat that real-world adoption is heterogeneous in intensity, model backend, and engagement pattern.
+The estimate is best read as the ATT of \emph{deliberate, visible adoption of Cursor as a development practice}, averaged over the realised heterogeneity of how repositories use the tool.
+Generalisation to specific adoption intensities is an external-validity concern and is handled in the existing Limitations subsection (Section~\ref{sec:cursor-limitations}).
+
+\paragraph{A5. Treatment-effect heterogeneity correctly handled by the estimator.}
+The estimator does not produce ``forbidden comparisons'' that would bias the average treatment effect under heterogeneous, time-varying ATTs.
+A5 is \emph{satisfied by construction (subject to A1)}.
+The \citet{borusyak2024revisiting} imputation estimator avoids the forbidden-comparison bias that affects two-way fixed-effects estimators in the staggered adoption setting~\cite{borusyak2024revisiting, callaway2021difference}; the appendix (Section~\ref{sec:appendix-alternative-estimators}) reports two alternative estimators (TWFE and \citet{callaway2021difference}) as cross-checks, and the velocity findings replicate qualitatively across all three.
+
+The credibility of the DiD causal claim therefore rests on A1 and the residual portion of A2---the assumptions that the design's construction does not guarantee.
+
+Three further assumptions support the causal interpretation of the GMM coefficients in Equation~\ref{eq:dynamic-gmm}.
+
+\paragraph{B1. Sequential exogeneity.}
+Shocks to the contemporaneous outcome are uncorrelated with the history of regressors and the unobserved repository effect.
+B1 \emph{requires empirical argument}.
+This assumption permits using lagged values of the regressor as instruments; it fails if persistent unobserved shocks affect both the regressor and subsequent outcomes (e.g., a maintainer's prolonged unavailability that simultaneously suppresses lines added and inflates technical debt).
+The first-difference transformation removes the time-invariant repository effect, but persistent shocks survive differencing and constitute the principal residual threat.
+
+\paragraph{B2. No serial correlation in residuals beyond AR(1).}
+After first-differencing, the residuals exhibit AR(1) but not AR(2) correlation.
+B2 \emph{is testable}.
+The Arellano-Bond AR(2) test reports $p$-values of 0.330--0.734 across the four GMM specifications (Table~\ref{tab:causal-paths}), all comfortably above 0.05, supporting the use of lag-2 and lag-3 instruments.
+
+\paragraph{B3. Joint instrument validity.}
+The full instrument set is exogenous to the contemporaneous error.
+B3 \emph{is testable}.
+The Sargan overidentification test reports $p$-values of 0.141--0.639 (Table~\ref{tab:causal-paths}), all above 0.05, providing the necessary (though not sufficient) condition for joint instrument validity; the test has known low power in finite samples and can be weakened by instrument proliferation~\cite{arellano1991some}, which the chapter mitigates by limiting lag depth to two and three.
+
+The credibility of the GMM causal claim therefore rests on B1, the only assumption that the diagnostic tests do not directly address.
+
+\subsection{Limitations and Known Caveats}
+\label{sec:cursor-credibility-limitations}
+
+The DiD design eliminates the standard observational confounders identified in the DAG---selection into Cursor adoption by project type, language, team composition, governance maturity, and lifecycle stage---through the combination of repository fixed effects, month fixed effects, time-varying covariates, and propensity-score matching on six-month pre-adoption dynamics.
+The GMM specification additionally addresses the standard endogeneity concern that contemporaneous velocity and quality may be jointly determined.
+Upon revisiting this study with the proposed causal credibility framework, we identify three threats to the internal causal validity of the chapter's estimates.
+
+\paragraph{Time-varying unobservables coincident with adoption.}
+A senior contributor joining a project who simultaneously brings Cursor and a more aggressive coding style cannot be separated from the treatment effect by any observational design.
+This threatens A1: the parallel-trends assumption fails when an unobserved shock occurs exactly at the adoption month and affects the outcome independently of Cursor.
+Repository fixed effects absorb time-invariant differences and the propensity-score model absorbs observable trajectory differences, but neither absorbs an unobserved coincident shock.
+Direction of bias depends on the confounder; the most plausible scenario is a ``modernisation push'' that bundles tool adoption with pace acceleration, which would reinforce the velocity-up and quality-down pattern, so the central findings are robust in sign but possibly inflated in magnitude.
+
+\paragraph{Time-varying adoption of other AI tools.}
+Adoption of GitHub Copilot, Claude Code, Windsurf, Cline, or OpenHands is not uniformly time-invariant within the study window; some repositories adopt these tools mid-panel.
+This threatens A1 because the effective treatment for a control repository that adopts Copilot mid-window differs from one that does not, and these tools independently affect both velocity and quality.
+Project fixed effects absorb a control that always uses or never uses Copilot; they do not absorb mid-window adoption.
+The chapter's \emph{Cursor and Other} versus \emph{Only Cursor} robustness checks (Section~\ref{sec:robustness}) mitigate this threat by showing that effects amplify in the cleaner subset, but the subset construction relies on observable detection signatures (e.g., \Code{.vscode/}, \Code{.claude/} folders) that systematically underestimate true other-AI usage.
+The reported costs of Cursor adoption on velocity and quality are therefore best read as marginal effects relative to the prevailing baseline of partly-observed AI-tool usage, not relative to a no-AI counterfactual.
+
+\paragraph{Anticipation through pre-commit Cursor use.}
+Developers can experiment with Cursor locally for weeks before committing a configuration file.
+This threatens A2 because outcomes in the months before $E_i$ may already reflect Cursor use, contaminating the imputed counterfactual.
+The Borusyak specification drops $h=-1$, absorbing one month of anticipation; experimentation earlier than $h=-1$ cannot be ruled out from configuration-file evidence alone.
+The direction of bias is to attenuate the immediate post-adoption ATT, since the imputed counterfactual would already partially reflect Cursor's effect; the reported velocity gains in the first two months are therefore conservative lower bounds in this respect.
+
+\paragraph{Sequential exogeneity in the GMM.}
+Persistent unobserved shocks that affect both the contemporaneous regressor and the next-period outcome (e.g., a sustained period of maintainer disengagement) violate B1 and bias the lagged-outcome instruments.
+The Arellano-Bond AR(2) test does not directly probe this scenario---it tests for residual correlation rather than for the persistence of an underlying shock.
+The chapter's interpretation of the $C_t \to L_{t+1}$ and $W_t \to L_{t+1}$ feedback as causal therefore rests on the auxiliary judgement that no such persistent shock dominates the data; the cross-direction agreement between the two contemporaneous and two lagged specifications (Table~\ref{tab:causal-paths}) is the principal evidence in favour of this judgement.
+
+The remaining limitations of the study are concerns about external validity, measurement validity, treatment definition, or ecosystem-specific scope rather than threats to the internal identification of the DiD or GMM estimates.
+They are addressed in the existing ``Limitations and Threats to Validity'' subsection (Section~\ref{sec:cursor-limitations}) and the ``Robustness Checks'' subsection (Section~\ref{sec:robustness}); we do not re-litigate them here.
+
+\subsection{Alternative Explanations}
+\label{sec:cursor-credibility-alternatives}
+
+Seven alternative causal structures could in principle explain the chapter's central findings without the proposed mechanism.
+Five of them are already addressed by the existing chapter through dedicated robustness checks (Section~\ref{sec:robustness}, Figure~\ref{fig:robustness-checks-all}) and the cross-estimator comparison (Section~\ref{sec:appendix-alternative-estimators}); we summarise their resolution and pointers in the table below.
+The remaining two are flagged here because the existing chapter does not explicitly canvass them.
+
+\paragraph{Alternatives already addressed in the existing chapter.}
+Table~\ref{tab:cursor-alternatives-pointers} maps each alternative to the existing analysis that addresses it; the credibility section does not re-litigate them.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Alternative causal structures already addressed by the existing chapter, with pointers to the analysis that resolves each.}
+\label{tab:cursor-alternatives-pointers}
+\begin{tabular}{p{6.4cm}p{6.6cm}}
+\toprule
+\textbf{Alternative} & \textbf{Addressed by} \\
+\midrule
+The transient velocity finding is an artefact of OSS repository mortality rather than Cursor. &
+\emph{Active Months} ($>0$ commits) and \emph{Very Active} ($\geq 10$ commits) subset robustness checks (Section~\ref{sec:robustness}, Figure~\ref{fig:robustness-checks-all} Row~2) show the velocity-then-decay pattern persists in the active sample. \\
+\addlinespace
+The pattern reflects an excitement--frustration--abandonment cycle rather than a sustained Cursor effect. &
+\emph{High Contributor Adoption} and \emph{Cursor Configuration Changes} subsets (Section~\ref{sec:robustness}, Figure~\ref{fig:robustness-checks-all} Row~1) show velocity gains \emph{persist} under sustained usage; explicit treatment in Section~\ref{sec:cursor-discussion}. \\
+\addlinespace
+The quality degradation is mechanically driven by increased code volume, not a per-line effect. &
+The dynamic panel GMM with explicit lines-of-code control (Section~\ref{sec:finding-interaction}, Table~\ref{tab:causal-paths}) shows the complexity effect survives the volume control, supporting a per-line interpretation; the warnings effect is honestly attributed to the volume-mediated path in Section~\ref{sec:cursor-discussion}. \\
+\addlinespace
+Contamination from other AI tools (Copilot, Claude Code, Windsurf, Cline, OpenHands) is the true driver. &
+The \emph{Cursor and Other} versus \emph{Only Cursor} subset robustness checks (Section~\ref{sec:robustness}, Figure~\ref{fig:robustness-checks-all} Row~3) show main findings amplify in the cleaner subset. The detection-signature limitation is acknowledged in Step~3 above. \\
+\addlinespace
+The findings are driven by particular programming languages or by particular adoption cohorts. &
+Per-language robustness panels (Section~\ref{sec:robustness}, Figure~\ref{fig:robustness-checks-all} Row~4) show qualitative consistency across JavaScript/TypeScript, Python, and Go; the cross-estimator appendix (Section~\ref{sec:appendix-alternative-estimators}) reports the cohort-disaggregated \citet{callaway2021difference} estimator and discusses divergence on quality outcomes honestly in Section~\ref{sec:estimator-comp}. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Alternative 1: Selection on time-varying unobservables coincident with adoption.}
+A reader could ask whether projects whose maintainers chose Cursor are systematically different in unobserved ways at the moment of adoption---more security-conscious, better resourced, more willing to experiment---and whether those unobserved differences, rather than the Cursor intervention itself, drive the observed effects.
+The design partially addresses this concern: repository fixed effects $\mu_i$ absorb all time-invariant project characteristics, the propensity-score model on six-month pre-adoption dynamics absorbs observable trajectory differences (AUC 0.83--0.91), and the pre-trend tests pass for all five outcomes.
+What remains unaddressed is the canonical residual threat to A1: a time-varying unobserved shock occurring exactly at the adoption month, such as a senior contributor joining who simultaneously brings Cursor and a different coding style.
+This shock cannot be separated from the treatment effect by any observational design, and is the principal load-bearing assumption the chapter's findings ultimately rest on.
+The most plausible candidate scenarios---a ``modernisation push'' that bundles tool adoption with pace acceleration, or a project entering a feature-development phase that coincides with Cursor adoption---would reinforce the velocity-up and quality-down pattern, so the central findings are robust in sign but possibly inflated in magnitude.
+
+\paragraph{Alternative 2: SonarQube warning increases reflect a measurement-side change in coding style rather than a quality decline.}
+A reader could argue that LLM-generated code triggers SonarQube rules that human-written code triggers less often---verbose patterns, unconventional naming, leftover scaffolding---without a corresponding change in defect proneness or maintainability.
+Under this reading, the warnings outcome would shift mechanically with style rather than with the substantive concept of code quality the chapter intends to measure.
+The appendix decomposition by warning category (Table~\ref{tab:warnings-by-category}) shows that the largest contributors to the post-adoption increase are Naming Conventions (+21.32), Code Hygiene (+16.15), Code Complexity (+15.34), and Code Style (+14.76)---categories consistent with both the per-line-quality-decline interpretation and with this style-shift interpretation.
+The two readings cannot be fully disambiguated by static analysis alone, and would require either developer-perceived defect data or downstream bug-reporting data to separate.
+This alternative is properly framed as a measurement-validity concern about the warnings outcome---the construct of ``code quality'' that SonarQube warnings proxy for---rather than as an internal-validity threat to the DiD estimate of the effect on warnings as defined.
+The chapter's central interpretation does not collapse under this alternative because the cognitive-complexity outcome is computed from a structural metric~\cite{DBLP:conf/icse/Campbell18} rather than from style-rule violations, and that outcome shows the same direction and a comparable magnitude.
+
+The credibility of the chapter's causal interpretation therefore rests primarily on the residual portion of A1 (no time-varying coincident unobservables) for the DiD estimand and on B1 (sequential exogeneity) for the GMM estimand.
+The cross-direction agreement between the four GMM specifications, the persistence of the main findings across the three robustness-check axes, and the conservative direction of the residual biases together support a measured but not absolute causal interpretation of the chapter's results.

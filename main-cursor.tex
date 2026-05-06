@@ -503,7 +503,7 @@ To summarize, the dynamic panel GMM models suggest that: (1) \emph{The adoption 
     \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_confidence_main.pdf}
     \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_activity_main.pdf}
     \includegraphics[width=\linewidth]{figs-cursor/dynamic_effects_other_tools_main.pdf}
-    \caption{The estimated ``horizon-average'' treatment effects in alternative dataset settings as robustness checks. We only display three outcome variables (lines added, static analysis warnings, and code complexity) due to space constraints (full results in the Appendix).
+    \caption{The estimated ``horizon-average'' treatment effects in alternative robustness check dataset settings. We only display three outcome variables (lines added, static analysis warnings, and code complexity) due to space constraints (full results in the Appendix).
     \emph{Row 1}: Robustness check on subsets with higher Cursor adoption confidence, showing generally stronger effects in high-confidence adoption observations. 
     \emph{Row 2}: Robustness check on subsets of different activity levels, showing the persistence of our findings even in very active repositories. 
     \emph{Row 3}: Robustness check between repositories with/without observable use of other AI tools, showing that the potential use of other AI tools weakens Cursor effect estimations, but only by a small margin.}
@@ -515,15 +515,13 @@ In this section, we present additional robustness checks to explore and rule out
 
 Recall that one limitation of our identification strategy is that it merely displays an ``intent-to-treat'' (ITT) signal without us knowing how Cursor was actually used in each treatment repository (Section~\ref{sec:cursor-limitations}).
 To test whether our findings are driven by repositories with genuine, sustained usage (versus minimal engagement), we repeat the same DiD modeling process on two subsets of data based on two alternative measurements of usage intensity:
-
 \begin{itemize}[leftmargin=15pt]
     \item \emph{High Contributor Adoption:} For each repository, we identify contributors modifying Cursor files (indicating experimentation) and calculate their fraction of total repository commits during observation. 
     This subset keeps only ``high-adoption'' repositories, in which those modifying Cursor files also contributed $\geq$80\% of commits, along with their own matched controls.
-    \item \emph{Cursor Configuration Changes:} For each repository, we identify all commits where \Code{.cursorrules} files were modified post-adoption. 
+    \item \emph{Cursor Configuration Changes:} For each repository, we identify all commits where the Cursor rule files were modified post-adoption. 
     This subset keeps only post-adoption observations where there is at least one commit modifying Cursor files in that observation period, representing sustained usage observations and ruling out potential post-adoption abandonments.
     %In these observed time periods, contributors are iteratively refining rules, likely indicating active usage of Cursor  %than those committing once and never touching \Code{.cursorrules} files again.
 \end{itemize}
-
 Results from the two subsets (Figure~\ref{fig:robustness-checks}, Row 1) show that our quality-related findings are robust and amplified in subsamples with higher sustained usage: The accumulation of static analysis warnings and code complexity is stronger---not weaker---among repositories with continued configuration refinement and where Cursor users dominated activity. 
 This strengthens causal interpretation: Effects are attributable to Cursor adoption rather than spurious correlation with other changes, and our main ITT estimates likely understate effects among repositories with intensive, sustained usage.
 Interestingly, while the velocity gain is still on average transient among repositories with high contributor adoption, we still observe a velocity increase in observations in which developers are still actively modifying Cursor files.
@@ -540,6 +538,8 @@ We build a \emph{Cursor and Other} subset for these repositories and an \emph{On
 The results (Figure~\ref{fig:robustness-checks}, Row 3) show that while contamination weakens our main ITT estimates (e.g., some repositories may be using GitHub Copilot before Cursor), all of our main findings are persistent through all three settings and amplified in settings where prior AI tool usage is less likely. 
 
 To summarize, the above robustness checks reassure our main causal findings against concerns from potential non-compliance (i.e., treatment repositories not actually using Cursor), selection bias (i.e., treatment repositories generally becoming inactive fast), and confounding from other AI tools (i.e., the presence of other AI tools nullifying estimates on the adoption of Cursor).
+
+\input{analysis-cursor}
 
 \section{Discussion}
 \label{sec:cursor-discussion}
