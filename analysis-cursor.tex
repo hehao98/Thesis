@@ -14,7 +14,7 @@ Each estimand rests on its own set of assumptions, and the section makes the dep
 
 Figure~\ref{fig:dag-cursor} shows the directed acyclic graph (DAG) governing the chapter's causal claims.
 
-\begin{figure}[t]
+\begin{figure}
     \centering
     \begin{tikzpicture}[
         >=latex, font=\scriptsize,
@@ -85,7 +85,7 @@ The treatment is the discrete event of a repository committing a Cursor configur
 The chapter's primary causal claims fall along two distinct mediator paths.
 The velocity path runs from $D$ through the code production rate that Cursor enables, generating the immediate uptick in commits and lines added documented across prior generations of AI coding assistants~\cite{DBLP:journals/corr/abs-2302-06590, cui2024effects, DBLP:journals/corr/abs-2406-17910, hoffmann2024generative, DBLP:conf/icis/YeverechyahuMO24, DBLP:journals/corr/abs-2410-02091, daniotti2025using}.
 The quality path runs partly through the volume mechanism---more lines added accumulate into a larger codebase, which mechanically accrues more warnings and complexity~\cite{DBLP:conf/sigsoft/ChengMCJGKZ022, besker2018technical}---and partly through a direct per-line channel, in which the structural properties of LLM-generated code differ from human-written code~\cite{DBLP:journals/tse/LiuTLZZ24, DBLP:conf/icse/Liang0M24}.
-Cumulative lines of code is promoted to an explicit moderator on the DAG because the chapter's GMM decomposition (Table~\ref{tab:causal-paths}) shows that the volume path absorbs most of the warnings effect and a large share of the complexity effect, while a residual direct effect on complexity survives the lines-of-code control and motivates the chapter's headline interpretation.
+The chapter's GMM decomposition (Table~\ref{tab:causal-paths}) shows that the volume path absorbs most of the warnings effect and a large share of the complexity effect, while a residual direct effect on complexity survives the lines-of-code control and motivates the chapter's headline interpretation.
 
 The DAG also names the confounders that, in an unstructured observational comparison of Cursor-adopting and non-adopting repositories, would bias the estimated effect.
 Project type, domain, and primary programming language shape both the propensity to adopt new tooling and the baseline structure of the codebase~\cite{DBLP:journals/corr/abs-2410-02091, daniotti2025using}; LLM performance varies systematically across languages~\cite{DBLP:journals/pacmpl/CassanoGLSFAF0J24, DBLP:journals/corr/abs-2503-17181}, and the matching procedure already enforces same-language pairs (Section~\ref{sec:matching}).
@@ -114,8 +114,15 @@ The Average Treatment Effect on the Treated, $\tau_{\text{ATT}} = E[Y_{it}(1) - 
 The horizon-average treatment effect, $\tau_{\text{ATT}}(h) = E[Y_{it}(1) - Y_{it}(0) \mid \text{adopter}, t = E_i + h]$ for $h \geq 0$, captures how that effect evolves with months elapsed since adoption; this is the quantity reported in Equation~\ref{eq:atth} and Figure~\ref{fig:dynamic-te}.
 The \citet{borusyak2024revisiting} estimator imputes $Y_{it}(0)$ for treated units from a counterfactual outcome regression fitted on the untreated sample (Equation~\ref{eq:imputation}); repository fixed effects $\mu_i$ absorb time-invariant project heterogeneity, month fixed effects $\lambda_t$ absorb common time shocks, and $Z_{it}$ absorbs observable scale dynamics.
 
-The GMM analysis targets the contemporaneous causal effect of one outcome on another conditional on Cursor adoption, repository identity, and calendar time, plus the lagged effect of one outcome on next-period values of another.
-The four estimands of interest are listed in Equation~\ref{eq:temporal} and the corresponding regression in Equation~\ref{eq:dynamic-gmm}.
+The GMM analysis targets four causal estimands, each instantiating the structural coefficient $\gamma$ in Equation~\ref{eq:dynamic-gmm} for a different choice of regressor $X_{it}$ and outcome $Y_{it}$ from the four directional pairs in Equation~\ref{eq:temporal}.
+For each pair $(X, Y)$, the estimand is the partial causal effect of $X$ on $Y$ holding repository identity, calendar time, the lagged outcome, Cursor adoption status, and time-varying covariates constant:
+\begin{equation}
+\label{eq:gmm-estimand}
+    \gamma_{X \to Y} = \frac{\partial \, E[Y_{it} \mid \mu_i, \lambda_t, Y_{i,t-1}, D_{it}, X_{it}, Z_{it}]}{\partial X_{it}}.
+\end{equation}
+For the two contemporaneous pairs (lines added to warnings, lines added to complexity), $X$ and $Y$ are observed in the same month $t$.
+For the two lagged pairs (warnings to next-period lines added, complexity to next-period lines added), Equation~\ref{eq:gmm-estimand} is evaluated with the regressor at $t$ and the outcome at $t+1$.
+The role of $D_{it}$ in the conditioning set is to absorb the Cursor-adoption shock so that $\gamma$ identifies the outcome--outcome relationship net of treatment, rather than the reduced-form effect of $D$ on $Y$.
 
 Five identifying assumptions support the causal interpretation of the DiD coefficients.
 
