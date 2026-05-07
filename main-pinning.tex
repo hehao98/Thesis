@@ -507,7 +507,6 @@ Given the set $P$ of all packages in the network, we quantify the impact of comp
     \textit{impact}(a)=\frac{\sum_{p \in \textit{reachable}(a)}\textit{downloads}(p)}{\sum_{p \in P}{\textit{downloads}(p)}}
 \end{equation}
 In other words, $\textit{impact}(a) \in [0, 1]$ measures the fraction of npm downloads that will be affected if package $a$ is compromised, as illustrated in Figure~\ref{fig:example-reachability}.
-
 For the set of packages $A\subset P$ (i.e., the top-$m$ most impactful packages), in which an attacker may target any of $p \in A$ based on the attack selection strategy, we define \textit{risk(A)} as the arithmetic mean of the impact across all possible targets in $A$ an attacker can choose from (i.e., $\textstyle\textit{risk}(A)=\frac{1}{{|A|}}{\sum_{a \in A} \textit{impact}(a)}$).
 % \begin{equation}
 % \label{eq:risk}
