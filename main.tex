@@ -113,6 +113,22 @@
 \definecolor{darkred}{rgb}{0.9, 0.0, 0.0}
 \definecolor{darkgreen}{rgb}{0.0, 0.8, 0.0}
 \definecolor{amber}{rgb}{1.0, 0.75, 0.0}
+
+% Chapter front matter: abstract, keywords, and source publication.
+% Usage: \chapterfrontmatter{abstract text}{keywords}{publication note}
+\newcommand{\chapterfrontmatter}[3]{%
+    \vspace{1em}%
+    \begingroup
+    \begin{quote}
+    \noindent\textbf{Chapter Abstract.} #1\par
+    \vspace{0.8em}%
+    \noindent\textbf{Keywords:} #2\par
+    \vspace{0.8em}%
+    \noindent\textbf{This chapter is based on:} #3\par
+    \end{quote}
+    \endgroup
+    \vspace{1em}%
+}
 %%%%%%%%%% End: Custom Commands and Colors %%%%%%%%%%
 
 \addbibresource{references.bib}
@@ -210,6 +226,20 @@ Finally, I thank the Google Cloud for Researchers program for the credits that f
 \chapter{Causal Inference for Empirical Software Engineering: A Tutorial}
 \label{chp:background}
 
+\chapterfrontmatter{%
+Empirical software engineering research frequently investigates causal questions---whether code review reduces defects, whether AI-assisted development improves velocity, whether dependency pinning improves security---yet such questions are routinely answered with descriptive, correlational, or qualitative evidence and a perfunctory ``correlation does not imply causation'' caveat.
+A literature review of 5{,}341 main-track papers at ICSE, FSE, and ASE between 2015 and 2025 reveals a structural gap: 29\% of empirical studies are motivated by a causal research question, but only 1.9\% employ a recognized causal inference method, and the ratio has remained stable for a decade.
+This tutorial provides a self-contained primer on the modern causal inference toolkit for software engineering researchers, covering the potential outcomes framework, graphical causal models, and design-based identification strategies (difference-in-differences, instrumental variables, regression discontinuity, panel fixed effects).
+A worked example on the impact of AI coding tools in open-source software illustrates the full arc from naive cross-sectional comparison through DAG-justified regression to design-based longitudinal identification, demonstrating how progressively stronger designs shrink an inflated +911\% naive estimate to a credible +32--52\% difference-in-differences estimate.
+The tutorial closes with a pragmatic stance and an empirical standard for causal inquiries in software engineering research.%
+}{%
+causal inference, empirical software engineering, mining software repositories, research methodology, potential outcomes, directed acyclic graphs, difference-in-differences, quasi-experimental design%
+}{%
+Hao He, Narayan Ramasubbu, Christian Kästner, and Bogdan Vasilescu.
+``Causal Inference for Empirical Software Engineering: A Tutorial.''
+\emph{Manuscript in preparation, targeting} ACM Transactions on Software Engineering and Methodology (TOSEM).%
+}
+
 \input{tutorial/paper/1-introduction}
 
 \input{tutorial/paper/2-primer}
@@ -231,15 +261,66 @@ Finally, I thank the Google Cloud for Researchers program for the credits that f
 \chapter{Empirical Study I: The Impact of Dependency Pinning on Supply Chain Security}
 \label{chp:pinning}
 
+\chapterfrontmatter{%
+Recent high-profile supply chain attacks have led practitioners and security scorecards to advocate \emph{pinning} dependencies to specific versions as a defense against malicious package updates, while a long line of software engineering research has argued that pinning accumulates technical debt and blocks the propagation of security patches.
+Despite the controversy, no quantitative evidence existed about the actual impact of pinning versus floating dependencies on the underlying security and maintenance trade-offs.
+This chapter presents a counterfactual analysis on a sample of 10{,}000 npm packages and 10{,}000 GitHub repositories using npm, leveraging an experimental time-traveling feature of the npm dependency resolver to simulate the evolution of dependency graphs under pinned and floating regimes.
+Using fixed-effects panel regression, we find that pinning direct dependencies not only increases the cost of maintaining vulnerable and outdated dependencies, but---counterintuitively---increases exposure to malicious package updates in larger dependency graphs because of the specifics of npm's dependency resolution mechanism.
+We further show through ecosystem-wide simulations that coordinated pinning at a small set of important upstream packages, especially when paired with a hypothetical \emph{transitive pinning} feature, can reduce the spread of malicious updates by up to 75\%, providing evidence in favor of ecosystem-level interventions over local ones.%
+}{%
+software supply chain security, dependency management, npm, semantic versioning, malicious packages, counterfactual analysis, panel regression%
+}{%
+Hao He, Bogdan Vasilescu, and Christian K\"astner.
+``Pinning Is Futile: You Need More Than Local Dependency Versioning to Defend against Supply Chain Attacks.''
+\emph{Proceedings of the ACM on Software Engineering} 2.FSE (2025), Article FSE013, pp.~266--289.
+%\href{https://doi.org/10.1145/3715728}{doi:10.1145/3715728}.
+Preprint: \href{https://arxiv.org/abs/2502.06662}{arXiv:2502.06662}.%
+}
+
 \include{main-pinning}
 
 \chapter{Empirical Study II: The Impact of Fake GitHub Stars on Repository Promotion}
 \label{chp:fake-stars}
 
+\chapterfrontmatter{%
+GitHub stars are a widely used proxy for repository popularity and have been adopted as an evaluation criterion by hiring managers, investors, journalists, and academic studies---creating strong incentives to artificially inflate them.
+This chapter presents the first systematic, global, and longitudinal measurement study of fake stars on GitHub.
+We build \SystemName, a scalable detection tool that mines GitHub's complete event metadata for two complementary signatures of inauthentic starring activity: low-activity accounts that engage in nothing beyond starring, and lockstep clusters of accounts that star bursts of repositories together.
+Applied to all GitHub events between 2019 and 2024, \SystemName identifies six million suspected fake stars across 26{,}254 repositories, with fake-star activity surging dramatically in 2024.
+The accounts and repositories involved exhibit highly trivial activity patterns, and the majority of fake-star campaigns target short-lived phishing-malware repositories, with the remainder promoting AI/LLM, blockchain, and tutorial content.
+A longitudinal panel regression analysis shows that fake stars provide only a brief promotional advantage---typically less than two months---before becoming a long-term liability associated with reduced organic engagement, indicating that the practice is counterproductive even for those who deploy it.
+The findings carry implications for GitHub platform governance, software developers using stars as a signal, and supply chain security researchers studying malware distribution.%
+}{%
+fake stars, GitHub, software supply chain security, malware, longitudinal analysis, panel regression, anomaly detection%
+}{%
+Hao He, Haoqin Yang, Philipp Burckhardt, Alexandros Kapravelos, Bogdan Vasilescu, and Christian K\"astner.
+``Six Million (Suspected) Fake Stars on GitHub: A Growing Spiral of Popularity Contests, Spam, and Malware.''
+In \emph{Proceedings of the 48th International Conference on Software Engineering} (ICSE'26), Rio de Janeiro, Brazil, 2026.
+Preprint: \href{https://arxiv.org/abs/2412.13459}{arXiv:2412.13459}.%
+}
+
 \include{main-fake-stars}
 
 \chapter{Empirical Study III: The Impact of Cursor AI on Open-Source Projects}
 \label{chp:cursor}
+
+\chapterfrontmatter{%
+Large language models (LLMs) have demonstrated the promise to revolutionize the field of software engineering.
+Among other things, LLM agents are rapidly gaining momentum in software development, with practitioners reporting a multifold increase in productivity after adoption.
+Yet, empirical evidence is lacking around these claims.
+In this chapter, we estimate the causal effect of adopting a widely popular LLM agent assistant, namely Cursor, on development velocity and software quality.
+The estimation is enabled by a state-of-the-art difference-in-differences design comparing Cursor-adopting GitHub projects with a matched control group of similar GitHub projects that do not use Cursor.
+We find that the adoption of Cursor leads to a statistically significant, large, but transient increase in project-level development velocity, along with a substantial and persistent increase in static analysis warnings and code complexity.
+Further panel generalized-method-of-moments estimation reveals that increases in static analysis warnings and code complexity are major factors driving long-term velocity slowdown.
+Our study identifies quality assurance as a major bottleneck for early Cursor adopters and calls for it to be a first-class citizen in the design of agentic AI coding tools and AI-driven workflows.%
+}{%
+AI coding assistants, LLM agents, Cursor, developer productivity, technical debt, code complexity, difference-in-differences, panel GMM%
+}{%
+Hao He, Courtney Miller, Shyam Agarwal, Christian K\"astner, and Bogdan Vasilescu.
+``Speed at the Cost of Quality: How Cursor AI Increases Short-Term Velocity and Long-Term Complexity in Open-Source Projects.''
+Accepted at the \emph{23rd International Conference on Mining Software Repositories} (MSR'26).
+Preprint: \href{https://arxiv.org/abs/2511.04427}{arXiv:2511.04427}.%
+}
 
 \include{main-cursor}
 
