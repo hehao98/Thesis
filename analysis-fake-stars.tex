@@ -1,0 +1,265 @@
+\section{Causal Credibility Assessment}
+\label{sec:fake-stars-credibility}
+
+Chapter~\ref{chp:background} argued that empirical software engineering research advances most effectively when causal claims are accompanied by an explicit assessment of their credibility.
+This section instantiates the four-step framework for the present study: derive a causal theory from existing literature, define the estimands and the assumptions under which they admit a causal interpretation, honestly acknowledge the limitations that bear on those assumptions, and navigate the alternative causal structures a careful reader would consider.
+The goal is not to claim that the study's causal interpretation is beyond doubt, but to make the load-bearing assumptions transparent so that the strength of the evidence can be calibrated against them.
+
+The assessment targets RQ4 (Section~\ref{sec:rq4}), the only research question in the chapter that makes a quantitative causal claim.
+RQ1--RQ3 are descriptive results---population frequencies, activity timelines, and joint distributions over repository categories---and the chapter's hedged phrasing for them already reflects that scope.
+The Discussion's policy claim (``we recommend against buying fake stars\dots\ our RQ4 results suggest that it is ineffective'') is causal in form and rests on the panel autoregression in Table~\ref{tab:regression}; the assessment below is what licenses that claim.
+
+Unlike the pinning study (Chapter~\ref{chp:pinning}), identification here is not by construction.
+The maintainer chooses whether to purchase fake stars endogenously, no counterfactual simulation imposes the treatment, and the panel-FE estimator's causal interpretation rests on a strict-exogeneity assumption that the design's construction does not guarantee.
+The DAG below makes that assumption visible alongside the residual confounding paths that threaten it; the subsequent subsections name the assumption, identify the load-bearing residual threats, and report the executed robustness checks that bound them.
+
+\subsection{Causal Theory}
+\label{sec:fake-stars-credibility-theory}
+
+Figure~\ref{fig:dag-fake-stars} shows the directed acyclic graph (DAG) governing RQ4.
+
+\begin{figure}[t]
+    \centering
+    \resizebox{\linewidth}{!}{%
+    \begin{tikzpicture}[
+        >=latex, font=\scriptsize,
+        confbox/.style={draw, rounded corners, fill=gray!12, align=left, text width=4.4cm, inner sep=4pt},
+        tnode/.style={draw, rounded corners, fill=green!20, very thick, minimum height=0.7cm, minimum width=2.6cm, align=center, font=\bfseries\scriptsize},
+        tnodeL/.style={draw, rounded corners, dashed, fill=green!8, minimum height=0.6cm, minimum width=2.6cm, align=center, font=\itshape\scriptsize},
+        mnode/.style={draw, rounded corners, fill=yellow!25, minimum height=0.6cm, minimum width=2.4cm, align=center, font=\scriptsize},
+        ynode/.style={draw, rounded corners, fill=blue!10, minimum height=0.6cm, minimum width=2.6cm, align=center, font=\scriptsize},
+        rbox/.style={draw, rounded corners, dashed, fill=red!8, align=left, text width=4.4cm, inner sep=4pt},
+        cedge/.style={->, gray, dashed, semithick},
+        medge/.style={->, black, semithick},
+        revedge/.style={->, red!70!black, dashed, thick},
+        meas/.style={->, gray!60!black, dotted, thick},
+    ]
+    \node[confbox] (Conf) {%
+        \textbf{Absorbed by repository FE $\mu_i$}\\[1pt]
+        $\bullet$ Maintainer growth-hacking disposition ($U_i$)\\
+        $\bullet$ Project type / topical baseline ($T_i$)\\
+        $\bullet$ Intrinsic quality / utility baseline ($N_i$)
+    };
+    \node[confbox, below=0.3cm of Conf] (Covar) {%
+        \textbf{Time-varying controls (RE only)}\\[1pt]
+        $\bullet$ $\textit{age}_{i,t}$, $\textit{had\_release}_{i,t}$, $\log \textit{activity}_{i,t}$\\
+        \quad (omitted in FE specification)
+    };
+    \node[tnodeL, right=1.6cm of Conf] (Dlat) {Latent $D_{i,t}$\\ purchase decision};
+    \node[tnode, below=0.7cm of Dlat] (D) {$\textit{fake}_{i,t}$\\ detected fake stars};
+    \node[mnode, right=1.4cm of Dlat] (Mvis) {Visibility\\(trending, ranking)};
+    \node[mnode, below=0.4cm of Mvis] (Mpen) {Penalty\\(scrutiny, removal)};
+    \node[ynode, right=1.2cm of Mvis, yshift=-0.55cm] (Y) {$\textit{real}_{i, t+k}$};
+    \node[rbox, below=0.7cm of D] (Z) {%
+        \textbf{Residual confounder $Z_{t}^{\text{topic}}$}\\[1pt]
+        $\bullet$ Topic-by-time and topic-by-channel hype\\
+        \quad (LLM 2024, crypto 2021--2022, content type)\\
+        \quad not absorbed by $\mu_i$ or $\lambda_t$ alone
+    };
+    \draw[cedge] (Conf.east) -- (Dlat.west) node[midway, above, font=\tiny\itshape] {(blocked by $\mu_i$)};
+    \draw[cedge] (Covar.east) to[bend right=8] (D.west);
+    \draw[meas] (Dlat.south) -- (D.north) node[midway, right, font=\tiny\itshape] {meas.\ (recall $\sim$81\%)};
+    \draw[medge] (D.east) to[bend left=8] (Mvis.south west);
+    \draw[medge] (D.east) to[bend right=4] (Mpen.west);
+    \draw[medge] (Mvis.east) to[bend left=8] node[above, font=\tiny\itshape] {$+$ short} (Y.north west);
+    \draw[medge] (Mpen.east) to[bend right=8] node[below, font=\tiny\itshape] {$-$ long} (Y.south west);
+    \draw[cedge] (Conf.east) to[bend left=10] (Y.north);
+    \draw[->, red!70!black, semithick] (Z.east) to[bend right=15] (D.south);
+    \draw[->, red!70!black, semithick] (Z.east) to[bend right=30] (Y.south);
+    \draw[revedge] (Y.north) to[bend left=35] node[above, font=\tiny\itshape] {reverse $(+)$: $\textit{real}_{i, t-k} \to D_{i,t}$} (Dlat.east);
+    \end{tikzpicture}%
+    }
+    \caption{Causal DAG for the RQ4 promotional-effect analysis.
+    The latent purchase decision $D_{i,t}$ is observed only through the proxy $\textit{fake}_{i,t}$ produced by \SystemName.
+    Time-invariant confounders $U_i$, $T_i$, $N_i$ (gray) are absorbed by repository fixed effects; release and activity covariates enter the random-effects specification only and are partly captured by FE on the within-unit variation.
+    The treatment effect on next-month real stars decomposes through two competing mediators: a positive visibility channel (trending, ranking, social proof) and a negative penalty channel (scrutiny, removal, signal-incongruence) that dominate at different horizons.
+    Topic-by-time and topic-by-channel hype $Z_{t}^{\text{topic}}$ (red dashed box) is not absorbed by either repository or month fixed effects on their own, and is the principal residual confounder.
+    The dashed red arrow $\textit{real}_{i, t-k} \to D_{i,t}$ is a reverse-causality edge with a positive sign---past organic momentum predicts subsequent purchasing---which the lagged-dependent-variable specification only partially blocks (small-$T$ Nickell bias~\cite{nickell1981biases}).
+    The principal load-bearing assumptions are A1 (strict exogeneity), A2 (no unobserved time-varying confounders), and A5 (panel completeness).}
+    \label{fig:dag-fake-stars}
+\end{figure}
+
+The treatment is the maintainer's monthly decision to purchase fake stars from third-party marketplaces, an active commercial channel documented in the chapter itself (Section~\ref{sec:fake-activity}) and corroborated by reporting on reputation farms and adjacent fake-engagement marketplaces~\cite{reputation-farm, taobao-github-star, gitstar, DBLP:conf/imc/StringhiniWEKVZZ13, DBLP:conf/ccs/CaoYYP14}.
+The decision is unobserved; \SystemName produces a noisy proxy $\textit{fake}_{i,t}$ at $\sim$81\% recall against the Stargazer Ghost Network ground truth (Section~\ref{sec:evaluation}), with measurement error of the kind documented for adaptive fake-account detection more broadly~\cite{DBLP:conf/uss/ThomasMGKP13, DBLP:conf/uss/ViswanathBCGGKM14, DBLP:conf/www/CresciPPST17}.
+The outcome $\textit{real}_{i, t+k}$ measures non-fake stars gained in subsequent months; stars are widely used as a popularity and discovery signal in OSS adoption studies~\cite{DBLP:conf/cscw/DabbishSTH12, DBLP:journals/software/BegelBS13a, DBLP:journals/jss/BorgesV18, DBLP:conf/msr/FangKLHV20} and predict downstream signals such as forks, contributors, and dependent projects~\cite{DBLP:conf/icse/TsayDH14}.
+
+The treatment effect on next-month real stars decomposes through two competing mediators.
+The visibility channel runs from inflated star count through Trending placement, search ranking, and social proof, prompting real users to discover and star~\cite{trending-works, github-trending, DBLP:conf/icse/TsayDH14, DBLP:journals/jmis/MoqriMQB18, dellarocas2010online, DBLP:conf/icse/TrockmanZKV18}.
+The penalty channel runs from inflated star count through user and security-tool inspection of activity signals to skeptical users declining to star or to platform removal, the kind of signal-incongruence response documented in adjacent contexts~\cite{startup-stars, github-star-trust, DBLP:journals/dss/CresciPPST15, mukherjee2013yelp, DBLP:journals/tkdd/YangWWGZD14, schueller2024modeling, github-policy}.
+The chapter's headline finding---a positive short-run coefficient on $\textit{fake}_{i, t-1}$ followed by a negative long-run coefficient on the cumulative count---is interpreted in the Discussion as the two channels dominating at different horizons.
+
+The DAG also names the confounders that, in an unstructured comparison of repositories with and without campaigns, would bias the estimated effect.
+Maintainer growth-hacking disposition shapes both the propensity to buy~\cite{bohnsack2019hack, startup-stars, DBLP:conf/imc/StringhiniWEKVZZ13, DBLP:conf/ccs/GrierTPZ10} and organic star accrual through reputation, communication quality, and project-marketing skill~\cite{DBLP:conf/icse/TsayDH14, DBLP:conf/cscw/DabbishSTH12}.
+Project type and topical baseline drive purchase rates---the chapter's own categorical analysis (Section~\ref{sec:rq3}) shows Spam/Phishing, AI/LLM, and Blockchain dominate---and also drive organic accrual through topic-area effects on adoption~\cite{DBLP:journals/jss/BorgesV18, DBLP:journals/ese/MunaiahKCN17}.
+Intrinsic quality and utility shape both the incentive to buy (lower-quality projects have weaker organic accrual to fall back on) and adoption itself~\cite{DBLP:conf/icse/TrockmanZKV18}.
+These three confounders are stable over the observation window and are absorbed by repository fixed effects $\mu_i$.
+Project release and activity dynamics enter the random-effects specification through $\textit{had\_release}_{i,t}$, $\log\textit{activity}_{i,t}$, and $\textit{age}_{i,t}$, are partly absorbed by FE on the within-unit variation, and are partly residual; the chapter reports both specifications to demonstrate that the headline coefficients are stable.
+
+One time-varying confounder is not absorbed by either repository or month fixed effects on their own.
+Topic-by-time hype waves---the LLM surge of 2023--2024, the blockchain wave of 2021--2022, and analogous attention bursts on shorter timescales---raise both the demand for fake stars (well-documented growth-hacking incentive at hype peaks~\cite{startup-stars, bohnsack2019hack}) and the organic real-star accrual rate within the affected topics, generating a positive correlation that the FE estimator does not block~\cite{schueller2024modeling, faris2017partisanship}.
+This is the single most threatening confounder for the short-run estimate; it is examined empirically in Step~3 (the calendar-period and topic-stratification robustness checks) and motivates the principal qualifier on the headline finding.
+
+Finally, the DAG draws an explicit reverse-causality edge from $\textit{real}_{i, t-k}$ to $D_{i,t}$.
+A maintainer observing a particular trajectory of organic real-star growth may adjust the purchase decision in either direction: buying after stagnation to reignite visibility (``panic-buy'') or buying during momentum to amplify it (``hype amplification'').
+Either dynamic violates strict exogeneity, and the lagged-dependent-variable specification only partially blocks the path because of well-known small-$T$ bias in dynamic panels~\cite{nickell1981biases}.
+The empirical robustness check below disambiguates the direction: the data supports hype amplification, not panic-buying.
+
+\subsection{Causal Estimands and Identifying Assumptions}
+\label{sec:fake-stars-credibility-estimand}
+
+Let $Y_{i, t+k}(d)$ denote real stars gained by repository $i$ in month $t+k$ if the maintainer had purchased $d$ fake stars in month $t$, holding $D_{i, s}$ fixed at observed values for all $s \neq t$.
+The study targets two estimands.
+The short-run promotional effect is the one-month elasticity of real stars with respect to detected fake-star intensity, $\beta_1 = \partial \log E[Y_{i, t+1}(d)] / \partial \log d$, evaluated locally around the observed treatment intensity.
+The long-run penalty is the analogous elasticity for cumulative purchases at horizon $k \geq 3$, $\beta_{\text{long}} = \partial \log E[Y_{i, t+k}(d)] / \partial \log\!\left(\sum_{s \leq t} D_{i,s}\right)$.
+The reported FE estimator targets $\beta_1$ through the coefficient on $\log \textit{fake}_{i, t-1}$ and $\beta_{\text{long}}$ through the coefficient on $\log \textit{all\_fake}_{i, t-k-1}$ in Table~\ref{tab:regression}.
+
+Six identifying assumptions support the causal interpretation of these coefficients.
+
+\paragraph{A1. Strict exogeneity of treatment to errors.}
+Conditional on repository fixed effects and the included controls, the treatment is uncorrelated with the unobserved error at all leads and lags.
+A1 \emph{requires empirical argument}.
+This is the central identifying assumption and is the one most threatened by the reverse-causality edge $\textit{real}_{i, t-k} \to D_{i,t}$.
+The lagged-dependent-variable specification absorbs some of the path but not all of it under small-$T$ panels~\cite{nickell1981biases}.
+
+\paragraph{A2. No unobserved time-varying confounders.}
+After conditioning on $\mu_i$ and the time-varying controls, no time-varying factor opens a back-door path from $\textit{fake}_{i,t}$ to $\textit{real}_{i, t+k}$.
+A2 \emph{requires empirical argument}.
+The topic-by-time confounder $Z_{t}^{\text{topic}}$ is the principal candidate violator: hype waves are time-varying within a repository's lifecycle, so $\mu_i$ does not absorb them, and they vary across topics within calendar time, so a single $\lambda_t$ is also insufficient.
+Inclusion of $\textit{had\_release}_{i,t}$ and $\log\textit{activity}_{i,t}$ in the random-effects specification yields qualitatively similar coefficients, suggesting the bias is bounded but not eliminated.
+
+\paragraph{A3. Classical (or known-direction) measurement error in the treatment proxy.}
+\SystemName-detected fake stars approximate the latent purchase intensity with errors that are independent of the true treatment.
+A3 \emph{requires empirical argument}.
+The detector reports $\sim$81\% recall against the Stargazer Ghost Network ground truth and unknown campaign-level precision (Section~\ref{sec:evaluation}).
+Under classical errors the estimated short-run elasticity is a lower bound on the true elasticity through standard attenuation; non-classical errors (e.g., systematic under-detection of sophisticated buyers) bias in unknown directions and are addressed in Step~4 as Alternative~4.
+
+\paragraph{A4. SUTVA at the repository level.}
+A repository's outcomes do not depend on the treatments assigned to other repositories.
+A4 is \emph{plausibly satisfied with caveats}.
+The likeliest violation runs through GitHub's platform algorithms: a faked repository displacing organic competitors via Trending or search ranking would create cross-repository spillovers.
+The magnitude is bounded by the small fraction of campaign repositories that ever reach Trending---0.42\% in the chapter's analysis (Section~\ref{sec:rq1})---suggesting the violation is empirically small but nonzero.
+
+\paragraph{A5. No selection on outcome (panel completeness).}
+The set of repositories observed in the panel is independent of the potential outcomes given the conditioning set.
+A5 \emph{requires empirical argument}.
+Repositories deleted before the observation window closes drop out of the panel, and 90.42\% of detected campaign repositories are eventually deleted (Section~\ref{sec:rq2}); the FE panel is estimated on the surviving 9.58\%.
+This is the most severe selection concern in the design and motivates the survivor-stratification check in Step~4.
+
+\paragraph{A6. Stable treatment definition.}
+``Buying fake stars'' has a single, well-defined operationalisation across the panel.
+A6 is \emph{satisfied at the level of the simulated estimand} but with the caveat that purchasing strategies are heterogeneous in volume, vendor, and intent (growth-hacking startups vs.\ malware promotion vs.\ search-engine spam).
+The estimate is best read as the average elasticity over the realised heterogeneity of detected campaigns; generalisation to specific strategies is an external-validity concern handled in the existing Limitations subsection (Section~\ref{sec:limitations}).
+
+If A1--A6 hold, the FE coefficient on $\textit{fake}_{i, t-1}$ identifies the average within-repository elasticity of next-month real stars with respect to detected fake-star intensity, averaged over the sub-population of repositories surviving in the panel.
+The Discussion's counterfactual claim (``buying fake stars is ineffective'') generalises only to the extent that this average partial effect is informative about the population of practitioners who would consider buying.
+The credibility of the causal claim therefore rests on A1, A2, and A5---the assumptions that the design's construction does not guarantee.
+The next subsection identifies the residual threats; Step~4 reports the executed robustness checks that bound them.
+
+\subsection{Limitations and Known Caveats}
+\label{sec:fake-stars-credibility-limitations}
+
+Repository fixed effects absorb the time-invariant confounders identified in the DAG---maintainer disposition, project type, intrinsic quality baseline---and the time-varying controls absorb release and activity dynamics on the within-unit variation.
+Upon revisiting the study with the proposed framework, four threats to the internal causal validity of the RQ4 estimate remain after the design's controls.
+
+\paragraph{Time-varying topic confounding.}
+Topic-by-time hype and the more granular topic-by-channel heterogeneity threaten A2.
+Repository fixed effects absorb only time-invariant traits, and a single calendar-time fixed effect $\lambda_t$ cannot absorb topic-by-time interactions.
+Direction of bias on the short-run $\beta_1$ is upward if hype both drives buying and drives organic interest within the affected topics.
+The calendar-period and topic-stratification robustness checks in Step~4 (Alternative~2) report the magnitude of the resulting concentration: the headline positive coefficient is largely a 2024-surge phenomenon and is null outside that window.
+
+\paragraph{Reverse causality between real-star growth and purchase decisions.}
+A maintainer's purchase decision plausibly responds to recent organic-star trajectory in either direction, threatening A1.
+The lagged-dependent-variable specification absorbs some of this path; small-$T$ Nickell bias~\cite{nickell1981biases} ensures that some remains.
+The lead-lag swap regression in Step~4 (Alternative~3) bounds the residual: the data supports hype amplification rather than panic-buying, and the bias on $\hat\beta_1$ is therefore upward, not downward as a casual reading would assume.
+
+\paragraph{Survivorship.}
+The chapter reports a 90.42\% deletion rate among detected campaign repositories (Section~\ref{sec:rq2}); the FE panel is estimated on the surviving 9.58\%, threatening A5.
+Direction of bias is unclear a priori: upward if repositories with successful short-run lift survive longer, downward if mechanical-survival-conditional-on-failure dominates.
+The survivor-length stratification in Step~4 (Alternative~1) reports that the long-run negative coefficient persists in long-survivors and flips positive in short-survivors, leaving the user-disengagement and selective-survival channels jointly compatible with the observed pattern.
+
+\paragraph{Cumulative-real series is monotone non-decreasing by construction.}
+A separate sub-mechanism of survivorship concerns whether GitHub retroactively removes stars from heavily faked repositories, generating part of the long-run negative coefficient through platform action rather than user behaviour.
+The chapter's data source---GHArchive \Code{WatchEvent} records---registers only star-creation events, so the cumulative real-star series is monotone non-decreasing by construction; an empirical check on the AR(2) panel finds zero non-monotone repositories, as expected.
+This is therefore a design limitation rather than a testable robustness check: distinguishing the user-disengagement and platform-moderation channels behind the long-run penalty would require periodic snapshots of total star counts from a non-event-stream source (e.g., scheduled GitHub REST API polls), which is out of scope for the chapter's existing data pipeline.
+
+The remaining concerns---non-classical measurement error in the treatment proxy beyond the classical-attenuation case, generalizability to undetected sophisticated campaigns, treatment-strategy heterogeneity (growth-hacking vs.\ malware vs.\ spam), and the methodological scope of Granger causality testing on short panels---are external validity, measurement validity, treatment-generalisability, or methodological-scope concerns rather than threats to the internal identification of the RQ4 estimate.
+They are addressed in the existing ``Limitations'' paragraph in Section~\ref{sec:rq4} and in Section~\ref{sec:limitations}; we do not re-litigate them here.
+
+\subsection{Alternative Explanations}
+\label{sec:fake-stars-credibility-alternatives}
+
+Four alternative causal structures could in principle explain the chapter's central RQ4 findings without the proposed mechanism.
+Each alternative is paired with the robustness check that operationalises the response.
+The four executed checks (R1, R2, R4, R5) re-fit the AR(2) FE specification on alternative samples or with a swapped dependent variable; their headline coefficients are collected in Table~\ref{tab:fake-stars-robustness}.
+Full chunk-level reproduction lives in the supplementary notebook \Code{fake-star-reanalysis/robustness.Rmd}.
+
+\paragraph{Alternative 1: The long-run negative coefficient is a survivorship artefact.}
+The coefficient on $\log \textit{all\_fake}_{i, t-3}$ is significantly negative across all $AR(k)$ specifications.
+A reader could ask whether the negative sign reflects user disengagement (the chapter's preferred reading) or whether it reflects selective deletion---repositories with larger and more obvious fake histories are deleted earlier, so the surviving panel observations at large cumulative-fake values are precisely those whose campaigns failed to convert into real attention.
+Robustness check R2 stratifies the AR(2) FE estimator by panel length as a proxy for eventual deletion (the dataset does not flag deletion directly).
+The negative long-run coefficient persists in long-survivors (panel length $\geq 12$) and flips positive in short-survivors (Table~\ref{tab:fake-stars-robustness}), leaving the user-disengagement and selective-survival readings jointly compatible.
+The chapter's long-run negative finding is consistent with both mechanisms; the data cannot fully distinguish them, and a clean separation would require the additional moderation signal flagged as a design limitation in Step~3.
+
+\paragraph{Alternative 2: Topic-momentum confounding inflates the short-run coefficient.}
+The 2024 surge in fake-star activity coincides with topic-level surges in AI/LLM and blockchain interest; within these domains organic real-star arrivals also surge in the same period.
+A maintainer in a hyped topic at month $t-1$ has both higher incentive to buy fake stars and higher organic real-star arrivals in month $t$, generating a positive coefficient that does not reflect a causal effect of buying on attention.
+Two robustness checks address this alternative.
+Check R4 stratifies the AR(2) FE estimator by calendar period (pre-2024, 2024-Q1--Q3 surge, post-surge); the headline positive short-run coefficient is significant only during the LLM-surge window and statistically indistinguishable from zero outside it (Table~\ref{tab:fake-stars-robustness}).
+Check R5 stratifies on the manual category labels for the 580 categorised repositories of Section~\ref{sec:rq3} (the \Code{domain} column of \Code{repo\_labels.csv}; 375 of the 580 also appear in the AR(2) panel, with strata smaller than 30 repositories or 100 panel observations omitted as too small for stable within-FE estimation).
+The pooled coefficient on labelled repositories ($+0.067^{***}$) hides an order-of-magnitude variation across domains: the short-run effect is significant in \texttt{tool/application}, \texttt{tutorial/demo}, \texttt{ai}, and \texttt{suspicious}, and null in \texttt{blockchain} and \texttt{web}.
+The pattern does not cleanly map to a simple AI/LLM hype story: \texttt{tutorial/demo}---which is not a hype-driven category---has the largest short-run coefficient.
+Read jointly, R4 and R5 establish that the pooled estimate is not a single causal parameter; it is an average over heterogeneous within-period and within-domain effects, with topic-by-time and topic-by-channel confounding remaining the leading concern even though the precise channel is broader than hype amplification alone.
+
+\paragraph{Alternative 3: Reverse causality between real-star growth and purchase decisions.}
+Maintainers may purchase fake stars in response to either weak organic momentum (``panic-buy'') or strong organic momentum (``hype amplification''); under either dynamic the lagged-dependent-variable specification only partially blocks the back-door path, and small-$T$ Nickell bias persists.
+Robustness check R1 swaps the dependent variable and refits a panel-FE autoregression with $\log \textit{fake}_{i,t}$ as the outcome and lagged real-star intensity as the regressor.
+All three lagged-real coefficients are positive and significant: $+0.0934^{***}$ on $\log \textit{real}_{i, t-1}$, $+0.0342^{*}$ on $\log \textit{real}_{i, t-2}$, and $+0.1131^{***}$ on $\log \textit{all\_real}_{i, t-3}$.
+Past organic momentum predicts subsequent fake-star buying, supporting hype amplification or rich-get-richer in purchasing rather than panic-buying.
+The bias on the headline $\hat\beta_1$ from this reverse-causality channel is therefore upward, and the headline short-run estimate is best read as an upper bound on the structural effect.
+The Discussion's conclusion (``buying fake stars is ineffective'') is strengthened under this reading: the true causal effect is plausibly smaller than the pooled estimate suggests.
+
+\paragraph{Alternative 4: Detection-induced selection and SUTVA via Trending.}
+A reader could argue that the estimated effect corresponds to the population of \emph{detectable} fake-star campaigns---the cheapest, most easily flagged tier of the market---while sophisticated merchants who use realistic accounts, dispersed timing, or smaller batch sizes are systematically under-detected.
+A second concern under this alternative is that Trending or search-ranking spillovers from faked repositories to organic competitors could violate SUTVA.
+Neither concern is operationalised as a robustness check.
+Whether sophisticated campaigns convert better into real attention cannot be tested with data \SystemName failed to flag, and the SUTVA violation magnitude is bounded by the small share of campaign repositories that ever reach Trending (0.42\%, Section~\ref{sec:rq1})---too small to materially shift any of the headline coefficients.
+The estimate is therefore best understood as the effect of \emph{detectable} fake-star buying on detectable real-star arrivals; the policy recommendation against buying fake stars strengthens under detector-evasion bias for non-sophisticated buyers (the dominant case in the chapter's data) but does not extend to actors with the resources to evade detection.
+
+\begin{table}[t]
+    \footnotesize
+    \centering
+    \caption{Headline fake-star coefficients across the baseline AR(2) FE specification and the robustness checks executed for Alternatives 1--3.
+    Cells report $\hat\beta$ with HC1 robust standard errors in parentheses; significance codes $^{*}p<0.05$, $^{**}p<0.01$, $^{***}p<0.001$, $^{.}p<0.1$.
+    The reverse-causality check R1 swaps the dependent variable to $\log \textit{fake}_{i,t}$ and is reported separately in the prose of Alternative~3.}
+    \label{tab:fake-stars-robustness}
+    \begin{tabular}{lrrrrr}
+    \toprule
+     & $n$ & repos & $\hat\beta_{\textit{fake}_{t-1}}$ & $\hat\beta_{\textit{fake}_{t-2}}$ & $\hat\beta_{\textit{all\_fake}_{t-3}}$ \\
+    \midrule
+    Baseline AR(2) FE & 12{,}738 & 1{,}042 & $+0.074^{***}$ & $+0.029^{*}$ & $-0.045^{**}$ \\
+    \midrule
+    \multicolumn{6}{l}{\emph{Alternative 1, R2: survivor-length stratification}} \\
+    Panel length $\geq 12$ & 10{,}751 & 394 & $+0.078^{***}$ & $+0.009$ & $-0.045^{***}$ \\
+    Panel length $< 12$ & 1{,}987 & 648 & $+0.078^{**}$ & $+0.063^{***}$ & $+0.061^{*}$ \\
+    \midrule
+    \multicolumn{6}{l}{\emph{Alternative 2, R4: calendar-period stratification}} \\
+    Month $<$ 2024-01 & 7{,}951 & 419 & $+0.031$ & $-0.068^{.}$ & $-0.054^{**}$ \\
+    2024-01 $\leq$ month $<$ 2024-09 & 3{,}580 & 841 & $+0.080^{***}$ & $+0.063^{***}$ & $+0.021$ \\
+    Month $\geq$ 2024-09 & 1{,}207 & 479 & $+0.030$ & $+0.011$ & $-0.072^{.}$ \\
+    \midrule
+    \multicolumn{6}{l}{\emph{Alternative 2, R5: domain stratification (\texttt{repo\_labels.csv})}} \\
+    Labelled repositories (pooled) & 5{,}198 & 375 & $+0.067^{***}$ & $+0.021$ & $-0.076^{***}$ \\
+    \quad domain $=$ blockchain & 1{,}241 & 51 & $+0.023$ & $-0.019$ & $-0.069^{***}$ \\
+    \quad domain $=$ web & 895 & 48 & $+0.003$ & $+0.004$ & $-0.054^{.}$ \\
+    \quad domain $=$ tool/application & 683 & 54 & $+0.120^{*}$ & $-0.040$ & $-0.171^{**}$ \\
+    \quad domain $=$ ai & 626 & 74 & $+0.099^{*}$ & $+0.018$ & $-0.042$ \\
+    \quad domain $=$ suspicious & 542 & 55 & $+0.068^{*}$ & $+0.155^{***}$ & $-0.034$ \\
+    \quad domain $=$ tutorial/demo & 426 & 39 & $+0.192^{**}$ & $+0.085$ & $+0.024$ \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+The four alternatives jointly support a measured but qualified causal interpretation of the chapter's RQ4 findings.
+Outside topic-hype windows the data does not support a positive promotional effect at all; within hype windows the effect exists but is plausibly inflated upward by reverse causality through the hype-amplification channel; the long-run penalty is consistent with both user disengagement and selective survival; and the per-domain heterogeneity is large enough that the pooled coefficient should not be reported as a single ATE-like quantity without an accompanying breakdown.
+The Discussion's policy recommendation against buying fake stars survives this scrutiny.
+The credibility of the chapter's causal interpretation rests primarily on A1 (strict exogeneity, with reverse causality biasing $\hat\beta_1$ upward through R1), A2 (no time-varying topic-by-time confounders, partially bounded through R4 and R5), and A5 (panel completeness, partially bounded through R2)---the assumptions the design's construction does not guarantee.

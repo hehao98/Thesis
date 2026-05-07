@@ -319,6 +319,9 @@ Even if \SystemName is $\sim$99\% precise in detecting repositories that bought 
 To mitigate such risks, we focus on presenting statistical patterns and avoid giving individual repositories as examples in the main text (unless they are obviously malicious).
 We also carefully discussed and noted ethical concerns in the dataset documentation, calling for its responsible use and interpretation  (Section~\ref{sec:conclusion}).
 
+The above limitations are concerns about measurement validity and external validity rather than threats to the internal causal identification of the RQ4 promotional-effect estimate.
+The latter is examined separately in Section~\ref{sec:fake-stars-credibility} through the four-step causal credibility framework of Chapter~\ref{chp:background}.
+
 
 \section{Measurement Study}
 \label{sec:measurement-study}
@@ -709,6 +712,7 @@ First, even if it allows for robust estimates of coefficients to represent the e
 While Granger causality tests are often used in the econometric literature to establish stronger evidence of causality~\cite{dumitrescu2012testing}, the majority of time series in our data are too short to fulfill the minimum requirements of Granger causality tests on unbalanced panels ($t \ge 6+2k$, $k$ is the autoregression order).
 More importantly, it is possible that real causality hides in exogenous variables~\cite{engle1983exogeneity} (e.g., if the repository maintainer is technically inexperienced and shortsighted, that may both cause the maintainer to buy fake stars and the repository to gain fewer real stars).
 Therefore, while our results provide initial evidence on the effect of fake stars on GitHub, future work is necessary to establish stronger evidence of causality and further uncover the mechanisms behind such effects.
+Section~\ref{sec:fake-stars-credibility} revisits these limitations through the four-step causal credibility framework introduced in Chapter~\ref{chp:background}, identifying the load-bearing identifying assumptions and reporting executed robustness checks that bound the residual threats.
 
 \begin{table}
     \small
@@ -766,6 +770,8 @@ This suggests that buying fake stars may only help the repository gain new atten
 \textbf{Finding 8:} Buying fake stars may help a repository gain real attention in the short term (i.e., less than two months), but the effect is about 5x smaller compared to real stars; in the long term, buying fake stars has a negative effect on star gain.
 %  and may reduce real
 \end{summary-rq}
+
+\input{analysis-fake-stars}
 
 \section{Discussion: What to Do about Fake Stars?}
 \label{sec:discussion}
