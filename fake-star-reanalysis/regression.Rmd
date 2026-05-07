@@ -325,3 +325,115 @@ texreg(list(ar1_stars_re,ar1_stars_fe,
        dcolumn=FALSE,
        override.se=rob_se)
 ```
+
+# Robustness Checks for Causal Credibility (R1-R4)
+
+These chunks operationalise Step 4 of the causal credibility analysis (see
+`plans/20260505 - Fake Stars Causal Credibility Analysis.md`). All four checks
+re-fit the AR(2) fixed-effects specification on alternative samples or with a
+swapped dependent variable.
+
+## R1 -- Reverse-causality lead-lag test (threatens A1)
+
+Swap the dependent variable: regress detected fake-star intensity on lagged
+real-star intensity, conditional on the same fixed-effects structure. A
+significantly positive coefficient on lagged real stars indicates that
+purchasing behaviour responds to prior organic momentum (not stagnation).
+
+```{r r1-reverse-causality}
+rev_causality_fe <- plm(
+  log(n_stars_fake + 1) ~
+    log(l1_real + 1) + log(l2_real + 1) + log(l3_total_real + 1) +
+    log(l1_fake + 1) + log(l2_fake + 1) + log(l3_total_fake + 1),
+  data = l2_repos, index = c("repo", "month"), model = "within"
+)
+coeftest(rev_causality_fe, vcov = vcovHC(rev_causality_fe, type = "HC1"))
+```
+
+## R2 -- Survivor-length stratification (threatens A5)
+
+Stratify campaign repositories by panel length as a proxy for eventual deletion
+(short panels suggest early exit). Re-fit the AR(2) FE model on each stratum.
+
+```{r r2-survivor-length}
+panel_lengths <- repos %>%
+  group_by(repo) %>%
+  summarise(panel_length = n_distinct(month), .groups = "drop")
+
+l2_repos_long  <- l2_repos %>% inner_join(filter(panel_lengths, panel_length >= 12), by = "repo")
+l2_repos_short <- l2_repos %>% inner_join(filter(panel_lengths, panel_length <  12), by = "repo")
+
+ar2_fe_long <- plm(log(n_stars_real + 1) ~
+                   log(l1_real + 1) + log(l2_real + 1) + log(l3_total_real + 1) +
+                   log(l1_fake + 1) + log(l2_fake + 1) + log(l3_total_fake + 1),
+                   data = l2_repos_long, index = c("repo", "month"), model = "within")
+ar2_fe_short <- plm(log(n_stars_real + 1) ~
+                    log(l1_real + 1) + log(l2_real + 1) + log(l3_total_real + 1) +
+                    log(l1_fake + 1) + log(l2_fake + 1) + log(l3_total_fake + 1),
+                    data = l2_repos_short, index = c("repo", "month"), model = "within")
+coeftest(ar2_fe_long,  vcov = vcovHC(ar2_fe_long,  type = "HC1"))
+coeftest(ar2_fe_short, vcov = vcovHC(ar2_fe_short, type = "HC1"))
+```
+
+## R4 -- Calendar-period subset sensitivity (threatens A2)
+
+Stratify by calendar period to bound the topic-by-time confounder. The 2024
+LLM-surge window is when both fake-star activity and organic AI/LLM interest
+peaked simultaneously; if the headline coefficient is materially larger in
+this window than outside it, topic-momentum confounding is contributing to
+the pooled estimate.
+
+```{r r4-calendar-period}
+fit_subset <- function(d) plm(log(n_stars_real + 1) ~
+                              log(l1_real + 1) + log(l2_real + 1) + log(l3_total_real + 1) +
+                              log(l1_fake + 1) + log(l2_fake + 1) + log(l3_total_fake + 1),
+                              data = d, index = c("repo", "month"), model = "within")
+
+l2_pre2024  <- l2_repos %>% filter(month <  "2024-01")
+l2_2024     <- l2_repos %>% filter(month >= "2024-01" & month < "2024-09")
+l2_post2024 <- l2_repos %>% filter(month >= "2024-09")
+
+ar2_fe_pre2024   <- fit_subset(l2_pre2024)
+ar2_fe_2024surge <- fit_subset(l2_2024)
+ar2_fe_post2024  <- fit_subset(l2_post2024)
+
+coeftest(ar2_fe_pre2024,   vcov = vcovHC(ar2_fe_pre2024,   type = "HC1"))
+coeftest(ar2_fe_2024surge, vcov = vcovHC(ar2_fe_2024surge, type = "HC1"))
+coeftest(ar2_fe_post2024,  vcov = vcovHC(ar2_fe_post2024,  type = "HC1"))
+```
+
+## R5 -- Topic stratification using `repo_labels.csv` (threatens A2)
+
+Stratify the AR(2) FE model by the manual category labels (Section 4.3 of the
+chapter) to disentangle topic-momentum confounding from the within-topic
+treatment effect. The `repo_labels.csv` file carries one row per labelled
+repository (580 in total), with `domain` as the primary categorical variable.
+Strata smaller than 30 repositories or 100 panel observations are skipped
+because within-FE estimation is unstable for such small panels.
+
+```{r r5-topic-stratification}
+labels <- read.csv("repo_labels.csv", stringsAsFactors = FALSE)
+l2_labeled <- l2_repos %>% inner_join(labels[, c("repo", "domain")], by = "repo")
+
+domain_counts <- l2_labeled %>%
+  group_by(domain) %>%
+  summarise(n_obs = n(), n_repos = n_distinct(repo), .groups = "drop") %>%
+  arrange(desc(n_obs))
+domain_counts
+
+# Pooled estimate restricted to labelled repos (R5 baseline)
+ar2_fe_labeled <- fit_subset(l2_labeled)
+coeftest(ar2_fe_labeled, vcov = vcovHC(ar2_fe_labeled, type = "HC1"))
+
+# Per-domain estimates (only domains with >= 30 repos and >= 100 obs)
+domains_to_fit <- domain_counts %>% filter(n_obs >= 100, n_repos >= 30) %>% pull(domain)
+domain_models <- lapply(domains_to_fit, function(dom) {
+  d <- l2_labeled %>% filter(domain == dom)
+  fit_subset(d)
+})
+names(domain_models) <- domains_to_fit
+for (dom in domains_to_fit) {
+  cat("\n--- domain:", dom, "---\n")
+  print(coeftest(domain_models[[dom]], vcov = vcovHC(domain_models[[dom]], type = "HC1")))
+}
+```

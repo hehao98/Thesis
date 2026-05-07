@@ -1,0 +1,312 @@
+---
+title: "Causal Credibility Robustness Checks (R1, R2, R4, R5)"
+author: "Fake Stars chapter"
+date: "`r format(Sys.Date(), '%Y-%m-%d')`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    code_folding: show
+    df_print: kable
+    theme: readable
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width = 8, fig.align = "center")
+```
+
+# Overview
+
+This notebook operationalises Step 4 of the causal credibility analysis plan
+(`plans/20260505 - Fake Stars Causal Credibility Analysis.md`). All four
+checks re-fit the AR(2) fixed-effects specification of the chapter on
+alternative samples or with a swapped dependent variable, using the panel
+data in `model_stars.csv` and the manual category labels in
+`repo_labels.csv`.
+
+| Check | Threatens | Question |
+|---|---|---|
+| R1 | A1 | Does past organic momentum predict subsequent fake-star buying? |
+| R2 | A5 | Is the long-run negative coefficient driven by selective survival? |
+| R4 | A2 | Is the headline coefficient concentrated in a topic-hype window? |
+| R5 | A2 | Is the coefficient heterogeneous across manually labelled domains? |
+
+R3 (star-monotonicity filter) was withdrawn because `n_stars_real` is computed
+from GHArchive `WatchEvent` records, which are additive only --- the panel
+cannot register a star removal, so the cumulative real-star series is monotone
+by construction.
+
+```{r packages}
+suppressPackageStartupMessages({
+  library(plm)
+  library(dplyr)
+  library(tidyr)
+  library(sandwich)
+  library(lmtest)
+  library(knitr)
+})
+```
+
+# Data
+
+```{r load-data}
+repos <- read.csv("model_stars.csv")
+
+l2_repos <- repos %>%
+  group_by(repo) %>%
+  arrange(month, .by_group = TRUE) %>%
+  mutate(
+    l1_real = lag(n_stars_real, 1),
+    l2_real = lag(n_stars_real, 2),
+    l1_fake = lag(n_stars_fake, 1),
+    l2_fake = lag(n_stars_fake, 2),
+    total_real = cumsum(n_stars_real),
+    l3_total_real = lag(total_real, 3),
+    total_fake = cumsum(n_stars_fake),
+    l3_total_fake = lag(total_fake, 3)
+  ) %>%
+  ungroup() %>%
+  drop_na()
+
+cat(sprintf("l2_repos: n = %d, repos = %d, months = [%s, %s]\n",
+            nrow(l2_repos), n_distinct(l2_repos$repo),
+            min(l2_repos$month), max(l2_repos$month)))
+```
+
+# Helpers
+
+```{r helpers}
+fit_ar2_fe <- function(d) {
+  plm(log(n_stars_real + 1) ~
+        log(l1_real + 1) + log(l2_real + 1) + log(l3_total_real + 1) +
+        log(l1_fake + 1) + log(l2_fake + 1) + log(l3_total_fake + 1),
+      data = d, index = c("repo", "month"), model = "within")
+}
+
+robust_coefs <- function(model, label) {
+  cv <- coeftest(model, vcov = vcovHC(model, type = "HC1"))
+  out <- as.data.frame(unclass(cv))
+  out$term <- rownames(out)
+  rownames(out) <- NULL
+  data.frame(
+    spec   = label,
+    n_obs  = nobs(model),
+    n_repos= length(unique(index(model)[, 1])),
+    term   = out$term,
+    est    = out$Estimate,
+    se     = out$`Std. Error`,
+    p      = out$`Pr(>|t|)`,
+    stringsAsFactors = FALSE
+  )
+}
+
+show_coefs <- function(model, label) {
+  d <- robust_coefs(model, label) %>%
+    mutate(sig = case_when(p < 0.001 ~ "***",
+                           p < 0.01  ~ "**",
+                           p < 0.05  ~ "*",
+                           p < 0.1   ~ ".",
+                           TRUE      ~ "")) %>%
+    mutate(`est (SE)` = sprintf("%+.4f (%.4f) %s", est, se, sig)) %>%
+    select(term, `est (SE)`)
+  knitr::kable(d, caption = paste0(label, "  (n=", nobs(model), ")"))
+}
+```
+
+# Baseline AR(2) FE (sanity check vs. paper)
+
+This replicates Table~\ref{tab:regression} in `main-fake-stars.tex`.
+
+```{r baseline}
+ar2_fe <- fit_ar2_fe(l2_repos)
+show_coefs(ar2_fe, "Baseline AR(2) FE")
+```
+
+# R1 -- Reverse-causality lead-lag test
+
+Swap the dependent variable: regress `log(n_stars_fake + 1)` on lagged real-
+star intensity. A significantly *positive* lagged-real coefficient supports
+hype-amplification or rich-get-richer in purchasing (biases $\hat\beta_1$ in
+the main regression *upward*); a significantly *negative* coefficient
+supports panic-buying after stagnation (biases $\hat\beta_1$ *downward*).
+
+```{r r1}
+rev_causality_fe <- plm(
+  log(n_stars_fake + 1) ~
+    log(l1_real + 1) + log(l2_real + 1) + log(l3_total_real + 1) +
+    log(l1_fake + 1) + log(l2_fake + 1) + log(l3_total_fake + 1),
+  data = l2_repos, index = c("repo", "month"), model = "within"
+)
+show_coefs(rev_causality_fe, "R1: reverse-causality FE (DV = log(fake+1))")
+```
+
+**Reading.** Lagged real-star coefficients are positive and significant at
+all three horizons. Past organic momentum predicts subsequent fake-star
+buying, suggesting a hype-amplification or rich-get-richer dynamic in
+purchasing. The bias on the headline $\hat\beta_1$ from this channel is
+upward, so the headline estimate should be treated as an *upper bound* under
+this reverse-causality story.
+
+# R2 -- Survivor-length stratification
+
+Stratify campaign repositories by panel length as a proxy for eventual
+deletion. Short panels suggest early exit (deletion or abandonment); long
+panels are repositories that survived the observation window. Refit AR(2)
+FE on each stratum separately.
+
+```{r r2}
+panel_lengths <- repos %>%
+  group_by(repo) %>%
+  summarise(panel_length = n_distinct(month), .groups = "drop")
+
+l2_long  <- l2_repos %>% inner_join(filter(panel_lengths, panel_length >= 12), by = "repo")
+l2_short <- l2_repos %>% inner_join(filter(panel_lengths, panel_length <  12), by = "repo")
+
+ar2_fe_long  <- fit_ar2_fe(l2_long)
+ar2_fe_short <- fit_ar2_fe(l2_short)
+
+show_coefs(ar2_fe_long,  "R2: panel_length >= 12")
+show_coefs(ar2_fe_short, "R2: panel_length < 12")
+```
+
+**Reading.** The long-run negative coefficient on `log(l3_total_fake + 1)`
+persists in long-survivors ($-0.045^{***}$) and *flips positive* in
+short-survivors ($+0.061^{*}$). Both readings remain compatible: the negative
+coefficient may reflect user-disengagement that requires time to materialise
+(visible only in long panels), or it may reflect selective deletion of
+repositories with successful-looking inflated histories before the negative
+mechanism plays out (visible in long panels because deletions are filtered
+out of long panels by definition).
+
+# R4 -- Calendar-period subset sensitivity
+
+Stratify by calendar period to bound the topic-by-time confounder $Z_t^{\text{topic}}$.
+
+```{r r4}
+l2_pre2024  <- l2_repos %>% filter(month <  "2024-01")
+l2_2024     <- l2_repos %>% filter(month >= "2024-01" & month < "2024-09")
+l2_post2024 <- l2_repos %>% filter(month >= "2024-09")
+
+ar2_fe_pre2024   <- fit_ar2_fe(l2_pre2024)
+ar2_fe_2024surge <- fit_ar2_fe(l2_2024)
+ar2_fe_post2024  <- fit_ar2_fe(l2_post2024)
+
+show_coefs(ar2_fe_pre2024,   "R4: month < 2024-01 (pre-surge)")
+show_coefs(ar2_fe_2024surge, "R4: 2024-01 <= month < 2024-09 (LLM surge)")
+show_coefs(ar2_fe_post2024,  "R4: month >= 2024-09 (post-surge)")
+```
+
+**Reading.** The headline positive short-run coefficient is significant
+*only* in the 2024 LLM-surge window ($+0.080^{***}$). It is statistically
+indistinguishable from zero pre-2024 ($+0.031$, n.s.) and post-2024
+($+0.030$, n.s.). The long-run negative coefficient is concentrated in the
+pre-2024 sample and absent during the surge. Strong evidence of topic-by-time
+confounding contributing to the pooled estimate.
+
+# R5 -- Topic stratification using `repo_labels.csv`
+
+Stratify on the manual `domain` labels for the 580 categorised repositories
+(of which 375 also appear in the AR(2) panel). Strata smaller than 30
+repositories or 100 panel observations are skipped because within-FE
+estimation is unstable on small panels.
+
+```{r r5-data}
+labels <- read.csv("repo_labels.csv", stringsAsFactors = FALSE)
+l2_labeled <- l2_repos %>% inner_join(labels[, c("repo", "domain")], by = "repo")
+
+domain_counts <- l2_labeled %>%
+  group_by(domain) %>%
+  summarise(n_obs = n(), n_repos = n_distinct(repo), .groups = "drop") %>%
+  arrange(desc(n_obs))
+knitr::kable(domain_counts, caption = "R5: panel observations and repos per domain")
+```
+
+```{r r5-pooled}
+ar2_fe_labeled <- fit_ar2_fe(l2_labeled)
+show_coefs(ar2_fe_labeled, "R5: pooled labelled repos")
+```
+
+```{r r5-strata, results="asis"}
+domains_to_fit <- domain_counts %>% filter(n_obs >= 100, n_repos >= 30) %>% pull(domain)
+domain_models <- list()
+for (dom in domains_to_fit) {
+  d <- l2_labeled %>% filter(domain == dom)
+  m <- tryCatch(fit_ar2_fe(d), error = function(e) e)
+  if (inherits(m, "plm")) {
+    domain_models[[dom]] <- m
+    cat("\n\n## Domain:", dom, "\n\n")
+    print(show_coefs(m, sprintf("R5: domain = %s", dom)))
+  }
+}
+skipped <- domain_counts %>% filter(n_obs < 100 | n_repos < 30) %>% pull(domain)
+if (length(skipped) > 0) {
+  cat("\n\n**Skipped strata** (below the 30-repo / 100-obs threshold):",
+      paste(skipped, collapse = ", "), "\n")
+}
+```
+
+**Reading.** The pooled $\hat\beta_{l1\_fake}$ on labelled repositories
+($+0.067^{***}$) hides an order-of-magnitude variation across domains. The
+short-run coefficient is significant in `tool/application` ($+0.120^{*}$),
+`tutorial/demo` ($+0.192^{**}$), `ai` ($+0.099^{*}$), and `suspicious`
+($+0.068^{*}$); it is null in `blockchain` ($+0.023$, n.s.) and `web`
+($+0.003$, n.s.). The long-run negative coefficient concentrates in
+`tool/application` ($-0.171^{**}$), `blockchain` ($-0.069^{***}$), and `web`
+($-0.054^{.}$), and is absent in `ai`, `suspicious`, and `tutorial/demo`.
+The pooled estimate is therefore not a single causal parameter; it is an
+average over heterogeneous within-domain effects, complicating any uniform
+causal interpretation.
+
+# Combined Coefficient Summary
+
+```{r summary-table}
+all_specs <- bind_rows(
+  robust_coefs(ar2_fe,           "Baseline AR(2) FE"),
+  robust_coefs(ar2_fe_long,      "R2: panel_length >= 12"),
+  robust_coefs(ar2_fe_short,     "R2: panel_length < 12"),
+  robust_coefs(ar2_fe_pre2024,   "R4: pre-2024"),
+  robust_coefs(ar2_fe_2024surge, "R4: 2024 surge"),
+  robust_coefs(ar2_fe_post2024,  "R4: post-2024"),
+  robust_coefs(ar2_fe_labeled,   "R5: pooled labelled")
+) %>%
+  bind_rows(do.call(rbind, lapply(names(domain_models), function(dom)
+    robust_coefs(domain_models[[dom]], paste0("R5: ", dom)))))
+
+key_terms <- c("log(l1_fake + 1)", "log(l2_fake + 1)", "log(l3_total_fake + 1)")
+
+summary_wide <- all_specs %>%
+  filter(term %in% key_terms) %>%
+  mutate(sig = case_when(p < 0.001 ~ "***",
+                         p < 0.01  ~ "**",
+                         p < 0.05  ~ "*",
+                         p < 0.1   ~ ".",
+                         TRUE      ~ ""),
+         cell = sprintf("%+.4f (%.4f) %s", est, se, sig)) %>%
+  select(spec, n_obs, n_repos, term, cell) %>%
+  pivot_wider(names_from = term, values_from = cell)
+
+knitr::kable(summary_wide, caption = "All specifications: headline fake-star coefficients (HC1 SEs in parentheses)")
+```
+
+# R1 reverse regression: lagged-real coefficients
+
+```{r r1-summary}
+r1_summary <- robust_coefs(rev_causality_fe, "R1") %>%
+  filter(term %in% c("log(l1_real + 1)", "log(l2_real + 1)", "log(l3_total_real + 1)")) %>%
+  mutate(sig = case_when(p < 0.001 ~ "***",
+                         p < 0.01  ~ "**",
+                         p < 0.05  ~ "*",
+                         p < 0.1   ~ ".",
+                         TRUE      ~ ""),
+         cell = sprintf("%+.4f (%.4f) %s", est, se, sig)) %>%
+  select(term, cell)
+knitr::kable(r1_summary, caption = "R1: lagged-real coefficients in the swapped regression")
+```
+
+# Session info
+
+```{r session}
+sessionInfo()
+```
