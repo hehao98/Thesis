@@ -17,18 +17,37 @@ Three empirical studies demonstrate this approach by challenging widely held sof
 
 ## Structure
 
+### Top-level LaTeX sources
+
 | File | Description |
 |------|-------------|
-| `main.tex` | Main document entry point |
-| `chap-intro.tex` | Introduction, thesis statement, and contributions |
-| `chap-background.tex` | A Primer on Causal Credibility |
-| `chap-finished-work.tex` | Completed empirical studies |
-| `chap-proposed-work.tex` | Proposed work |
-| `main-pinning.tex` | Full paper: Dependency Pinning study |
-| `main-fake-stars.tex` | Full paper: Fake GitHub Stars study |
-| `main-cursor.tex` | Full paper: Cursor AI study |
-| `references*.bib` | Bibliography files |
+| `main.tex` | Main document entry point (preamble, front matter, chapter assembly) |
+| `chap-intro.tex` | Chapter 1: Introduction, thesis statement, and contributions |
+| `main-pinning.tex` | Chapter 3: Dependency pinning empirical study (full paper) |
+| `main-fake-stars.tex` | Chapter 4: Fake GitHub stars empirical study (full paper) |
+| `main-cursor.tex` | Chapter 5: Cursor AI empirical study (full paper) |
+| `analysis-pinning.tex` | Causal credibility analysis appended to the pinning chapter |
+| `analysis-fake-stars.tex` | Causal credibility analysis appended to the fake-stars chapter |
+| `analysis-cursor.tex` | Causal credibility analysis appended to the Cursor chapter |
 | `cmuthesis.cls` | CMU thesis document class |
+
+### Bibliography
+
+| File | Description |
+|------|-------------|
+| `references.bib` | Shared bibliography (intro, tutorial cross-cutting references) |
+| `references-pinning.bib` | Pinning chapter bibliography |
+| `references-fake-stars.bib` | Fake-stars chapter bibliography |
+| `references-cursor.bib` | Cursor chapter bibliography |
+
+### Subdirectories
+
+| Path | Description |
+|------|-------------|
+| `tutorial/` | Chapter 2 sources: causal inference tutorial paper, data, notebooks, plots, and slides. Included into `main.tex` via `tutorial/paper/{1-introduction,2-primer,3-worked-example,4-discussion,appendix}.tex` |
+| `fake-star-reanalysis/` | R Markdown notebooks (`regression.Rmd`, `robustness.Rmd`) and data (`model_stars.csv`, `repo_labels.csv`) for the fake-stars panel regression and robustness checks |
+| `figs-pinning/`, `figs-fake-stars/`, `figs-cursor/` | Per-chapter figures |
+| `plans/` | Detailed sub-plans (e.g., per-chapter causal credibility analysis plans), named `YYYYMMDD - {Summary}.md` per `AGENTS.md` |
 
 ## Building
 
