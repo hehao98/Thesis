@@ -112,7 +112,7 @@ They are able to choose between frontier models from OpenAI, Anthropic, and Goog
 We chose Cursor as our main study case for two reasons. 
 First, our preliminary exploration found widespread and growing adoption compared to competing tools, providing sufficient statistical power for causal inference. 
 Second, Cursor is among the earliest to allow optional configuration files (e.g., \Code{.cursorrules}) in the git repository to direct AI behavior~\cite{cursor-rules}, leading to a clear and timestamped adoption event in the version control history and a scalable identification strategy based on these files.
-However, this identification strategy also has important limitations (Section~\ref{sec:cursor-limitations}), which we will address through robustness checks (Section~\ref{sec:robustness}).
+However, this identification strategy also has important limitations (Section~\ref{sec:cursor-limitations}), which we will address through robustness checks (Section~\ref{sec:cursor-robustness}).
 
 \subsubsection{Identifying GitHub Projects Adopting Cursor}
 \label{sec:find-cursor-repo}
@@ -338,7 +338,7 @@ These models complement DiD by decomposing the mechanisms through which Cursor a
 \label{sec:cursor-limitations}
 
 \subsubsection{Internal Validity}
-Our identification strategy has important limitations that we address through robustness checks (Section~\ref{sec:robustness}).
+Our identification strategy has important limitations that we address through robustness checks (Section~\ref{sec:cursor-robustness}).
 
 \emph{Observable adoption through committed configuration files.} Our treatment group only includes repositories committing Cursor configuration files to the version control history, but developers can use Cursor without committing such files.
 Thus, our sample represents repositories with observable and committed Cursor adoption rather than all possible Cursor-adopting repositories. 
@@ -371,7 +371,7 @@ The DiD design further addresses imperfect matching through incorporating per-re
 Another particular concern for our study setting is that repositories in both the treatment and control groups may be using alternative AI tools before and throughout the observation period, with or without visible traces.
 For example, many developers may use early versions of GitHub Copilot or chat-based interfaces like the ChatGPT web portal~\cite{stackoverflow-survey-ai} without leaving any visible traces in the git repository.
 Therefore, our estimates should be interpreted as the impact of systematic Cursor adoption compared to the current state-of-the-practice, in which code completion tools and chat-based AI interfaces may be prevalently used, not the impact of using Cursor with respect to no AI usage at all (the latter is generally not estimable in our observational dataset).
-Additionally, we identify observable AI coding tools in our dataset (e.g., Claude Code with \Code{.claude} folders) and present robustness checks in Section~\ref{sec:robustness}.
+Additionally, we identify observable AI coding tools in our dataset (e.g., Claude Code with \Code{.claude} folders) and present robustness checks in Section~\ref{sec:cursor-robustness}.
 
 \subsubsection{External Validity}
 
@@ -496,7 +496,7 @@ To summarize, the dynamic panel GMM models suggest that: (1) \emph{The adoption 
 %\end{summary-rq}
 
 \subsection{Robustness Checks}
-\label{sec:robustness}
+\label{sec:cursor-robustness}
 
 \begin{figure*}
     \centering
@@ -565,7 +565,7 @@ One reason for such divergence likely stems from the temporal dynamics between d
 This negative effect of technical debt is both supported in the prior literature~\cite{DBLP:conf/sigsoft/ChengMCJGKZ022, besker2018technical} and our panel GMM models (Table~\ref{tab:causal-paths}).
 However, this mechanism alone likely does not fully explain why the development velocity gain vanishes after two months: A $\sim$3x increase in code complexity or a $\sim$5x increase in static analysis warnings would be necessary to fully cancel out the effect of Cursor adoption according to our models (Table~\ref{tab:causal-paths}), which is unlikely.
 
-Another highly plausible explanation, as indicated in Section~\ref{sec:robustness}, is that open-source developers experience an excitement-frustration-abandonment cycle while they adopt LLM agent assistants.
+Another highly plausible explanation, as indicated in Section~\ref{sec:cursor-robustness}, is that open-source developers experience an excitement-frustration-abandonment cycle while they adopt LLM agent assistants.
 For example, during the initial adoption phase, developers may experience novelty effects and actively experiment on tasks where AI excels (e.g., rapid prototyping), contributing to the immediate velocity spike post-adoption. 
 However, as developers encounter scenarios where AI is still limited (e.g., debugging intricate logic, understanding existing codebases, handling edge cases), frustration may accumulate. 
 This frustration, combined with the cognitive overhead of verifying and debugging 
@@ -746,7 +746,7 @@ Rather than estimating regression models on all adoption cohorts, it first estim
 
 For a group of repositories $g$ that adopt Cursor at time period $g$, the average treatment effect at calendar time $t$ is identified as:
 \begin{equation}
-\label{eq:cs-att-gt}
+\label{eq:cursor-cs-att-gt}
 ATT(g, t) = \mathbb{E}[Y_t - Y_{g-1} \mid G_g=1] - \mathbb{E}[Y_t - Y_{g-1} \mid C]
 \end{equation}
 where $Y_t - Y_{g-1}$ represents the evolution of the outcome from the period prior to treatment ($g-1$) to the current period $t$. 
@@ -887,8 +887,8 @@ Setting & \# Treatment Repos & \# Control Repos & \# Total Observations & \# Pos
     \label{fig:robustness-checks-all}
 \end{figure*}
 
-Following discussions in Section~\ref{sec:robustness}, we present summary statistics in all alternative dataset settings in Table~\ref{tab:summary-stats-settings} and the full robustness check results in Figure~\ref{fig:robustness-checks-all}.
-Apart from the settings already discussed in Section~\ref{sec:robustness}, we additionally conduct experiments across different programming language groups to check whether our findings are driven by repositories with particular programming languages or consistent across programming languages.
+Following discussions in Section~\ref{sec:cursor-robustness}, we present summary statistics in all alternative dataset settings in Table~\ref{tab:summary-stats-settings} and the full robustness check results in Figure~\ref{fig:robustness-checks-all}.
+Apart from the settings already discussed in Section~\ref{sec:cursor-robustness}, we additionally conduct experiments across different programming language groups to check whether our findings are driven by repositories with particular programming languages or consistent across programming languages.
 The results in Figure~\ref{fig:robustness-checks-all}, Row 4 show that our main causal findings are qualitatively consistent on all the major programming languages in our dataset (JavaScript/TypeScript, Python, Go).
 Comparing the differences, we observe that the velocity gain is most transient in JavaScript/TypeScript repositories but less so in Python and Go repositories, while the effect on code quality in Go repositories is strongest.
 However, it is essential to note that this heterogeneity should not be attributed to the programming languages themselves in our setting. Our intuition is that some form of selection bias (e.g., Go repositories may be larger and have more sustained activity) is driving the heterogeneity we observe here.

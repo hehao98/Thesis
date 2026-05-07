@@ -5,19 +5,19 @@
 \renewcommand{\arraystretch}{1.1}
     \footnotesize
     \centering
-    \caption{The argued trade-offs (\emph{\color{darkgreen}\faToggleDown} benefits and \emph{\color{darkred}\faToggleUp} drawbacks) between pinning and floating}
+    \caption{The argued trade-offs ({\color{darkgreen}\faToggleDown} benefits and {\color{darkred}\faToggleUp} drawbacks) between pinning and floating}
     \begin{tabular}{l@{~}p{11cm}ll}
     \toprule
         \multicolumn{2}{l}{The Trade-Offs (\faLock~~Security and {\faCogs}~~Maintenance)} & Floating & Pinning  \\
     \midrule
-        \faLock & \textbf{Attack Surface for Malicious Package Updates}~\cite[e.g.,][]{openssf-pinning, facts-vs-feelings, DBLP:journals/ieeesp/ZahanKHSW23, DBLP:conf/sp/LadisaPMB23} & \emph{\color{darkred}\faToggleUp}~Larger & \emph{\color{darkgreen}\faToggleDown}~Smaller \\
+        \faLock & \textbf{Attack Surface for Malicious Package Updates}~\cite[e.g.,][]{openssf-pinning, facts-vs-feelings, DBLP:journals/ieeesp/ZahanKHSW23, DBLP:conf/sp/LadisaPMB23} & {\color{darkred}\faToggleUp}~Larger & {\color{darkgreen}\faToggleDown}~Smaller \\
         \faCogs & Effort to Handle Breaking Changes~\cite[e.g.,][]{pin-your-npm-yarn-dependencies, stop-version-range, pin-exact-dep-versions, %should-i-pin-python-deps, 
-        DBLP:journals/tse/JafariCAST22, DBLP:journals/jss/RaemaekersDV17, DBLP:journals/tosem/BogartKHT21} & \emph{\color{darkred}\faToggleUp}~More & \emph{\color{darkgreen}\faToggleDown}~Less  \\[.5em]
-        \faLock & \textbf{Attack Surface from Security Vulnerabilities}~\cite[e.g.,][]{floating-discussion, should-i-pin-python-deps, DBLP:journals/tse/JafariCAST22, DBLP:journals/ese/ChinthanetKMIIM21, DBLP:journals/tse/0038SP00C0023} & \emph{\color{darkgreen}\faToggleDown}~Smaller & \emph{\color{darkred}\faToggleUp}~Larger \\
+        DBLP:journals/tse/JafariCAST22, DBLP:journals/jss/RaemaekersDV17, DBLP:journals/tosem/BogartKHT21} & {\color{darkred}\faToggleUp}~More & {\color{darkgreen}\faToggleDown}~Less  \\[.5em]
+        \faLock & \textbf{Attack Surface from Security Vulnerabilities}~\cite[e.g.,][]{floating-discussion, should-i-pin-python-deps, DBLP:journals/tse/JafariCAST22, DBLP:journals/ese/ChinthanetKMIIM21, DBLP:journals/tse/0038SP00C0023} & {\color{darkgreen}\faToggleDown}~Smaller & {\color{darkred}\faToggleUp}~Larger \\
         \faCogs & Effort to Update Outdated Dependencies~\cite[e.g.,][]{%floating-discussion, %i-have-misgivings-about-all-these-version-pinning,
-        DBLP:journals/tse/JafariCAST22} &  \emph{\color{darkgreen}\faToggleDown}~Less & \emph{\color{darkred}\faToggleUp}~More \\
+        DBLP:journals/tse/JafariCAST22} &  {\color{darkgreen}\faToggleDown}~Less & {\color{darkred}\faToggleUp}~More \\
         \faCogs & Effort to Resolve Dependency Conflicts~\cite[e.g.,][]{floating-discussion} %should-i-pin-python-deps
-         & \emph{\color{darkgreen}\faToggleDown}~Less & \emph{\color{darkred}\faToggleUp}~More \\
+         & {\color{darkgreen}\faToggleDown}~Less & {\color{darkred}\faToggleUp}~More \\
     \bottomrule
     \end{tabular}
     \label{tab:trade-offs}
@@ -103,7 +103,7 @@ The chapter also presents evidence that a new ecosystem-wide intervention, along
 These findings lead to concrete advice for developers and ecosystem policy makers to improve the state of software supply chain security (Section~\ref{sec:pinning-discussion}).
 
 \section{Background and Related Work}
-\label{sec:background}
+\label{sec:pinning-background}
 
 \paragraph{Dependency Management in npm.}
 
@@ -557,7 +557,7 @@ To make the simulation feasible, we make several simplifying assumptions describ
 Notably, we assume that  attacks happen uniformly randomly on a fixed number of attack targets, while real attack selection strategies may be more targeted, more opportunistic, and may adapt in response to defense strategies.
 Therefore, we additionally explored two different attack selection strategies: (1) attacking any actively maintained projects randomly, and (2) attacking the most fragile or under-maintained packages (e.g., as the \Code{xz} attack, which focused on a dependency with a single overworked maintainer~\cite{xz-utils}) defined as the bottom-1000 packages in our package dataset, ranked by the number of core maintainers estimated in World of Code~\cite{DBLP:journals/ese/MaDBAVTKZM21}. For space and since our results are generally robust under the different attack selection strategies, we only report results under the impact-based attack selection strategy (the remaining are in the replication package, Section~\ref{sec:data-availability}).
 What's more, the dependency network is only an approximation of reverse dependency relationships. 
-However, similar kinds of dependency networks are frequently used in prior research~\cite{DBLP:journals/ese/DecanMG19, DBLP:conf/uss/ZimmermannSTP19} because it is generally impossible to compute precise reverse dependencies as would be resolved by npm due to its deduplication optimizations (Section~\ref{sec:background}).
+However, similar kinds of dependency networks are frequently used in prior research~\cite{DBLP:journals/ese/DecanMG19, DBLP:conf/uss/ZimmermannSTP19} because it is generally impossible to compute precise reverse dependencies as would be resolved by npm due to its deduplication optimizations (Section~\ref{sec:pinning-background}).
 For defense selection strategies, we have to rely on simple heuristics, leaving potentially better strategies (e.g., more computationally expensive optimization attempts) to future work.
 Finally, due to a lack of access to real-world application data, our simulation does not accurately quantify the impact of malicious package updates on applications, whether open-source repositories or closed-source projects outside of npm.
 We mitigate this by considering downloads in attack impact estimation (Equation~\ref{eq:impact}), but npm download data can be also noisy and inconsistent.
@@ -606,7 +606,7 @@ but transitive pinning is usually two to three times more effective than local p
 \end{figure}
 
 \label{dedup}
-This surprising effect is explained by a detail of how the npm dependency resolver handles dependency conflicts~\cite{how-npm3-works} (cf. Section~\ref{sec:background}):
+This surprising effect is explained by a detail of how the npm dependency resolver handles dependency conflicts~\cite{how-npm3-works} (cf. Section~\ref{sec:pinning-background}):
 If two or more nodes in the dependency graph declare a dependency  on the same package, npm will first check (with heuristics) whether there is a version of that package that meets all declared version constraints (as in our example in Figure~\ref{fig:floating-example}). If there are conflicting version constraints in dependency declarations, npm will install multiple versions of the package to satisfy all version constraints (as in our example in Figure~\ref{fig:pinning-example}). This deduplication (or debloating) process is designed to download fewer, often redundant, copies of packages in the installation process. In fact, there are many possible deduplication heuristics and researchers have explored how to improve this in various ways (e.g., using an SMT solver~\cite{DBLP:conf/icse/PinckneyCGBCG23}).
 
 The deduplication process interacts with pinning: If more dependencies are pinned, the dependency graph resolution has fewer opportunities to deduplicate a specific package and will be more likely to create larger dependency graphs with multiple versions of the same package. Those different versions may also then include additional dependencies---as visible in our example in Figure~\ref{fig:rq2-example}. Both effects increase the attack surface, in that attackers have possibly more version ranges they can attack for the same packages and there could be even additional packages they can attack.
@@ -637,7 +637,7 @@ In such contexts, pinning can create substantial maintenance costs, for limited 
 Therefore, we argue that pinning should not be considered when scoring the security practices of packages.
 
 \textbf{Instead of pinning, application developers should freeze their entire dependency graph with a shared lock file.}
-In the npm ecosystem, it means to not only use but also \emph{commit} the \Code{package-lock.json} file (Section~\ref{sec:background}) to the version control repository (44.21\% of GitHub repositories in our dataset did this).
+In the npm ecosystem, it means to not only use but also \emph{commit} the \Code{package-lock.json} file (Section~\ref{sec:pinning-background}) to the version control repository (44.21\% of GitHub repositories in our dataset did this).
 This practice enables the effective pinning of all direct and transitive dependencies and, more importantly, prevents updates from being installed automatically in a new machine or in the CI/CD environment.
 However, \emph{lock files are intended only for applications (not packages)}, and they are not designed to allow easy selective updates or audits of dependency updates---hence every developer would need to individually judge when to update which (possibly indirect) dependencies rather than delegating some of that judgment to package maintainers and ecosystem moderators.
 

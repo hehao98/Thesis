@@ -1,5 +1,5 @@
 \section{Introduction}
-\label{sec:introduction}
+\label{sec:fake-stars-introduction}
 
 \begin{quote}
 \emph{
@@ -326,7 +326,7 @@ The latter is examined separately in Section~\ref{sec:fake-stars-credibility} th
 \section{Measurement Study}
 \label{sec:measurement-study}
 
-Using the dataset of 18,617 repositories and 301k accounts with fake star campaigns (Section~\ref{sec:implementation}), we conduct a measurement study of fraudulent starring activities in GitHub, that answers the following four research questions (formulated in Section~\ref{sec:introduction}):
+Using the dataset of 18,617 repositories and 301k accounts with fake star campaigns (Section~\ref{sec:implementation}), we conduct a measurement study of fraudulent starring activities in GitHub, that answers the following four research questions (formulated in Section~\ref{sec:fake-stars-introduction}):
 \begin{itemize}[leftmargin=15pt]
     \item \RQOne
     \item \RQTwo
@@ -649,7 +649,7 @@ Then, we conduct open coding~\cite{khandkar2009open} on the repository READMEs--
 (c) 299 randomly sampled repositories from the remaining 1,476 repositories (sample size determined from 95\% confidence level and 5\% margin of error).
 From this analysis, we identify eight major categories of repositories (Table~\ref{tab:repo-labels}).
 Among them, the most common---and also most concerning---category, is \textsf{Spam/Phishing} (31.1\% in Other, 22.6\% in All), where the repository is either an obvious clickbait (e.g., claiming game cheats, pirated software, cryptocurrency bots) to trick download of suspicious files or spreading spam content (e.g.,  used for search-engine-optimizations).\footnote{Note that while we try our best to identify spam/phishing repositories, it is still possible that we miss better-obfuscated malicious repositories and mis-categorize them into other categories.
-We will discuss more on this limitation in Section~\ref{sec:discussion}.}
+We will discuss more on this limitation in Section~\ref{sec:fake-stars-discussion}.}
 The remaining popular categories include: (1) \textsf{AI/LLM}, many of which are academic paper repositories or LLM-related startup products, (2) \textsf{Blockchain} or cryptocurrency related repositories, (3) \textsf{Tool/Applications}, or (4) \textsf{Tutorials/Demos} that seem to serve a reference or demonstration purpose (e.g., Python coding examples or list of awesome LLM tools).
 We provide definition of each category, analysis of inter-rater reliability, and examples of \textsf{Spam/Phishing} repositories in Appendix (Section~\ref{sec:conclusion}).
 
@@ -774,7 +774,7 @@ This suggests that buying fake stars may only help the repository gain new atten
 \input{analysis-fake-stars}
 
 \section{Discussion: What to Do about Fake Stars?}
-\label{sec:discussion}
+\label{sec:fake-stars-discussion}
 
 Our study points to a growing problem: %The seemingly-coordinated 
 Fake star campaigns have become orders of magnitude more common in 2024 compared to 2023, further distorting the already questionable reliability of star count as a signal of popularity and trustworthiness.

@@ -199,7 +199,7 @@ Direction of bias depends on the confounder; the most plausible scenario is a ``
 Adoption of GitHub Copilot, Claude Code, Windsurf, Cline, or OpenHands is not uniformly time-invariant within the study window; some repositories adopt these tools mid-panel.
 This threatens A1 because the effective treatment for a control repository that adopts Copilot mid-window differs from one that does not, and these tools independently affect both velocity and quality.
 Project fixed effects absorb a control that always uses or never uses Copilot; they do not absorb mid-window adoption.
-The chapter's \emph{Cursor and Other} versus \emph{Only Cursor} robustness checks (Section~\ref{sec:robustness}) mitigate this threat by showing that effects amplify in the cleaner subset, but the subset construction relies on observable detection signatures (e.g., \Code{.vscode/}, \Code{.claude/} folders) that systematically underestimate true other-AI usage.
+The chapter's \emph{Cursor and Other} versus \emph{Only Cursor} robustness checks (Section~\ref{sec:cursor-robustness}) mitigate this threat by showing that effects amplify in the cleaner subset, but the subset construction relies on observable detection signatures (e.g., \Code{.vscode/}, \Code{.claude/} folders) that systematically underestimate true other-AI usage.
 The reported costs of Cursor adoption on velocity and quality are therefore best read as marginal effects relative to the prevailing baseline of partly-observed AI-tool usage, not relative to a no-AI counterfactual.
 
 \paragraph{Anticipation through pre-commit Cursor use.}
@@ -214,13 +214,13 @@ The Arellano-Bond AR(2) test does not directly probe this scenario---it tests fo
 The chapter's interpretation of the $C_t \to L_{t+1}$ and $W_t \to L_{t+1}$ feedback as causal therefore rests on the auxiliary judgement that no such persistent shock dominates the data; the cross-direction agreement between the two contemporaneous and two lagged specifications (Table~\ref{tab:causal-paths}) is the principal evidence in favour of this judgement.
 
 The remaining limitations of the study are concerns about external validity, measurement validity, treatment definition, or ecosystem-specific scope rather than threats to the internal identification of the DiD or GMM estimates.
-They are addressed in the existing ``Limitations and Threats to Validity'' subsection (Section~\ref{sec:cursor-limitations}) and the ``Robustness Checks'' subsection (Section~\ref{sec:robustness}); we do not re-litigate them here.
+They are addressed in the existing ``Limitations and Threats to Validity'' subsection (Section~\ref{sec:cursor-limitations}) and the ``Robustness Checks'' subsection (Section~\ref{sec:cursor-robustness}); we do not re-litigate them here.
 
 \subsection{Alternative Explanations}
 \label{sec:cursor-credibility-alternatives}
 
 Seven alternative causal structures could in principle explain the chapter's central findings without the proposed mechanism.
-Five of them are already addressed by the existing chapter through dedicated robustness checks (Section~\ref{sec:robustness}, Figure~\ref{fig:robustness-checks-all}) and the cross-estimator comparison (Section~\ref{sec:appendix-alternative-estimators}); we summarise their resolution and pointers in the table below.
+Five of them are already addressed by the existing chapter through dedicated robustness checks (Section~\ref{sec:cursor-robustness}, Figure~\ref{fig:robustness-checks-all}) and the cross-estimator comparison (Section~\ref{sec:appendix-alternative-estimators}); we summarise their resolution and pointers in the table below.
 The remaining two are flagged here because the existing chapter does not explicitly canvass them.
 
 \paragraph{Alternatives already addressed in the existing chapter.}
@@ -236,19 +236,19 @@ Table~\ref{tab:cursor-alternatives-pointers} maps each alternative to the existi
 \textbf{Alternative} & \textbf{Addressed by} \\
 \midrule
 The transient velocity finding is an artefact of OSS repository mortality rather than Cursor. &
-\emph{Active Months} ($>0$ commits) and \emph{Very Active} ($\geq 10$ commits) subset robustness checks (Section~\ref{sec:robustness}, Figure~\ref{fig:robustness-checks-all} Row~2) show the velocity-then-decay pattern persists in the active sample. \\
+\emph{Active Months} ($>0$ commits) and \emph{Very Active} ($\geq 10$ commits) subset robustness checks (Section~\ref{sec:cursor-robustness}, Figure~\ref{fig:robustness-checks-all} Row~2) show the velocity-then-decay pattern persists in the active sample. \\
 \addlinespace
 The pattern reflects an excitement--frustration--abandonment cycle rather than a sustained Cursor effect. &
-\emph{High Contributor Adoption} and \emph{Cursor Configuration Changes} subsets (Section~\ref{sec:robustness}, Figure~\ref{fig:robustness-checks-all} Row~1) show velocity gains \emph{persist} under sustained usage; explicit treatment in Section~\ref{sec:cursor-discussion}. \\
+\emph{High Contributor Adoption} and \emph{Cursor Configuration Changes} subsets (Section~\ref{sec:cursor-robustness}, Figure~\ref{fig:robustness-checks-all} Row~1) show velocity gains \emph{persist} under sustained usage; explicit treatment in Section~\ref{sec:cursor-discussion}. \\
 \addlinespace
 The quality degradation is mechanically driven by increased code volume, not a per-line effect. &
 The dynamic panel GMM with explicit lines-of-code control (Section~\ref{sec:finding-interaction}, Table~\ref{tab:causal-paths}) shows the complexity effect survives the volume control, supporting a per-line interpretation; the warnings effect is honestly attributed to the volume-mediated path in Section~\ref{sec:cursor-discussion}. \\
 \addlinespace
 Contamination from other AI tools (Copilot, Claude Code, Windsurf, Cline, OpenHands) is the true driver. &
-The \emph{Cursor and Other} versus \emph{Only Cursor} subset robustness checks (Section~\ref{sec:robustness}, Figure~\ref{fig:robustness-checks-all} Row~3) show main findings amplify in the cleaner subset. The detection-signature limitation is acknowledged in Step~3 above. \\
+The \emph{Cursor and Other} versus \emph{Only Cursor} subset robustness checks (Section~\ref{sec:cursor-robustness}, Figure~\ref{fig:robustness-checks-all} Row~3) show main findings amplify in the cleaner subset. The detection-signature limitation is acknowledged in Step~3 above. \\
 \addlinespace
 The findings are driven by particular programming languages or by particular adoption cohorts. &
-Per-language robustness panels (Section~\ref{sec:robustness}, Figure~\ref{fig:robustness-checks-all} Row~4) show qualitative consistency across JavaScript/TypeScript, Python, and Go; the cross-estimator appendix (Section~\ref{sec:appendix-alternative-estimators}) reports the cohort-disaggregated \citet{callaway2021difference} estimator and discusses divergence on quality outcomes honestly in Section~\ref{sec:estimator-comp}. \\
+Per-language robustness panels (Section~\ref{sec:cursor-robustness}, Figure~\ref{fig:robustness-checks-all} Row~4) show qualitative consistency across JavaScript/TypeScript, Python, and Go; the cross-estimator appendix (Section~\ref{sec:appendix-alternative-estimators}) reports the cohort-disaggregated \citet{callaway2021difference} estimator and discusses divergence on quality outcomes honestly in Section~\ref{sec:estimator-comp}. \\
 \bottomrule
 \end{tabular}
 \end{table}
