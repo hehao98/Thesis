@@ -1,4 +1,4 @@
-\section{Summary of Contributions}
+\section{Thesis Summary}
 \label{sec:conclusion-summary}
 
 This thesis has argued that causal credibility assessments are feasible in empirical software engineering through an explicit articulation of causal theory and assumptions.
@@ -53,27 +53,24 @@ Table~\ref{tab:conclusion-comparison} summarises the comparison along the four d
     \caption{Causal credibility comparison across the three empirical chapters.
     Each row reports how the chapter's treatment is assigned, the load-bearing identifying assumptions, the diagnostic or robustness device that probes those assumptions, and the author's qualitative ranking of the resulting causal credibility.}
     \label{tab:conclusion-comparison}
-    \begin{tabular}{p{2cm}p{3.2cm}p{3.4cm}p{3.6cm}p{1.6cm}}
+    \begin{tabular}{p{2.1cm}p{3cm}p{7.4cm}p{1.6cm}}
     \toprule
-    \textbf{Chapter} & \textbf{Treatment assignment} & \textbf{Load-bearing assumptions} & \textbf{Diagnostic / robustness device} & \textbf{Ranking} \\
+    \textbf{Chapter} & \textbf{Dimension} & \textbf{Detail} & \textbf{Ranking} \\
     \midrule
-    Pinning (Ch.~\ref{chp:pinning}) &
-    Imposed deterministically by the simulator from each project's \Code{package.json} &
-    A1: simulation fidelity &
-    Resolution-failure analysis on the 12--16\% of project-time units that fail to resolve; npm semantics validation against published resolver behaviour &
-    Strongest \\
+    \textbf{Pinning (Ch.~\ref{chp:pinning})}
+      & \textit{Treatment assignment} & Imposed deterministically by the simulator from each project's \Code{package.json} & {Strongest} \\
+      & \textit{Load-bearing assumptions} & A1: simulation fidelity & \\
+      & \textit{Diagnostic / robustness device} & Resolution-failure analysis on the 12--16\% of project-time units that fail to resolve; npm semantics validation against published resolver behavior & \\
     \addlinespace
-    Cursor (Ch.~\ref{chp:cursor}) &
-    Maintainer choice; matched on six-month pre-adoption trajectories &
-    A1: parallel trends; B1: sequential exogeneity for the GMM &
-    Pre-trend Wald test; Arellano-Bond AR(2) and Sargan tests; cross-estimator appendix (TWFE, \citet{callaway2021difference}) &
-    Close to strong \\
+    \textbf{Cursor (Ch.~\ref{chp:cursor})}
+      & \textit{Treatment assignment} & Maintainer choice; matched on six-month pre-adoption trajectories & {Close to strong} \\
+      & \textit{Load-bearing assumptions} & A1: parallel trends; B1: sequential exogeneity for the GMM & \\
+      & \textit{Diagnostic / robustness device} & Pre-trend Wald test; Arellano-Bond AR(2) and Sargan tests; cross-estimator appendix (TWFE, \citet{callaway2021difference}) & \\
     \addlinespace
-    Fake stars (Ch.~\ref{chp:fake-stars}) &
-    Endogenous maintainer purchase decision, observed only through a noisy detection proxy &
-    A1: strict exogeneity; A2: no time-varying topic confounders; A5: panel completeness &
-    R1: survivor-length stratification; R2: topic stratification; R3: lead-lag swap regression &
-    Weakest, but informative \\
+    \textbf{Fake stars (Ch.~\ref{chp:fake-stars})}
+      & \textit{Treatment assignment} & Endogenous maintainer purchase decision, observed only through a noisy detection proxy & {Weakest, but informative} \\
+      & \textit{Load-bearing assumptions} & A1: strict exogeneity; A2: no time-varying topic confounders; A5: panel completeness & \\
+      & \textit{Diagnostic / robustness device} & R1: survivor-length stratification; R2: topic stratification; R3: lead-lag swap regression & \\
     \bottomrule
     \end{tabular}
 \end{table}
