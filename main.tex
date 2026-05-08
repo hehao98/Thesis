@@ -325,23 +325,9 @@ Preprint: \href{https://arxiv.org/abs/2511.04427}{arXiv:2511.04427}.%
 \include{main-cursor}
 
 \chapter{Conclusion}
+\label{chp:conclusion}
 
-%1. Summary of Contributions    
-%2. Revisiting the Thesis Statement    
-%3. Final Thoughts (some comments for writing the final thoughts section)
-
-% > finally, at the end it's a bit --- so there are lots of assumptions and we are not really sure about some of them. so where does it leave us? is it credible? how do you envision somebody downstream uses this information better than how they misscited Ray?
-
-% In my opinion, the three presented studies have varying level of causal credibility with the pinning one being strongest (condition on only the assumption that the simulation is not too wrong to overturn the results) and DiD one being close to strong (condition on the parallel trend and instrument validity assumption). The fake star one is weakest but still informative as this analysis does not overturn the final policy recommendation (i.e., do not buy fake stars).
-
-% Ultimately, all causal inference papers will rest on some assumptions (this applies to controlled experiments too!). The most cynical critic can still choose to not believe any study and someone that is not knowledgeable on the field can still choose to misinterpret a descriptive finding causally. Maybe this is not an issue that we can ultimately resolve; but the field can use the credibility analysis to iteratively refine study designs and obtain results with more credibility.
-
-Compared with the other two empirical chapters in this thesis, the Cursor study sits between them on the design-strength spectrum.
-The pinning study (Chapter~\ref{chp:pinning}) achieves identification by construction: both potential outcomes are simulated for every project from the same \Code{package.json}, so maintainer-choice confounders are blocked at the assignment mechanism rather than absorbed in expectation, and only simulation fidelity remains as an empirical argument.
-The fake-stars study (Chapter~\ref{chp:fake-stars}) operates on fully observational panel data where the maintainer purchase decision is endogenous; three residual threats---reverse causality, topic-by-time confounding, and panel survivorship---are bounded by post-hoc robustness checks rather than by the design itself, and the load-bearing assumptions A1, A2, and A5 all require empirical argument.
-The Cursor design is stronger than the fake-stars study because the propensity-score matching procedure aligns observable pre-adoption trajectories, the \citet{borusyak2024revisiting} imputation estimator avoids forbidden comparisons under heterogeneous treatment effects, and the cross-direction GMM agreement substitutes for the missing experimental variation in distinguishing the velocity--quality feedback.
-It is weaker than the pinning study because identification still rests on assumptions the design's construction does not enforce---parallel trends in the post-period and sequential exogeneity in the GMM---rather than on properties guaranteed by the assignment mechanism.
-
+\include{chap-conclusion}
 
 \chapter{\bibname}
 \printbibliography[heading=none]

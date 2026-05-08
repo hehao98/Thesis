@@ -1,0 +1,165 @@
+\section{Summary of Contributions}
+\label{sec:conclusion-summary}
+
+This thesis has argued that causal credibility assessments are feasible in empirical software engineering through an explicit articulation of causal theory and assumptions.
+The argument is developed through one tutorial chapter and three empirical chapters, each instantiating the four-step framework introduced in Chapter~\ref{chp:background}.
+The contributions of each chapter are summarised below; the cross-chapter comparison in Section~\ref{sec:conclusion-comparison} makes their relative causal credibility explicit.
+
+\subsection{A Tutorial on Causal Inference for Empirical Software Engineering}
+
+Chapter~\ref{chp:background} provides the methodological infrastructure on which the three empirical chapters build.
+A literature review of 5{,}341 main-track papers at ICSE, FSE, and ASE between 2015 and 2025 documents a structural gap in the field: 29\% of empirical studies are motivated by a causal research question, but only 1.9\% employ a recognised causal inference method, and the ratio has remained flat for a decade.
+The tutorial closes this gap with a self-contained primer on the potential-outcomes framework, graphical causal models, and design-based identification strategies including difference-in-differences, instrumental variables, regression discontinuity, and panel fixed effects.
+A worked example on the impact of AI coding tools illustrates how progressively stronger designs collapse a naive +911\% cross-sectional estimate to a credible +32--52\% difference-in-differences estimate, demonstrating that the choice of identification strategy is not a matter of statistical refinement but of which causal claim the data can actually license.
+
+\subsection{Empirical Study I: Dependency Pinning and Software Supply Chain Security}
+
+Chapter~\ref{chp:pinning} challenges the practitioner belief that pinning dependency versions improves project security against malicious package updates.
+The chapter builds a counterfactual simulation that constructs both the pinning and the floating outcome for every project-time unit from the same \Code{package.json}, leveraging an experimental time-traveling feature of the npm dependency resolver to evaluate 10{,}000 npm packages and 10{,}000 GitHub repositories under both regimes.
+A fixed-effects panel regression on the simulated data shows that pinning direct dependencies is futile or counter-productive in dependency graphs of 498 nodes or more, an effect driven by npm's deduplication algorithm and corroborated by a minimal worked example.
+A complementary ecosystem-wide network propagation simulation shows that coordinated pinning at $\sim$100 important upstream packages reduces the spread of malicious updates by up to 75\%.
+The methodological lesson is that identification by construction is achievable in observational software-engineering data when the underlying data-generating process can be simulated faithfully against a fixed historical snapshot.
+
+\subsection{Empirical Study II: Fake GitHub Stars and Repository Promotion}
+
+Chapter~\ref{chp:fake-stars} challenges the belief that buying fake GitHub stars provides sustainable promotional benefit.
+The chapter introduces \SystemName, which mines GitHub's complete event metadata for two complementary signatures of inauthentic starring activity and identifies six million suspected fake stars across 26{,}254 repositories between 2019 and 2024.
+A panel autoregression with repository fixed effects estimates the promotional and penalty effects of detected fake-star activity on subsequent organic star arrivals.
+The analysis finds a short-run promotional bump of less than two months followed by a long-run penalty, with the majority of fake-star campaigns targeting short-lived phishing or malware repositories.
+The methodological lesson is that even when the maintainer's treatment decision is endogenous and identification cannot be by construction, a panel-FE design paired with three targeted robustness checks---survivor stratification, topic stratification, and a lead-lag swap regression---can discipline the directions of residual biases and bound the policy-relevant claim, even though it cannot eliminate the underlying threats.
+
+\subsection{Empirical Study III: Cursor AI and Open-Source Project Outcomes}
+
+Chapter~\ref{chp:cursor} challenges the belief that AI coding tools unambiguously improve developer productivity.
+The chapter applies the \citet{borusyak2024revisiting} difference-in-differences estimator with propensity-score matching on six-month pre-adoption dynamics, comparing Cursor-adopting GitHub repositories with a matched control group of similar non-adopting repositories.
+The DiD analysis finds a large but transient velocity gain in the first one to two months after adoption, alongside a substantial and persistent increase in static-analysis warnings and cognitive complexity.
+A complementary panel generalised method-of-moments analysis decomposes the velocity-quality feedback and shows that the accumulated technical debt subsequently dampens future development velocity.
+The methodological lesson is that a quasi-experimental design can reach close-to-strong causal credibility when the assignment mechanism cannot be controlled but matching, an estimator robust to heterogeneous treatment effects, and cross-direction GMM agreement substitute for the missing experimental variation.
+
+\section{Comparing the Three Studies on Causal Credibility}
+\label{sec:conclusion-comparison}
+
+The three empirical chapters apply the same four-step framework but achieve distinctly different levels of causal credibility, governed by what their treatment assignment mechanisms permit rather than by the rigour of their analyses.
+The pinning study (Chapter~\ref{chp:pinning}) achieves identification by construction: both potential outcomes are simulated for every project from the same \Code{package.json}, so maintainer-choice confounders are blocked at the assignment mechanism rather than absorbed in expectation, and only simulation fidelity remains as an empirical argument.
+The fake-stars study (Chapter~\ref{chp:fake-stars}) operates on fully observational panel data where the maintainer purchase decision is endogenous; three residual threats---reverse causality, topic-by-time confounding, and panel survivorship---are bounded by post-hoc robustness checks rather than by the design itself, and the load-bearing assumptions A1, A2, and A5 all require empirical argument.
+The Cursor study (Chapter~\ref{chp:cursor}) sits between the two: it is stronger than the fake-stars study because the propensity-score matching procedure aligns observable pre-adoption trajectories, the \citet{borusyak2024revisiting} imputation estimator avoids forbidden comparisons under heterogeneous treatment effects, and the cross-direction GMM agreement substitutes for the missing experimental variation in distinguishing the velocity-quality feedback.
+It is weaker than the pinning study because identification still rests on assumptions the design's construction does not enforce---parallel trends in the post-period and sequential exogeneity in the GMM---rather than on properties guaranteed by the assignment mechanism.
+
+Table~\ref{tab:conclusion-comparison} summarises the comparison along the four dimensions of the framework.
+
+\begin{table}[t]
+    \footnotesize
+    \centering
+    \caption{Causal credibility comparison across the three empirical chapters.
+    Each row reports how the chapter's treatment is assigned, the load-bearing identifying assumptions, the diagnostic or robustness device that probes those assumptions, and the author's qualitative ranking of the resulting causal credibility.}
+    \label{tab:conclusion-comparison}
+    \begin{tabular}{p{2.6cm}p{3.2cm}p{3.4cm}p{3.6cm}p{1.8cm}}
+    \toprule
+    \textbf{Chapter} & \textbf{Treatment assignment} & \textbf{Load-bearing assumptions} & \textbf{Diagnostic / robustness device} & \textbf{Ranking} \\
+    \midrule
+    Pinning (Ch.~\ref{chp:pinning}) &
+    Imposed deterministically by the simulator from each project's \Code{package.json} &
+    A1: simulation fidelity &
+    Resolution-failure analysis on the 12--16\% of project-time units that fail to resolve; npm semantics validation against published resolver behaviour &
+    Strongest \\
+    \addlinespace
+    Cursor (Ch.~\ref{chp:cursor}) &
+    Maintainer choice; matched on six-month pre-adoption trajectories &
+    A1: parallel trends; B1: sequential exogeneity for the GMM &
+    Pre-trend Wald test; Arellano-Bond AR(2) and Sargan tests; cross-estimator appendix (TWFE, \citet{callaway2021difference}) &
+    Close to strong \\
+    \addlinespace
+    Fake stars (Ch.~\ref{chp:fake-stars}) &
+    Endogenous maintainer purchase decision, observed only through a noisy detection proxy &
+    A1: strict exogeneity; A2: no time-varying topic confounders; A5: panel completeness &
+    R1: survivor-length stratification; R2: topic stratification; R3: lead-lag swap regression &
+    Weakest, but informative \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+The ordering in the rightmost column reflects a hierarchy that follows from the assignment mechanism: identification by construction is preferable when the data-generating process can be simulated faithfully; design-based identification with targeted matching and an estimator robust to heterogeneous effects is the next-best option when the treatment is observed but not controlled; panel fixed effects with explicit robustness checks on the residual biases is the fallback when the treatment proxy is itself endogenous and noisy.
+The ordering is not a verdict on the value of the contributions; all three chapters answer questions the field had not previously answered with quantitative evidence.
+
+A surprise of the cross-study comparison is that policy survival is orthogonal to design strength.
+The chapter with the weakest design (fake stars) yields a policy claim that survives most easily, because the residual biases on the short-run estimate point upward and would only strengthen the recommendation against buying fake stars if corrected.
+The pinning chapter's policy claim survives because identification is strong by construction.
+The Cursor chapter's policy claim survives because the most plausible residual confounders---a modernisation push that bundles tool adoption with pace acceleration, mid-window adoption of competing AI tools, or pre-commit experimentation---all bias the estimates in directions that either reinforce the velocity-up and quality-down pattern or attenuate the velocity gains, leaving the qualitative recommendation intact.
+Design strength and policy survival are therefore distinct dimensions, and downstream readers should resist the temptation to treat them as proxies for one another.
+
+\section{Revisiting the Thesis Statement}
+\label{sec:conclusion-thesis-statement}
+
+The framed thesis statement on page~\pageref{sec:thesis-statement} reads:
+\begin{quote}
+\emph{Causal credibility assessments are feasible in empirical software engineering through an explicit articulation of causal theory and assumptions.}
+\end{quote}
+
+The four-step framework introduced in Chapter~\ref{chp:background} operationalises this claim through a uniform procedure: (1) derive an explicit causal theory from existing software engineering domain knowledge, typically as a directed acyclic graph; (2) define the causal estimand through the potential-outcomes framework and specify the assumptions under which it admits a causal interpretation; (3) honestly acknowledge and mitigate limitations and known caveats; (4) thoughtfully navigate alternative causal structures the data also admits.
+Each empirical chapter instantiates the four steps in a dedicated Causal Credibility Assessment section.
+The pinning chapter develops them in Sections~\ref{sec:pinning-credibility-theory}, \ref{sec:pinning-credibility-estimand}, \ref{sec:pinning-credibility-limitations}, \ref{sec:pinning-credibility-alternatives}, and the summary in Section~\ref{sec:pinning-credibility-summary}.
+The fake-stars chapter does the same in Sections~\ref{sec:fake-stars-credibility-theory}, \ref{sec:fake-stars-credibility-estimand}, \ref{sec:fake-stars-credibility-limitations}, \ref{sec:fake-stars-credibility-alternatives}, and Section~\ref{sec:fake-stars-credibility-summary}.
+The Cursor chapter does the same in Sections~\ref{sec:cursor-credibility-theory}, \ref{sec:cursor-credibility-estimand}, \ref{sec:cursor-credibility-limitations}, \ref{sec:cursor-credibility-alternatives}, and Section~\ref{sec:cursor-credibility-summary}.
+
+The thesis statement claims feasibility, not certainty.
+The fact that the same four-step framework operates uniformly across designs that differ as much as a counterfactual simulation, a staggered-adoption difference-in-differences, and a panel autoregression on observational data is the argument that the feasibility claim is broadly applicable rather than tied to any single design tradition.
+What the thesis does not claim, and what this conclusion does not extend to:
+\begin{itemize}[leftmargin=20pt]
+\item The framework does not eliminate causal uncertainty.
+Each empirical chapter still has load-bearing assumptions that require empirical argument, and the credibility summaries name them honestly rather than rhetorically.
+\item The framework does not apply to every empirical SE study.
+The literature review in Chapter~\ref{chp:background} establishes that 29\% of empirical SE papers are causal in nature; for the other 71\% the framework is unnecessary.
+\item The framework addresses identification, not measurement.
+Persistent empirical controversies in SE---such as the programming-language and defect-proneness debate---remain unresolved partly because of identification failures (which this thesis addresses) and partly because of measurement challenges (which this thesis acknowledges but does not solve).
+A causally clean estimate of an effect on a noisy proxy still leaves the underlying construct in dispute.
+\end{itemize}
+
+Within these limits, the three empirical chapters demonstrate that causal credibility assessment is feasible across substantively different software engineering questions, and that doing it explicitly produces more honest and more useful conclusions than the field's prevailing pattern of correlational claims accompanied by a perfunctory ``correlation does not imply causation'' caveat.
+
+\section{Final Thoughts}
+\label{sec:conclusion-final-thoughts}
+
+\subsection{The Downstream Misuse Problem}
+
+A central worry that motivates this thesis is that even carefully hedged empirical results are routinely read by downstream readers as causal claims, and that the field lacks a shared framework for evaluating whether such a reading is warranted.
+The Ray et al.\ controversy documented in Chapter~\ref{chp:intro} illustrates the pattern: the original authors framed their findings as associational, but downstream practitioners and follow-up papers cited the work as if it had established a causal effect of programming language on defect proneness.
+The four-step framework cannot prevent miscitation, but it offers a partial response along three lines.
+For producers of empirical work, the framework imposes a discipline that forces the load-bearing assumptions into the open before the study reaches downstream readers.
+For consumers of empirical work, the framework provides a checklist for distinguishing studies whose authors have stress-tested their identification and reported what survived from studies that have not.
+For misciting downstream readers, the framework cannot police behaviour, but it makes the gap between what a study claims and what a downstream reader infers visible and challengeable.
+
+The fake-stars chapter is the clearest illustration of this asymmetry.
+A downstream reader who reads only the abstract still receives the policy claim that buying fake stars is ineffective; a downstream reader who engages with Section~\ref{sec:fake-stars-credibility} understands why the claim survives, what it depends on, and what residual threats a careful reader would still want to inspect.
+The framework is therefore a piece of communicative infrastructure as much as it is a methodological one: it gives a downstream reader the tools to read a study honestly even when that reader is not in a position to redo the analysis.
+
+\subsection{Assumptions Are Universal}
+
+Every causal inference rests on assumptions, and observational designs are not uniquely vulnerable in this respect.
+Randomised controlled trials rest on assumptions of stable unit treatment values, full compliance, no spillover between units, construct validity of the chosen outcome measure, and generalisability beyond the trial population.
+The novelty of the four-step framework is not that it makes assumptions visible---every method does, somewhere---but that it makes them visible uniformly across the observational designs that the empirical SE field has historically treated as if they had no assumptions to articulate.
+The shift the thesis advocates is therefore one of expectation rather than of method: a study that claims a causal effect should be expected to name the assumptions the claim rests on, just as a randomised trial is expected to report its compliance rate.
+
+This shift will not satisfy the most cynical critic, who can refuse to believe any observational study, and it will not protect against the uninformed reader, who can misread any descriptive result as causal.
+Neither failure mode is the framework's responsibility to solve.
+The framework's value is for the practitioner in between---the researcher, reviewer, or practitioner-engineer who is willing to engage with the evidence but needs a structured way to calibrate confidence in what the evidence supports.
+
+\subsection{Iterative Refinement, Not Final Resolution}
+
+The three empirical chapters in this thesis benefit from infrastructure that did not exist a decade ago.
+The pinning chapter's identification by construction depends on an experimental time-traveling feature of the npm dependency resolver.
+The Cursor chapter's matching procedure depends on six-month pre-adoption activity trajectories that became observable only after dense repository event logging matured.
+The fake-stars chapter's detection pipeline depends on the GHArchive event stream and on advances in fake-account-detection methodology that accumulated across adjacent fields.
+Each generation of empirical SE work that engages explicitly with causal credibility hands the next generation a stronger toolkit; the field's path forward is iterative refinement, not a single final resolution.
+
+In honest terms, the three studies presented in this thesis are at varying levels of causal credibility.
+The pinning chapter is the strongest, conditional only on the assumption that the simulator is not too wrong to overturn the qualitative results.
+The Cursor chapter is close to strong, conditional on the parallel-trends assumption for the DiD estimand and the sequential-exogeneity assumption for the GMM estimand.
+The fake-stars chapter is the weakest, but it remains informative because the post-hoc robustness checks discipline the directions of residual bias and the policy recommendation survives the scrutiny.
+Reviewers, downstream researchers, and future PhD students benefit more from this calibrated ranking than from a rhetorically even claim that all three chapters are equally credible.
+
+\subsection{Closing Posture}
+
+This thesis does not claim to resolve the empirical software engineering field's longstanding disconnect between causal ambition and methodological practice.
+It claims that the disconnect is bridgeable through an explicit articulation of causal theory and assumptions, and that the four-step framework is one usable operationalisation of that bridge.
+The three empirical chapters demonstrate that the framework is feasible across substantively different questions; the cross-chapter comparison demonstrates that feasibility does not collapse credibility differences across designs but makes them inspectable.
+If future empirical SE research adopts this kind of explicit credibility assessment, even partially, the field will become better equipped to do what it has historically struggled to do: dispel the myths that practitioners hold by accumulating consistent, transparently-justified causal evidence rather than by accumulating correlational findings that downstream readers must guess how to interpret.

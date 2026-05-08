@@ -1,6 +1,6 @@
 # Conclusion Chapter Plan
 
-**Status:** Draft plan, pending author review
+**Status:** Executed on 2026-05-08; pending author review of the drafted text
 **Target file:** New `chap-conclusion.tex`, `\include`d from `main.tex` after Chapter~\ref{chp:cursor}
 **Replaces:** The author's existing skeleton notes in `main.tex` (lines 327--343), which already include a Cursor design-strength paragraph that should be relocated into Section~2 of the conclusion below
 
@@ -146,13 +146,14 @@ End with the pragmatic stance the abstract and `chap-intro.tex` both gesture at.
 
 ## Tasks
 
-- [ ] Create `chap-conclusion.tex` with three sections (Summary of Contributions, Revisiting the Thesis Statement, Final Thoughts) plus the cross-study comparison as Section~2.
-- [ ] Move `main.tex` lines 339--343 (the existing Cursor cross-study paragraph) into Section~2.1 of the new file; remove the comment-only skeleton on lines 327--337 once their content has been incorporated.
-- [ ] Update `main.tex` to `\include{chap-conclusion}` after Chapter~\ref{chp:cursor}.
-- [ ] Add cross-study comparison table to Section~2.2 (treat the suggested table above as a starting point; verify column count and final formatting match thesis style).
-- [ ] Add `\label{sec:pinning-credibility-summary}`, `\label{sec:fake-stars-credibility-summary}`, `\label{sec:cursor-credibility-summary}` to the existing `Causal Credibility Summary` subsections in the three analysis files so Section~3.2 can cross-reference them. (None of the three currently have an explicit label.)
-- [ ] Verify all `\ref{}` targets used in the conclusion exist before final compile.
-- [ ] Pass the final draft through the AGENTS.md style rules: one sentence per line, em-dashes without spaces, declarative tone, no superlatives or hedging.
+- [x] Create `chap-conclusion.tex` with three sections (Summary of Contributions, Revisiting the Thesis Statement, Final Thoughts) plus the cross-study comparison as Section~2.
+- [x] Move `main.tex` lines 339--343 (the existing Cursor cross-study paragraph) into Section~2 of the new file; remove the comment-only skeleton on lines 327--337 once their content has been incorporated.
+- [x] Update `main.tex` to `\include{chap-conclusion}` after Chapter~\ref{chp:cursor}.
+- [x] Add cross-study comparison table to Section~2 (`tab:conclusion-comparison`).
+- [x] Add `\label{sec:pinning-credibility-summary}`, `\label{sec:fake-stars-credibility-summary}`, `\label{sec:cursor-credibility-summary}` to the existing `Causal Credibility Summary` subsections in the three analysis files. Also added `\label{sec:thesis-statement}` to `chap-intro.tex` so the conclusion can `\pageref{}` it.
+- [x] Verify cite keys `borusyak2024revisiting` and `callaway2021difference` resolve (both in `tutorial/paper/references.bib`, which is already loaded by `main.tex`).
+- [ ] Pass the final draft through the AGENTS.md style rules on a careful re-read: one sentence per line, em-dashes without spaces, declarative tone, no superlatives or hedging. (The draft was written to these rules but the author should do a final review.)
+- [ ] Compile the full thesis once and confirm all `\ref{}` and `\pageref{}` targets resolve without warnings.
 
 ---
 
