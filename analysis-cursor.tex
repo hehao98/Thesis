@@ -268,5 +268,19 @@ The two readings cannot be fully disambiguated by static analysis alone, and wou
 This alternative is properly framed as a measurement-validity concern about the warnings outcome---the construct of ``code quality'' that SonarQube warnings proxy for---rather than as an internal-validity threat to the DiD estimate of the effect on warnings as defined.
 The chapter's central interpretation does not collapse under this alternative because the cognitive-complexity outcome is computed from a structural metric~\cite{DBLP:conf/icse/Campbell18} rather than from style-rule violations, and that outcome shows the same direction and a comparable magnitude.
 
-The credibility of the chapter's causal interpretation therefore rests primarily on the residual portion of A1 (no time-varying coincident unobservables) for the DiD estimand and on B1 (sequential exogeneity) for the GMM estimand.
+\subsection{Causal Credibility Summary}
+
+The credibility of the chapter's causal interpretation rests primarily on the residual portion of A1 (no time-varying coincident unobservables) for the DiD estimand and on B1 (sequential exogeneity) for the GMM estimand.
 The cross-direction agreement between the four GMM specifications, the persistence of the main findings across the three robustness-check axes, and the conservative direction of the residual biases together support a measured but not absolute causal interpretation of the chapter's results.
+
+The chapter's discussion and practical recommendations (Section~\ref{sec:cursor-discussion}, Section~\ref{sec:practical-implications}) survive this scrutiny.
+The most plausible residual confounder---a modernisation push that bundles Cursor adoption with pace acceleration or with the arrival of an experienced contributor---reinforces both the velocity-up and the quality-down pattern, so the call for quality assurance to scale with AI-era velocity is robust in sign even if individual coefficient magnitudes are inflated.
+Mid-window adoption of competing AI tools rebases the estimate from a no-AI counterfactual to a partly-AI baseline, which sharpens rather than weakens the qualitative recommendation that any AI-assisted development setting needs proportionally stronger quality processes.
+Pre-commit experimentation attenuates the immediate post-adoption velocity gain, so the reported transient velocity effect is best read as a conservative lower bound, and the velocity-then-decay narrative survives at full strength.
+The GMM-based finding that code complexity exhibits a per-line effect surviving the volume control---which underpins the call for readability-aware tooling and complexity-triggered refactoring---rests on B1 and on the cross-direction agreement of the four GMM specifications, both of which the chapter defends through the Arellano-Bond AR(2) and Sargan diagnostics and the cross-coefficient sign pattern (Table~\ref{tab:causal-paths}).
+
+\begin{summary-rq}
+\textbf{Causal credibility, in plain language:} The Cursor study's design is relatively strong but not the strongest in this thesis.
+While parallel trends and sequential exogeneity remains untestable and not enforced by construction, the design is enhanced by matching, the Borusyak imputation, and cross-direction GMM agreement that substitutes for the missing experimental variation.
+The chapter's recommendation that quality assurance must scale with AI-era velocity survives this scrutiny because the most plausible residual confounders either reinforce the velocity-up and quality-down pattern or attenuate the reported velocity gains.
+\end{summary-rq}

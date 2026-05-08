@@ -59,18 +59,18 @@ Figure~\ref{fig:dag-pinning} shows the directed acyclic graph (DAG) governing RQ
 \end{figure}
 
 The treatment is the project-level versioning strategy for direct dependencies, contrasting all-pinning against the project's observed (predominantly floating) configuration.
-The mechanism through which pinning affects the five outcome metrics is npm's deduplication algorithm: pinning fixes version constraints, which in turn changes the set of versions npm resolves into the transitive dependency graph, which in turn determines the value of each outcome metric.
+The mechanism through which pinning affects the five outcome metrics is npm's deduplication algorithm: pinning fixes version constraints, which in turn changes the set of versions npm resolves into the transitive dependency graph, which in turn determines the value of each outcome metric.\footnote{See Section~\ref{sec:pinning-discussion} for a detailed explanation of this mechanism.}
 The interaction between pinning and dependency-graph size $G$ is structural rather than incidental: the deduplication mechanism produces qualitatively different behavior at large $G$ because the probability of conflicting version constraints increases with graph complexity~\cite{DBLP:conf/icse/PinckneyCGBCG23}.
 
 The DAG also names the confounders that, in an unstructured observational comparison of pinning and floating projects, would bias the estimated effect.
-Project type (package versus application) shapes both the versioning strategy choice~\cite{DBLP:journals/tse/JafariCAST22} and the structural topology of the dependency graph~\cite{DBLP:conf/kbse/LatendresseMCS22, DBLP:journals/ese/DecanMG19}; library maintainers have strong incentives to use floating version ranges to avoid forcing duplicate installations on downstream consumers, while application maintainers have stronger incentives to pin for reproducibility~\cite{DBLP:journals/corr/abs-2505-04834, renovate-pinning}.
+Project type (package versus application) shapes both the versioning strategy choice~\cite{DBLP:journals/tse/JafariCAST22} and the structural topology of the dependency graph~\cite{DBLP:conf/kbse/LatendresseMCS22, DBLP:journals/ese/DecanMG19}; library maintainers generally prefer to use floating version ranges to avoid forcing duplicate installations on downstream consumers, while application maintainers may have stronger incentives to pin for reproducibility~\cite{DBLP:journals/corr/abs-2505-04834, renovate-pinning}.
 Project maturity---expressed through age, release history, and contributor count---predicts versioning strategy and outcome levels independently~\cite{DBLP:journals/tosem/JafariCSA23, DBLP:conf/icsr/ZeroualiCMRG18}.
 Calendar time matters because the npm ecosystem itself shifts over the observation window: the 2020 turn toward pinning, the rapid growth of the GitHub Advisory database~\cite{DBLP:journals/ese/ChinthanetKMIIM21}, and the changing prevalence of automated dependency-update tools all introduce time-varying common shocks.
 Latent developer security-consciousness affects both the strategy choice and the speed of vulnerability remediation~\cite{DBLP:conf/ccs/PashchenkoVM20}.
 Number of downstream dependents shapes maintainer conservatism through reputational pressure~\cite{DBLP:conf/uss/ZimmermannSTP19}.
 
 The counterfactual simulation that underpins RQ1 fundamentally changes the identification problem relative to a standard observational comparison.
-As both potential outcomes $Y_{it}(0)$ and $Y_{it}(1)$ are constructed for every project-time unit from the same \Code{package.json}, the simulation severs every back-door path that runs from a confounder into the treatment assignment, whether the confounder is time-invariant or time-varying.
+As both potential outcomes $Y_{it}(0)$ and $Y_{it}(1)$\footnote{This potential outcome notation follows Chapter~\ref{chp:background}: $Y_{it}(1)$ denotes the outcome that would have been observed if project $i$ at time $t$ had been assigned to the treatment (all-pinning) and $Y_{it}(0)$ denotes the outcome that would have been observed if it had been assigned to the control (predominantly floating).} are constructed for every project-time unit from the same \Code{package.json}, the simulation severs every back-door path that runs from a confounder into the treatment assignment, whether the confounder is time-invariant or time-varying.
 The remaining identification threat thus comes from whether the simulated counterfactual outcomes have the same expected values as the actual potential outcomes would.
 The next subsection makes this threat precise.
 
@@ -98,7 +98,7 @@ A2 is \emph{satisfied by construction}: dependency resolution is deterministic g
 RQ2 deliberately violates A2 by design---ecosystem-level interference is the entire point---which is why RQ2 uses a network propagation simulation method rather than a panel regression on simulated experiment data.
 
 \paragraph{A3. Consistent treatment value (SUTVA, Part 2).}
-There exists a single well-defined version of the treatment ``all-pinning.''
+In this study, treatment is well-defined (i.e., changing versioning strategy to all-pinning).
 A3 is \emph{satisfied by construction}: the treatment is imposed by a deterministic transformation of the \Code{package.json}---removing every caret and tilde from direct production dependencies and resolving to the minimum specified version---yielding a single, operationally well-defined version of all-pinning.
 The fact that real-world pinning behavior is a spectrum rather than a binary decision bears on whether the presented estimand is policy-relevant, not on whether the simulated estimand is causally identified; that concern belongs to external validity and is addressed in the existing Limitations subsection (Section~\ref{sec:method-rq1}).
 
@@ -129,17 +129,30 @@ They are addressed in the existing ``Limitations and Threats to Validity'' parag
 \subsection{Alternative Explanations}
 \label{sec:pinning-credibility-alternatives}
 
-Two alternative causal structures could in principle explain the central RQ1 findings without the proposed mechanism; this subsection considers each and explains how the design rules them out, partially addresses them, or leaves them open.
+%Two alternative causal structures could in principle explain the central RQ1 findings without the proposed mechanism; this subsection considers each and explains how the design rules them out, partially addresses them, or leaves them open.
 
-\paragraph{Alternative 1: The crossover finding is a simulation artefact.}
-The counter-intuitive result that pinning increases \Code{n\_floating} for large dependency graphs (Figure~\ref{fig:n-floating}) could be a simulation artefact if the \Code{-{}-before} resolver produces systematically different deduplication behavior for pinned versus floating \Code{package.json} files at high graph complexity.
+%\paragraph{Alternative 1: The crossover finding is a simulation artefact.}
+The only alternative causal structure that could explain the central RQ1 findings without the proposed mechanism is that the crossover finding is merely a simulation artefact.
+For example, the counter-intuitive result that pinning increases \Code{n\_floating} for large dependency graphs (Figure~\ref{fig:n-floating}) could be a simulation artefact if the \Code{-{}-before} resolver produces systematically different deduplication behavior for pinned versus floating \Code{package.json} files at high graph complexity.
 The design is defensible against this alternative: the mechanism---deduplication producing additional transitive version copies when pinning forces version conflicts---is structurally documented in npm's resolver implementation~\cite{how-npm3-works} and is illustrated with a minimal worked example in Figure~\ref{fig:rq2-example}.
 The crossover point at 498 nodes is consistent with the mechanism activating only once enough version conflicts accumulate in the transitive graph, a continuous rather than discontinuous process.
 The finding replicates across four robustness checks---npm packages only, GitHub repositories only, $t_0$ only, and development dependencies included---each representing a distinct subpopulation.
-A simulation artefact would need to produce the same spurious crossover point in all four populations, which is unlikely.
+A simulation artefact would need to produce the same spurious crossover point in all four populations, which we believe is unlikely.
 
-\paragraph{Alternative 2: Unobserved selection on project quality drives the within-project comparison.}
-A reader could ask whether projects whose maintainers chose pinning are systematically different in unobserved ways---more security-conscious, better resourced, more careful about updates---and whether those differences, rather than the pinning intervention itself, drive the observed effects.
-The counterfactual simulation eliminates this concern at the level of the RQ1 estimate: treatment is imposed by a deterministic transformation of the \Code{package.json}, not chosen by the project's maintainer.
-Selection into the observed pinning strategy is irrelevant to the simulated potential outcomes because every project is observed under both treatment conditions.
-This is the principal advantage of the counterfactual simulation design over an observational comparison and is what permits the relatively strong causal claims of RQ1 despite the absence of randomization.
+%\paragraph{Alternative 2: Unobserved selection on project quality drives the within-project comparison.}
+%A reader could ask whether projects whose maintainers chose pinning are systematically different in unobserved ways---more security-conscious, better resourced, more careful about updates---and whether those differences, rather than the pinning intervention itself, drive the observed effects.
+%The counterfactual simulation eliminates this concern at the level of the RQ1 estimate: treatment is imposed by a deterministic transformation of the \Code{package.json}, not chosen by the project's maintainer.
+%Selection into the observed pinning strategy is irrelevant to the simulated potential outcomes because every project is observed under both treatment conditions.
+%This is the principal advantage of the counterfactual simulation design over an observational comparison and is what permits the relatively strong causal claims of RQ1 despite the absence of randomization.
+
+\subsection{Causal Credibility Summary}
+
+The simulation design in RQ1 eliminates common selection bias, such as more security-conscious, better-maintained, or differently-typed projects being the ones who chose to pin.
+The one remaining assumption the design does not guarantee is \textit{simulation fidelity}, that npm's resolver faithfully reproduces, at the historical timestamp, what would actually have been installed.
+Additionally, another concrete validity threat is that 12--16\% of project-time observations fail to resolve, and these failures cluster on projects whose dependencies are already most conflict-prone, so the reported costs of pinning (more outdated, vulnerable, bloated, and auto-updating dependencies) should be read as lower bounds---especially for projects with large dependency graphs.
+The counter-intuitive crossover at 498 nodes, where pinning starts to \emph{increase} rather than reduce floating dependencies, survives four independent robustness checks and follows from a documented property of npm's deduplication algorithm, so it is best read as a genuine consequence of the mechanism rather than a simulator artefact.
+
+\begin{summary-rq}
+\textbf{Causal credibility, in plain language:} As every project is its own control during simulations, the pinning study has the strongest causal credibility in this thesis. 
+The chapter's headline conclusions---that local pinning is futile or counter-productive in large dependency graphs and that ecosystem-level coordinated pinning is the more effective intervention---survive intact, with the reported costs of pinning best read as lower bounds due to reported simulation failures.
+\end{summary-rq}
