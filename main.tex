@@ -101,7 +101,11 @@
 %%%%%%%%%% Begin: Custom Commands and Colors %%%%%%%%%%
 \renewcommand*{\ttdefault}{lmtt} % Change texttt font
 
-\newcommand{\TODO}[1]{{\textbf{\color{red}[[TODO: #1]]}}}
+% \TODO notes are not shown by default in a Thesis document to suppress TODOs in a WIP tutorial paper.
+\newif\ifshowtodos
+\showtodosfalse
+\ifdefined\HIDETODOS\showtodosfalse\fi
+\newcommand{\TODO}[1]{\ifshowtodos{\textbf{\color{red}[[TODO: #1]]}}\fi}
 \newcommand{\Code}[1]{\texttt{#1}}
 \newcommand{\SmallCode}[1]{\begin{small}\texttt{#1}\end{small}}
 \newcommand{\SystemName}[0]{\texttt{StarScout}\xspace}

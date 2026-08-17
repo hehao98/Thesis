@@ -3,7 +3,7 @@
 
 Chapter~\ref{chp:background} argued that empirical software engineering research advances most effectively when causal claims are accompanied by an explicit assessment of their credibility.
 This section instantiates the four-step framework for the present study: derive a causal theory from existing literature, define the estimands and the assumptions under which they admit a causal interpretation, honestly acknowledge the limitations that bear on those assumptions, and navigate the alternative causal structures a careful reader would consider.
-The goal is not to claim that the study's causal interpretation is beyond doubt, but to make the load-bearing assumptions transparent so that the strength of the evidence can be calibrated against them.
+The goal is not to claim that the study's causal interpretation is beyond doubt, but to make the assumptions transparent so that the strength of the evidence can be calibrated against them.
 
 Unlike the pinning study (Chapter~\ref{chp:pinning}), identification here is not by construction.
 The study targets two distinct estimands on the same data: the difference-in-differences (DiD) average effect of Cursor adoption on each outcome, and the dynamic feedback between velocity and quality outcomes identified by panel generalized method of moments (GMM).
@@ -82,7 +82,7 @@ Figure~\ref{fig:dag-cursor} shows the directed acyclic graph (DAG) governing the
     The DiD estimand identifies the marginal effect of $D$ on each outcome through these paths.
     The GMM estimand identifies two further causal arrows beyond the DiD's reach (dashed blue): the contemporaneous within-period effect $L_t \to C_t$ and the lagged feedback $C_t \to L_{t+1}$ from quality back to next-period velocity; analogous arrows on the warnings side are tested in Table~\ref{tab:causal-paths} but omitted from the figure for legibility.
     Three residual threats remain after fixed effects and matching: time-varying adoption of other AI tools, anticipatory pre-commit experimentation earlier than $h{=}{-}1$, and time-varying unobservables coincident with adoption.
-    The principal load-bearing assumptions are A1 (parallel trends) for the DiD estimand and B1 (sequential exogeneity) for the GMM estimand.}
+    The principal assumptions are A1 (parallel trends) for the DiD estimand and B1 (sequential exogeneity) for the GMM estimand.}
     \label{fig:dag-cursor}
 \end{figure}
 
@@ -135,7 +135,7 @@ Five identifying assumptions support the causal interpretation of the DiD coeffi
 In the absence of treatment, the average outcome trajectory of treated and matched-control repositories would have evolved in parallel.
 A1 \emph{requires empirical argument}.
 The pre-period placebo test in Equation~\ref{eq:parallel-trend} provides indirect evidence: all five outcomes pass the heteroscedasticity- and cluster-robust Wald test at the 0.05 level under the \citet{borusyak2024revisiting} estimator, and the propensity-score model on six-month pre-adoption dynamics (Section~\ref{sec:matching}) further strengthens the assumption's plausibility by aligning observable trajectories before adoption.
-The assumption nevertheless remains untestable in the post-period and is the principal load-bearing condition for the DiD estimate.
+The assumption nevertheless remains untestable in the post-period and is the principal condition for the DiD estimate.
 
 \paragraph{A2. No anticipation.}
 Outcomes for treated repositories before $E_i$ are unaffected by future treatment status.
@@ -257,7 +257,7 @@ Per-language robustness panels (Section~\ref{sec:cursor-robustness}, Figure~\ref
 A reader could ask whether projects whose maintainers chose Cursor are systematically different in unobserved ways at the moment of adoption---more security-conscious, better resourced, more willing to experiment---and whether those unobserved differences, rather than the Cursor intervention itself, drive the observed effects.
 The design partially addresses this concern: repository fixed effects $\mu_i$ absorb all time-invariant project characteristics, the propensity-score model on six-month pre-adoption dynamics absorbs observable trajectory differences (AUC 0.83--0.91), and the pre-trend tests pass for all five outcomes.
 What remains unaddressed is the canonical residual threat to A1: a time-varying unobserved shock occurring exactly at the adoption month, such as a senior contributor joining who simultaneously brings Cursor and a different coding style.
-This shock cannot be separated from the treatment effect by any observational design, and is the principal load-bearing assumption the chapter's findings ultimately rest on.
+This shock cannot be separated from the treatment effect by any observational design, and is the principal assumption the chapter's findings ultimately rest on.
 The most plausible candidate scenarios---a ``modernisation push'' that bundles tool adoption with pace acceleration, or a project entering a feature-development phase that coincides with Cursor adoption---would reinforce the velocity-up and quality-down pattern, so the central findings are robust in sign but possibly inflated in magnitude.
 
 \paragraph{Alternative 2: SonarQube warning increases reflect a measurement-side change in coding style rather than a quality decline.}

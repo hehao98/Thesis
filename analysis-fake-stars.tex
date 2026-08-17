@@ -3,7 +3,7 @@
 
 Chapter~\ref{chp:background} argued that empirical software engineering research advances most effectively when causal claims are accompanied by an explicit assessment of their credibility.
 This section instantiates the four-step framework for the present study: derive a causal theory from existing literature, define the estimands and the assumptions under which they admit a causal interpretation, honestly acknowledge the limitations that bear on those assumptions, and navigate the alternative causal structures a careful reader would consider.
-The goal is not to claim that the study's causal interpretation is beyond doubt, but to make the load-bearing assumptions transparent so that the strength of the evidence can be calibrated against them.
+The goal is not to claim that the study's causal interpretation is beyond doubt, but to make the assumptions transparent so that the strength of the evidence can be calibrated against them.
 
 The assessment targets RQ4 (Section~\ref{sec:rq4}), the only research question in the chapter that makes a quantitative causal claim.
 RQ1--RQ3 are descriptive results---population frequencies, activity timelines, and joint distributions over repository categories---and the chapter's hedged phrasing for them already reflects that scope.
@@ -75,7 +75,7 @@ Figure~\ref{fig:dag-fake-stars} shows the directed acyclic graph (DAG) governing
     The treatment effect on next-month real stars decomposes through two competing mediators: a positive visibility channel (trending, ranking, social proof) and a negative penalty channel (scrutiny, removal, signal-incongruence) that dominate at different horizons.
     Topic-by-time and topic-by-channel hype $Z_{t}^{\text{topic}}$ (red dashed box) is not absorbed by either repository or month fixed effects on their own, and is the principal residual confounder.
     The dashed red arrow $\textit{real}_{i, t-k} \to D_{i,t}$ is a reverse-causality edge with a positive sign---past organic momentum predicts subsequent purchasing---which the lagged-dependent-variable specification only partially blocks (small-$T$ Nickell bias~\cite{nickell1981biases}).
-    The principal load-bearing assumptions are A1 (strict exogeneity), A2 (no unobserved time-varying confounders), and A5 (panel completeness).}
+    The principal assumptions are A1 (strict exogeneity), A2 (no unobserved time-varying confounders), and A5 (panel completeness).}
     \label{fig:dag-fake-stars}
 \end{figure}
 
@@ -274,5 +274,5 @@ Still, \emph{the discussion's policy recommendation against buying fake stars su
 Ultimately, the credibility of the RQ4's causal interpretation rests primarily on A1 (strict exogeneity, with reverse causality biasing $\hat\beta_1$ upward through R3), A2 (no time-varying topic-by-time confounders, partially bounded through R2), and A5 (panel completeness, partially bounded through R1)---the assumptions the design's construction does not guarantee.
 
 \begin{summary-rq}
-\textbf{Causal credibility, in plain language:} The fake-stars study has a relatively weak causal design among the three empirical chapters in this thesis because the maintainer's purchase decision is endogenous and three load-bearing assumptions all require empirical argument; nonetheless, the chapter's policy recommendation against buying fake stars survives because the residual biases on the short-run estimate point upward---the headline recommendation in this paper ``buying fake stars is ineffective'' is still strong and credible despite the limitations.
+\textbf{Causal credibility, in plain language:} The fake-stars study has a relatively weak causal design among the three empirical chapters in this thesis because the maintainer's purchase decision is endogenous and the three assumptions all require empirical argument; nonetheless, the chapter's policy recommendation against buying fake stars survives because the residual biases on the short-run estimate point upward---the headline recommendation in this paper ``buying fake stars is ineffective'' is still strong and credible despite the limitations.
 \end{summary-rq}
