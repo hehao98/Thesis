@@ -150,20 +150,20 @@
 \title{{\it Thesis}\\
 {\bf Dispelling Software Engineering Myths:\\A Pragmatic Causal Inference Approach
 }}
-\author{Hao He}
-\date{\today}
+\author{\textbf{Hao He}}
+\date{September 2026}
 \Year{\the\year}
-\trnumber{}
+\trnumber{CMU-S3D-26-118}
 
 \committee{
 Bogdan Vasilescu, Co-Chair \\
 Christian Kästner, Co-Chair \\
 Rohan Padhye \\
-Narayan Ramasubbu
+Narayan Ramasubbu (University of Pittsburgh)
 }
 
-%\support{This work was supported in part by the National Science Foundation (award 2206859).}
-%\disclaimer{The views expressed in this work are those of the author and do not necessarily reflect the views of the sponsoring agencies.}
+\support{This work was supported in part by the National Science Foundation (award 2206859 and 2317168).}
+\disclaimer{The views expressed in this work are those of the author and do not necessarily reflect the views of the sponsoring agencies.}
 
 \keywords{causal inference, empirical software engineering, mining software repositories, research methodology, quasi-experimental design, observational studies, AI coding tools, software supply chain security, GitHub, developer productivity, open-source software}
 
@@ -182,9 +182,8 @@ While empirical software engineering research frequently investigates these myth
 In this thesis, I argue that \emph{causal credibility assessments are feasible in empirical software engineering research through explicit articulations of causal theory and assumptions}.
 
 To demonstrate this argument, this thesis starts with an accessible introduction to the modern causal inference toolkit for software engineering researchers.
-I will cover three conceptual pillars that would enable explicit articulations of causal theory and assumptions in empirical settings: potential outcomes framework, graphical causal models, and design-based identification.
-I will walk through AI coding tool adoption as a running example throughout, demonstrating how progressively stronger causal research designs can be made through articulating a causal theory and inspecting the plausibility of assumptions beneath each statistical method used.
-
+%I will cover three conceptual pillars that would enable explicit articulations of causal theory and assumptions in empirical settings: potential outcomes framework, graphical causal models, and design-based identification.
+%I will walk through AI coding tool adoption as a running example throughout, demonstrating how progressively stronger causal research designs can be made through articulating a causal theory and inspecting the plausibility of assumptions beneath each statistical method used.
 Then, across three empirical studies, I demonstrate how causal credibility assessments can reveal systematic gaps between practitioner beliefs and empirical reality. 
 First, using counterfactual analysis and simulations on npm dependency data, I challenge the myth that pinning dependency versions improves project security, showing that it paradoxically increases attack exposure unless upstream packages pin their own dependencies. 
 Second, through a longitudinal analysis of GitHub starring patterns with panel regression models, I challenge the myth that fake GitHub stars provide sustainable promotional benefits, showing instead that these artificial signals become long-term liabilities. 
@@ -208,11 +207,11 @@ Thank you for an understanding without parallel, both for what this work has dem
 These years have not always been easy, and the PhD itself, in honesty, was rarely the hardest part.
 I owe a quieter gratitude to the other life hardships I faced in parallel, too, for making me stronger, more resilient, and more attuned to the blessings I am fortunate to hold in my current life.
 
-The work in this thesis was supported in part by the National Science Foundation under award 2206859 (Kästner) and award 2317168 (Vasilescu), as well as research awards to Vasilescu from Google and the Digital Infrastructure Fund.
-The work in Chapter~\ref{chp:fake-stars} was further supported in part by the National Science Foundation under award 2207008 (Kapravelos).
-The work in Chapter~\ref{chp:fake-stars} is also supported by Socket Inc (\url{https://socket.dev}) and its CEO, Feross Aboukhadijeh, for the collaboration opportunities, general support, and computational resources that made the work in Chapter~\ref{chp:fake-stars} possible.
-The work in Chapter~\ref{chp:cursor} was further supported by the National Science Foundation Graduate Research Fellowship Program under Grant Number DGE214073 (Miller). 
-Finally, I thank the Google Cloud for Researchers program for the credits that funded the BigQuery-based analyses in Chapters~\ref{chp:fake-stars} and~\ref{chp:cursor}.
+% The work in this thesis was supported in part by the National Science Foundation under award 2206859 (Kästner) and award 2317168 (Vasilescu), as well as research awards to Vasilescu from Google and the Digital Infrastructure Fund.
+% The work in Chapter~\ref{chp:fake-stars} was further supported in part by the National Science Foundation under award 2207008 (Kapravelos).
+% The work in Chapter~\ref{chp:fake-stars} is also supported by Socket Inc (\url{https://socket.dev}) and its CEO, Feross Aboukhadijeh, for the collaboration opportunities, general support, and computational resources that made the work in Chapter~\ref{chp:fake-stars} possible.
+% The work in Chapter~\ref{chp:cursor} was further supported by the National Science Foundation Graduate Research Fellowship Program under Grant Number DGE214073 (Miller). 
+% Finally, I thank the Google Cloud for Researchers program for the credits that funded the BigQuery-based analyses in Chapters~\ref{chp:fake-stars} and~\ref{chp:cursor}.
 \end{acknowledgments}
 
 \tableofcontents
