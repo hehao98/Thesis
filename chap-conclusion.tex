@@ -26,7 +26,7 @@ Chapter~\ref{chp:fake-stars} challenges the software engineering myth that buyin
 The chapter introduces \SystemName, which mines GitHub's complete event metadata for two complementary signatures of inauthentic starring activity and identifies six million suspected fake stars across 26{,}254 repositories between 2019 and 2024.
 A panel autoregression with repository fixed effects estimates the promotional and penalty effects of detected fake-star activity on subsequent organic star arrivals.
 The analysis finds a short-run promotional bump of less than two months followed by a long-run penalty, with the majority of fake-star campaigns targeting short-lived phishing or malware repositories.
-The methodological lesson is that even when the maintainer's treatment decision is endogenous and identification cannot be by construction, a panel-FE design paired with three targeted robustness checks---survivor stratification, topic stratification, and a lead-lag swap regression---can discipline the directions of residual biases and bound the policy-relevant claim, even though it cannot eliminate the underlying threats.
+The methodological lesson is that even when the maintainer's treatment decision is endogenous and identification cannot be by construction, a panel-FE design paired with three targeted robustness checks---survivor stratification, topic stratification, and a lead-lag swap regression---can discipline the directions of residual biases and bound the policy-relevant claim, even though it cannot eliminate the underlying threats decisively.
 
 \subsection{Empirical Study III: Cursor AI and Open-Source Project Outcomes}
 
@@ -87,17 +87,23 @@ Design strength and policy survival are therefore distinct dimensions, and downs
 \section{Revisiting the Thesis Statement}
 \label{sec:conclusion-thesis-statement}
 
-The framed thesis statement on page~\pageref{sec:thesis-statement} reads:
+In this thesis, I argue that:
 \begin{quote}
 \emph{Causal credibility assessments are feasible in empirical software engineering through an explicit articulation of causal theory and assumptions.}
 \end{quote}
 
-The four-step framework introduced in Chapter~\ref{chp:background} operationalises this claim through a uniform procedure: (1) derive an explicit causal theory from existing software engineering domain knowledge, typically as a directed acyclic graph; (2) define the causal estimand through the potential-outcomes framework and specify the assumptions under which it admits a causal interpretation; (3) honestly acknowledge and mitigate limitations and known caveats; (4) thoughtfully navigate alternative causal structures the data also admits.
+The four-step framework introduced in Chapter~\ref{chp:background} operationalizes this claim through a uniform procedure: 
+\begin{enumerate}
+  \item Derive an explicit causal theory from existing software engineering domain knowledge, typically as a directed acyclic graph.
+  \item Define the causal estimand through the potential-outcomes framework and specify the assumptions under which it admits a causal interpretation.
+  \item Honestly acknowledge and mitigate limitations and known caveats.
+  \item Thoughtfully navigate alternative causal structures the data also admits.
+\end{enumerate}
 Each empirical chapter instantiates the four steps in a dedicated Causal Credibility Assessment section (Section~\ref{sec:pinning-credibility}, Section~\ref{sec:fake-stars-credibility}, Section~\ref{sec:cursor-credibility}).
 
 The thesis statement claims feasibility, not certainty.
 The fact that the same four-step framework operates uniformly across designs that differ as much as a counterfactual simulation, a staggered-adoption difference-in-differences, and a panel autoregression on observational data is the argument that the feasibility claim is broadly applicable rather than tied to any single design tradition.
-What the thesis does not claim, and what this conclusion does not extend to:
+I list a few important caveats regarding what this thesis does not claim and where the statement cannot be extended:
 \begin{itemize}[leftmargin=20pt]
 \item The framework does not eliminate causal uncertainty.
 Each empirical chapter still has identifying assumptions that require empirical argument, and the credibility summaries name them honestly rather than rhetorically.
@@ -106,6 +112,8 @@ The literature review in Chapter~\ref{chp:background} establishes that 29\% of e
 \item The framework addresses identification, not measurement.
 Persistent empirical controversies in SE---such as the programming-language and defect-proneness debate---remain unresolved partly because of identification failures (which this thesis addresses) and partly because of measurement challenges (which this thesis acknowledges but does not solve).
 A causally clean estimate of an effect on a noisy proxy still leaves the underlying construct in dispute.
+\item The framework does not replace existing data-driven empirical SE methods, nor does it imply that certain methods are inferior or superior to other methods.
+This framework builds on top of the existing diverse realm of empirical methods used in SE and adds an explicit statement of the causal theory, estimand, and assumptions that would help transparent disclosure and iterative refinement.
 \end{itemize}
 
 Within these limits, the three empirical chapters demonstrate that causal credibility assessment is feasible across substantively different software engineering questions, and that doing it explicitly produces more honest and more useful conclusions than the field's prevailing pattern of correlational claims accompanied by a perfunctory ``correlation does not imply causation'' caveat.
