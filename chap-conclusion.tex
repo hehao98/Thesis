@@ -113,6 +113,10 @@ Persistent empirical controversies in SE---such as the programming-language and 
 A causally clean estimate of an effect on a noisy proxy still leaves the underlying construct in dispute.
 \item The framework does not replace existing data-driven empirical SE methods, nor does it imply that certain methods are inferior or superior to other methods.
 This framework builds on top of the existing diverse realm of empirical methods in SE and adds an explicit statement of the causal theory, estimand, and assumptions that I believe will help transparent disclosure, iterative refinement, and cumulative knowledge building for a broad class of intervention-outcome problems prevalent in empirical software engineering research.
+\item The framework prescribes transparent disclosure of the causal theory, not a particular formalism for it.
+A DAG is one way to state a researcher's beliefs about the data-generating process, and different experts can legitimately hold different theories of the same phenomenon~\cite{DBLP:books/sp/08/SjobergDAH08, DBLP:journals/scp/StolF15}.
+Some of the theories in this thesis---the velocity--quality feedback in Chapter~\ref{chp:cursor} and the momentum--purchase dynamics in Chapter~\ref{chp:fake-stars}---are temporal feedback systems that a static acyclic graph represents only after unrolling time, and for which cyclic structural causal models~\cite{bongers2021foundations}, time-varying treatment frameworks~\cite{robins1986new, hernan2020causal}, or system dynamics models~\cite{abdelhamid1991software, sterman2000business} may be the more natural formulation.
+Section~\ref{sec:conclusion-transparency} extends this argument.
 \end{itemize}
 
 Within these limits, the three empirical chapters demonstrate that causal credibility assessment is feasible across substantively different software engineering questions, and that doing it explicitly produces more honest and more useful conclusions than the field's prevailing pattern of correlational claims accompanied by a perfunctory ``correlation does not imply causation'' caveat.
@@ -148,6 +152,7 @@ A downstream reader who reads only the abstract still receives the policy claim 
 The framework is therefore a piece of communicative infrastructure as much as it is a methodological one: it gives a downstream reader the tools to read a study honestly even when that reader is not in a position to redo the analysis.
 
 \subsection{Assumptions Are Universal, and Transparent Disclosure Is the Key}
+\label{sec:conclusion-transparency}
 
 Every causal inference rests on assumptions, and observational designs are not uniquely vulnerable in this respect.
 Randomized controlled trials rest on assumptions of stable unit treatment values, full compliance, no spillover between units, construct validity of the chosen outcome measure, and generalisability beyond the trial population.
@@ -156,6 +161,20 @@ The shift the thesis advocates is therefore one of expectation rather than of me
 Still, this shift will not satisfy the most cynical critic, who can refuse to believe any observational study, and it will not protect against the uninformed reader, who can misread any descriptive result as causal.
 Neither failure mode is the framework's responsibility to solve.
 The framework's value is for the practitioner in between---the researcher, reviewer, or practitioner-engineer who is willing to engage with the evidence but needs a structured way to calibrate confidence in what the evidence supports.
+
+The same expectation of disclosure applies to the causal theory itself, and here the framework's commitment is to transparency rather than to any single representation.
+Chapter~\ref{chp:background} recommends DAGs because they make conditioning decisions inspectable and because the back-door criterion turns a drawn graph into a covariate-selection rule; the three empirical chapters follow this recommendation.
+A DAG is nevertheless one formalism among several for encoding what a researcher believes about the data-generating process.
+The potential-outcomes tradition in economics states the same beliefs as assumptions about the assignment mechanism and rarely draws a graph~\cite{imbens2020potential}; structural econometrics states them as systems of equations with explicit functional form~\cite{heckman2015causal}; and the medical-statistics literature has questioned whether an acyclic graph is the right abstraction for mechanisms that unfold continuously in time~\cite{aalen2016can}.
+The distinction matters for software engineering because many of the field's most interesting theories are not completely acyclic.
+The Cursor chapter's central finding is a feedback loop---velocity affects quality within a period and quality affects velocity in the next---and the fake-stars chapter's principal residual threat is a reverse-causal loop between organic momentum and purchase decisions.
+Both chapters handle these loops by unrolling time so that the graph remains acyclic, which is the standard treatment of time-varying exposures~\cite{robins1986new, hernan2020causal}, but a researcher whose theory is fundamentally about equilibria, accumulation, or delayed feedback may find a cyclic structural causal model~\cite{bongers2021foundations} or a system dynamics model in the tradition of \citet{abdelhamid1991software} and \citet{sterman2000business} a more faithful statement of that theory.
+This thesis leaves these as potential future work.
+
+Different experts also hold different theories of the same phenomenon, and the software engineering literature has long recognized that the field's theories are plural, mostly implicit, and unevenly used.
+\citet{DBLP:journals/tse/HannaySD07} found that fewer than a quarter of the software engineering experiments published over a decade used any theory to explain the cause--effect relationship under investigation, and subsequent calls for theory-oriented software engineering~\cite{DBLP:journals/software/JohnsonEJ12, DBLP:journals/scp/StolF15, DBLP:journals/tse/Ralph19} have argued that the discipline needs a shared vocabulary for proposing, comparing, and refining such theories~\cite{DBLP:books/sp/08/SjobergDAH08}.
+Causal credibility assessment supplies one concrete use for that vocabulary: Whatever formalism a researcher chooses, the theory must be stated explicitly enough that a second expert holding a different theory can see where the two disagree, and the fourth step of the framework is the place where those disagreements are meant to surface.
+The requirement is therefore not that every study draw a DAG, but that every study make its theory a disclosed and contestable object rather than an implicit input to a model specification.
 
 \subsection{Iterative Refinement, Not Final Resolution}
 
