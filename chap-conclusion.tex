@@ -87,7 +87,6 @@ Design strength and policy survival are therefore distinct dimensions, and downs
 \section{Revisiting the Thesis Statement}
 \label{sec:conclusion-thesis-statement}
 
-In this thesis, I argue that:
 \begin{quote}
 \emph{Causal credibility assessments are feasible in empirical software engineering through an explicit articulation of causal theory and assumptions.}
 \end{quote}
@@ -113,7 +112,7 @@ The literature review in Chapter~\ref{chp:background} establishes that 29\% of e
 Persistent empirical controversies in SE---such as the programming-language and defect-proneness debate---remain unresolved partly because of identification failures (which this thesis addresses) and partly because of measurement challenges (which this thesis acknowledges but does not solve).
 A causally clean estimate of an effect on a noisy proxy still leaves the underlying construct in dispute.
 \item The framework does not replace existing data-driven empirical SE methods, nor does it imply that certain methods are inferior or superior to other methods.
-This framework builds on top of the existing diverse realm of empirical methods used in SE and adds an explicit statement of the causal theory, estimand, and assumptions that would help transparent disclosure and iterative refinement.
+This framework builds on top of the existing diverse realm of empirical methods in SE and adds an explicit statement of the causal theory, estimand, and assumptions that I believe will help transparent disclosure, iterative refinement, and cumulative knowledge building for a broad class of intervention-outcome problems prevalent in empirical software engineering research.
 \end{itemize}
 
 Within these limits, the three empirical chapters demonstrate that causal credibility assessment is feasible across substantively different software engineering questions, and that doing it explicitly produces more honest and more useful conclusions than the field's prevailing pattern of correlational claims accompanied by a perfunctory ``correlation does not imply causation'' caveat.
@@ -148,10 +147,10 @@ The fake-stars chapter is the clearest illustration of this asymmetry.
 A downstream reader who reads only the abstract still receives the policy claim that buying fake stars is ineffective; a downstream reader who engages with Section~\ref{sec:fake-stars-credibility} understands why the claim survives, what it depends on, and what residual threats a careful reader would still want to inspect.
 The framework is therefore a piece of communicative infrastructure as much as it is a methodological one: it gives a downstream reader the tools to read a study honestly even when that reader is not in a position to redo the analysis.
 
-\subsection{Assumptions Are Universal}
+\subsection{Assumptions Are Universal, and Transparent Disclosure Is the Key}
 
 Every causal inference rests on assumptions, and observational designs are not uniquely vulnerable in this respect.
-Randomised controlled trials rest on assumptions of stable unit treatment values, full compliance, no spillover between units, construct validity of the chosen outcome measure, and generalisability beyond the trial population.
+Randomized controlled trials rest on assumptions of stable unit treatment values, full compliance, no spillover between units, construct validity of the chosen outcome measure, and generalisability beyond the trial population.
 The novelty of the four-step framework is not that it makes assumptions visible---every method does, somewhere---but that it makes them visible uniformly across the observational designs that the empirical SE field has historically treated as if they had no assumptions to articulate.
 The shift the thesis advocates is therefore one of expectation rather than of method: A study that claims a causal effect should be expected to name the assumptions the claim rests on, just as a randomised trial is expected to report its compliance rate.
 Still, this shift will not satisfy the most cynical critic, who can refuse to believe any observational study, and it will not protect against the uninformed reader, who can misread any descriptive result as causal.
@@ -166,7 +165,12 @@ The Cursor chapter's matching procedure depends on six-month pre-adoption activi
 The fake-stars chapter's detection pipeline depends on the GHArchive event stream and on advances in fake-account-detection methodology that accumulated across adjacent fields.
 Each generation of empirical SE work that engages explicitly with causal credibility hands the next generation a stronger toolkit; the field's path forward is iterative refinement, not a single final resolution.
 
+\subsection{On Practitioners' Belief and Impact of Empirical SE Research}
+
 \subsection{Closing Posture}
+
+
+\textbf{What Should the Field Set as the New Standard?}
 
 This thesis does not claim to resolve the empirical software engineering field's longstanding disconnect between causal ambition and methodological practice.
 It claims that the disconnect is bridgeable through an explicit articulation of causal theory and assumptions, and that the four-step framework is one usable operationalisation of that bridge.
