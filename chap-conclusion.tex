@@ -138,7 +138,7 @@ The four-step framework's contribution is therefore not to declare each myth dis
 Practitioners and researchers can then update their beliefs along the specific dimension the evidence speaks to rather than wholesale, and downstream readers can engage with the qualified claim without having to choose between accepting or rejecting the entire study.
 % This reframing also explains why the field's prevailing pattern of correlational findings with a perfunctory ``correlation does not imply causation'' caveat has done little to dispel myths over decades: An unconditional finding cannot displace an unconditional belief, and only a conditional, identification-aware claim can engage with a myth at the resolution at which the myth is actually held.
 
-\subsection{The Downstream Misuse Problem}
+\subsection{Revisiting the Downstream Misuse Problem}
 
 A central worry that motivates this thesis is that even carefully hedged empirical results are routinely read by downstream readers as causal claims, and that the field lacks a shared framework for evaluating whether such a reading is warranted.
 The Ray et al.\ controversy documented in Chapter~\ref{chp:intro} illustrates the pattern: the original authors framed their findings as associational, but downstream practitioners and follow-up papers cited the work as if it had established a causal effect of programming language on defect proneness.
@@ -178,18 +178,45 @@ The requirement is therefore not that every study draw a DAG, but that every stu
 
 Transparent disclosure has a further benefit that the preceding discussion has only implied: It is the precondition for iterative refinement.
 An assumption that is named can be targeted by a later design; a theory that is stated can be contested by a second expert; and a limitation whose direction of bias is recorded tells the next study which way its estimate needs to move.
-None of these steps is available when the assumptions remain implicit in a model specification, because an undisclosed assumption cannot be deliberately relaxed.
-The three empirical chapters show how quickly disclosed targets become reachable, since each benefits from infrastructure that did not exist a decade ago.
-The pinning chapter's identification by construction depends on an experimental time-traveling feature of the npm dependency resolver.
-The Cursor chapter's matching procedure depends on six-month pre-adoption activity trajectories that became observable only after dense repository event logging matured.
-The fake-stars chapter's detection pipeline depends on the GHArchive event stream and on advances in fake-account-detection methodology that accumulated across adjacent fields.
-In each case, an assumption that an earlier study could only state became one that a later design could enforce or test, and a later design can recognize which newly available data lifts which assumption only if the assumption was articulated in the first place.
-The residual threats named in the three credibility assessments---simulation fidelity in Chapter~\ref{chp:pinning}, reverse causality between organic momentum and purchase decisions in Chapter~\ref{chp:fake-stars}, and time-varying shocks that coincide with tool adoption in Chapter~\ref{chp:cursor}---occupy the same position today: They are the disclosed targets that a future improved design can address.
 Each generation of empirical SE work that engages explicitly with causal credibility therefore hands the next generation both a stronger toolkit and a sharper list of what remains to be shown; the field's path forward is iterative refinement, not a single final resolution.
 
-\subsection{On Practitioners' Belief and Impact of Empirical SE Research}
+\subsection{On Practitioners' Beliefs and the Impact of Empirical SE Research}
+\label{sec:conclusion-practitioner-beliefs}
 
+A reasonable objection to the three empirical chapters is that their estimates match nobody's prior.
+Practitioners form their beliefs primarily from personal experience rather than from published evidence~\cite{DBLP:conf/icse/Devanbu0B16, DBLP:conf/esem/PassosBCM11}, they are persuaded more readily by local opinion than by empirical findings~\cite{DBLP:conf/isese/RainerHB03}, and their beliefs are not consistently supported by data from the very projects that formed them~\cite{DBLP:journals/ese/ShrikanthNFM21}.
+The pinning chapter's estimate---a security benefit that reverses in dependency graphs of 498 nodes or more---is a population-level, conditional quantity that neither the security cohort nor the maintenance cohort in the prior debate held a belief about, and the same is true of the two-month promotional horizon in the fake-stars chapter and the transient velocity gain in the Cursor chapter.
+If the estimate corresponds to no belief a practitioner actually holds, what is the study for?
 
+This thesis takes the position that empirical software engineering research is \emph{supplementary} to practitioner judgment, and that its best achievable impact is to shift practitioners' beliefs by the amount that well-informed and well-executed evidence warrants.
+The position has a precedent.
+Evidence-based medicine defined itself as the integration of individual clinical expertise with the best available external evidence and explicitly rejected the reading that evidence replaces judgment~\cite{sackett1996evidence}; the evidence-based software engineering program imported the same stance~\cite{DBLP:conf/icse/KitchenhamDJ04, DBLP:journals/software/DybaKJ05}.
+Research is supplementary not because it is weaker than experience but because the two sample the data-generating process differently.
+A practitioner's experience samples a narrow slice---their own projects, ecosystem, and era---at high resolution, and it is frequently accurate within that slice.
+Empirical research samples broadly across projects at lower resolution and recovers population-level and conditional structure that no individual's experience can reach.
+The pinning debate illustrates the complementarity: The security cohort and the maintenance cohort each generalized from the projects they had seen, both were right within their slice, and the dependency-graph-size condition that reconciles them is visible only from an ecosystem-scale sample.
+That the estimate matches no prior is therefore not a defect of the study; it is the information the study adds.
+A practitioner who combines the two sources arrives at a belief that neither source could have produced alone, and the impact of a study is the size of that update rather than the estimate it reports.
+
+The Bayesian framing introduced in Chapter~\ref{chp:intro} makes the position precise and clarifies what causal credibility contributes to it.
+A practitioner who assigns a low prior probability to a claim---which is what holding a myth means---updates toward the claim only when the observed evidence is substantially more probable under the claim than under its alternatives~\cite{howson2006scientific}; this is the sense in which extraordinary claims require extraordinary evidence.
+The consequence that matters for this thesis is that the likelihood ratio is a property of the research design, not of the point estimate.
+If an observed effect is nearly as probable under confounding, reverse causality, or selection as under the causal claim, the likelihood ratio is close to one, and the estimate should not move a calibrated practitioner however large it is.
+This is exactly the discounting Chapter~\ref{chp:intro} describes: When a controversial finding fails to rule out alternative explanations, practitioners become skeptical of it altogether, and that skepticism is warranted.
+Steps 3 and 4 of the framework---bounding residual biases and navigating alternative causal structures---are where alternatives are made improbable, so a causal credibility assessment is, in Bayesian terms, an honest report of the likelihood ratio the study is entitled to claim.
+Extraordinary evidence is built by design rather than by effect size, and iterative refinement compounds it: Each subsequent study that targets an assumption the previous one left open removes an alternative under which the earlier evidence would have been equally likely, so the accumulated likelihood ratio across a research program grows in a way that a sequence of correlational studies restating the same association under the same unaddressed alternatives cannot.
+A myth held with confidence will therefore not be displaced by a single study, and the framework does not promise that it will; it promises that each study's contribution to the eventual displacement is stated and can be built upon.
+
+Three qualifications keep this position from overreaching.
+First, the goal is calibration, not persuasion in a predetermined direction.
+A research program whose only acceptable output is a dispelled myth would inflate its claims, and a practitioner population that has learned to discount inflated claims would assign every subsequent study a likelihood ratio near one, corroding the channel the program depends on.
+All three chapters end with a conditional finding that partially vindicates the belief they set out to challenge, and the framework must remain equally willing to report that a myth survives.
+Second, practitioners hold heterogeneous priors, so there is no single threshold of extraordinary evidence; the threshold is set by the most skeptical reasonable prior, and the conditional claims discussed above are what let a study address each prior at its own resolution.
+For a practitioner whose belief concerns a condition the study does not analyze, the honest answer is that the study does not speak to them, and the estimand definition in Step 2 makes this boundary explicit rather than leaving it to be inferred.
+Third, the belief update rarely happens through the paper itself.
+Practitioners rate much software engineering research as relevant~\cite{DBLP:conf/sigsoft/LoNZ15}, yet published findings remain a minor source of their beliefs relative to experience and peers~\cite{DBLP:conf/icse/Devanbu0B16, DBLP:journals/ese/GarousiBO20}.
+Beliefs travel through intermediaries---security scorecards, tool defaults, platform policies, educators, and colleagues---and the audience whose beliefs a study most needs to move is often the maintainer of an OpenSSF Scorecard check or the designer of a package manager's default resolution rule rather than the individual developer.
+The communicative role of the framework discussed above matters most for these intermediaries: An intermediary that encodes a claim with more confidence than the evidence supports reproduces the myth in a new form, and an explicit credibility assessment is what gives the intermediary a basis for calibrating the confidence it encodes.
 
 \subsection{Closing Posture}
 
