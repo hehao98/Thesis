@@ -184,8 +184,8 @@ Each generation of empirical SE work that engages explicitly with causal credibi
 \label{sec:conclusion-practitioner-beliefs}
 
 A reasonable objection to the three empirical chapters is that their estimates match nobody's prior.
-Practitioners form their beliefs primarily from personal experience rather than from published evidence~\cite{DBLP:conf/icse/Devanbu0B16, DBLP:conf/esem/PassosBCM11}, they are persuaded more readily by local opinion than by empirical findings~\cite{DBLP:conf/isese/RainerHB03}, and their beliefs are not consistently supported by data from the very projects that formed them~\cite{DBLP:journals/ese/ShrikanthNFM21}.
-The pinning chapter's estimate---a security benefit that reverses in dependency graphs of 498 nodes or more---is a population-level, conditional quantity that neither the security cohort nor the maintenance cohort in the prior debate held a belief about, and the same is true of the two-month promotional horizon in the fake-stars chapter and the transient velocity gain in the Cursor chapter.
+This is because practitioners form their beliefs primarily from personal experience rather than from published evidence~\cite{DBLP:conf/icse/Devanbu0B16, DBLP:conf/esem/PassosBCM11}, they are persuaded more readily by local opinion than by empirical findings~\cite{DBLP:conf/isese/RainerHB03}, and their beliefs are not consistently supported by data from the very projects that formed them~\cite{DBLP:journals/ese/ShrikanthNFM21}.
+On the other hand, the pinning chapter's estimate---a security benefit that reverses in dependency graphs of 498 nodes or more---is a population-level, conditional quantity that neither the security cohort nor the maintenance cohort in the prior debate held a belief about, and the same is true of the two-month promotional horizon in the fake-stars chapter and the transient velocity gain in the Cursor chapter.
 If the estimate corresponds to no belief a practitioner actually holds, what is the study for?
 
 This thesis takes the position that empirical software engineering research is \emph{supplementary} to practitioner judgment, and that its best achievable impact is to shift practitioners' beliefs by the amount that well-informed and well-executed evidence warrants.
@@ -194,7 +194,7 @@ Evidence-based medicine defined itself as the integration of individual clinical
 Research is supplementary not because it is weaker than experience but because the two sample the data-generating process differently.
 A practitioner's experience samples a narrow slice---their own projects, ecosystem, and era---at high resolution, and it is frequently accurate within that slice.
 Empirical research samples broadly across projects at lower resolution and recovers population-level and conditional structure that no individual's experience can reach.
-The pinning debate illustrates the complementarity: The security cohort and the maintenance cohort each generalized from the projects they had seen, both were right within their slice, and the dependency-graph-size condition that reconciles them is visible only from an ecosystem-scale sample.
+For example, the pinning debate illustrates the complementarity: The security cohort and the maintenance cohort each generalized from the projects they had seen, both were right within their slice, and the dependency-graph-size condition that reconciles them is visible only from an ecosystem-scale sample.
 That the estimate matches no prior is therefore not a defect of the study; it is the information the study adds.
 A practitioner who combines the two sources arrives at a belief that neither source could have produced alone, and the impact of a study is the size of that update rather than the estimate it reports.
 
@@ -207,23 +207,60 @@ Steps 3 and 4 of the framework---bounding residual biases and navigating alterna
 Extraordinary evidence is built by design rather than by effect size, and iterative refinement compounds it: Each subsequent study that targets an assumption the previous one left open removes an alternative under which the earlier evidence would have been equally likely, so the accumulated likelihood ratio across a research program grows in a way that a sequence of correlational studies restating the same association under the same unaddressed alternatives cannot.
 A myth held with confidence will therefore not be displaced by a single study, and the framework does not promise that it will; it promises that each study's contribution to the eventual displacement is stated and can be built upon.
 
-Three qualifications keep this position from overreaching.
-First, the goal is calibration, not persuasion in a predetermined direction.
+I make three additional clarifications to keep this position from overreaching:
+\begin{itemize}
+  \item First, the goal is calibration, not persuasion in a predetermined direction.
 A research program whose only acceptable output is a dispelled myth would inflate its claims, and a practitioner population that has learned to discount inflated claims would assign every subsequent study a likelihood ratio near one, corroding the channel the program depends on.
-All three chapters end with a conditional finding that partially vindicates the belief they set out to challenge, and the framework must remain equally willing to report that a myth survives.
-Second, practitioners hold heterogeneous priors, so there is no single threshold of extraordinary evidence; the threshold is set by the most skeptical reasonable prior, and the conditional claims discussed above are what let a study address each prior at its own resolution.
-For a practitioner whose belief concerns a condition the study does not analyze, the honest answer is that the study does not speak to them, and the estimand definition in Step 2 makes this boundary explicit rather than leaving it to be inferred.
-Third, the belief update rarely happens through the paper itself.
+The framework must remain equally willing to report that a myth survives.
+  \item Second, practitioners hold heterogeneous priors, so there is no single threshold of extraordinary evidence; the threshold is set by the most skeptical reasonable prior, and the conditional claims discussed above are what let a study address each prior at its own resolution.
+For a practitioner whose belief concerns a condition the study does not analyze, the researcher must provide the honest answer that the study does not speak to them and disclose the boundries transparently.
+  \item Third, the belief update rarely happens through the paper itself.
 Practitioners rate much software engineering research as relevant~\cite{DBLP:conf/sigsoft/LoNZ15}, yet published findings remain a minor source of their beliefs relative to experience and peers~\cite{DBLP:conf/icse/Devanbu0B16, DBLP:journals/ese/GarousiBO20}.
-Beliefs travel through intermediaries---security scorecards, tool defaults, platform policies, educators, and colleagues---and the audience whose beliefs a study most needs to move is often the maintainer of an OpenSSF Scorecard check or the designer of a package manager's default resolution rule rather than the individual developer.
-The communicative role of the framework discussed above matters most for these intermediaries: An intermediary that encodes a claim with more confidence than the evidence supports reproduces the myth in a new form, and an explicit credibility assessment is what gives the intermediary a basis for calibrating the confidence it encodes.
+Beliefs travel through intermediaries---security scorecards, tool defaults, platform policies, educators, and colleagues---and the audience whose beliefs a study most needs to move is often relevant practitioners (e.g., maintainers of the OpenSSF Scorecard for the pinning study and senior managers deciding tool adoption for the Cursor study) rather than any individual developer.
+The communicative role of the framework discussed above matters most for these intermediaries.
+\end{itemize}
 
-\subsection{Closing Posture}
+\subsection{Closing Posture: How Should the Field Move Forward?}
+\label{sec:conclusion-closing}
 
+The thesis argues that causal credibility assessment is feasible; whether the field moves as a result is a separate question, and there are two symmetric ways it could go wrong.
+The first failure mode is inertia: The field takes note of the framework and changes nothing, and the 1.9\% share of causal-method papers documented in Chapter~\ref{chp:background} stays where it has stood for a decade.
+The second failure mode is over-correction: Causal inference becomes a fashion, peer review develops an \emph{identification police} that rejects observational studies for lacking an instrument, a discontinuity, or an experiment, and the field loses the descriptive, exploratory, and qualitative work on which causal theories depend.
+Both failure modes have precedents in fields that adopted causal inference earlier than software engineering, and their experience shapes my position here.
 
-\textbf{What Should the Field Set as the New Standard?}
+The identification-police concern is the one often raised against this thesis, and the economics profession's experience supplies the answer.
+The credibility revolution in empirical economics~\cite{angrist2010credibility} provoked a sustained critique that design-based methods answer narrow questions with local estimands, privilege identification over substantive theory, and reduce methodology to a hierarchy in which only experiments and instruments count~\cite{deaton2010instruments, heckman2010comparing, deaton2018understanding}.
+The productive part of that exchange was the discipline the debate imposed on both sides: A study must state what its design identifies, for which population, and under which assumptions, and a critic must state which assumption fails and in which direction~\cite{imbens2010better}.
+The unproductive part was the reflex of dismissing a study for the design it did not use rather than engaging with the assumptions it did.
+None of the three empirical chapters in this thesis uses an instrument or a discontinuity, and a reviewer who applied the hierarchy as a rule would reject all three.
+Each chapter also names its assumptions, so the valid criticism of each is specific: that strict exogeneity in Chapter~\ref{chp:fake-stars} fails because momentum drives purchases in a way the lead-lag swap does not bound, that parallel trends in Chapter~\ref{chp:cursor} fails because a modernization push coincides with adoption, or that the simulation in Chapter~\ref{chp:pinning} misrepresents resolver behavior for some class of projects.
+In all cases, the framework cannot disarm criticism but may rather give weapons through the exact transparent disclosure process I advocate throughout the thesis.
 
-This thesis does not claim to resolve the empirical software engineering field's longstanding disconnect between causal ambition and methodological practice.
+This is why an empirical standard is the right institutional response.
+The ACM SIGSOFT Empirical Standards~\cite{DBLP:journals/corr/abs-2010-03525} address reviewers as well as authors, and each standard enumerates acceptable deviations and invalid criticisms alongside essential attributes.
+The standard for causal inquiries in Appendix~\ref{sec:appendix-standard} inherits that design: It names the absence of a randomized experiment, the existence of unmeasured confounders, a local estimand, a hedged conclusion, and the use of an established rather than a novel estimator as grounds on which a reviewer may not reject.
+Importantly, the standard makes it explicit upfront that it does not apply to descriptive, exploratory, and qualitative work that does not seek to quantitatively investigate intervention-outcome questions. 
+I should note that the field also already has a police of the opposite kind.
+The prevailing reflex that treats any causal language in an observational study as a defect, and that is satisfied by a perfunctory ``correlation does not imply causation'' caveat, is an \emph{association police} whose effect epidemiology has documented: Euphemism hides the causal question the study was asking and does nothing for the inference~\cite{hernan2018cword}.
+For both kind of ``police'' in peer reviews, an empirical standard that clearly outlines invalid criticisms is the answer.
+
+The inertia concern is the more serious of the two, and the thesis's own evidence supports taking it seriously.
+The field of medicine offers the sharper warning: Evidence-based medicine has had a mature evidence base and formal guidelines for three decades~\cite{sackett1996evidence}, and a substantial literature documents that well-evidenced guidelines do not change practice wholesale.
+\citet{cabana1999why} classify the barriers as lack of awareness and familiarity, lack of agreement, lack of self-efficacy, lack of outcome expectancy, inertia of previous practice, and external constraints, and \citet{grol2003best} show that passive dissemination of evidence is largely ineffective on its own and that durable change requires interventions targeted at the specific barriers of a specific setting.
+Read against this classification, the question of what the field can do beyond adopting methods has a concrete answer: Target the barriers one at a time.
+The tutorial chapter targets awareness and familiarity, and the worked example, the FAQ in Appendix~\ref{sec:appendix-faq}, and the three empirical chapters as reusable templates target self-efficacy.
+The three chapters also speak to outcome expectancy by producing findings that no correlational design could have delivered: an effect that reverses with dependency-graph size, a promotional bump that turns into a penalty, and a velocity gain that technical debt subsequently consumes.
+The empirical standard is aimed at the external constraint that matters most to researchers, which is what reviewers and venues expect.
+Inertia is the barrier that none of these moves individually, and it yields only when outcome expectancy and venue norms move together.\footnote{
+  I hold reasonable optimism as adoption is already visible.
+  Within eight months of the Cursor study's preprint, several independent groups reused its design: \citet{DBLP:journals/corr/abs-2606-13298} apply the same staggered difference-in-differences design and \citet{borusyak2024revisiting} imputation estimator to architectural smells and describe the Cursor study as their closest predecessor; \citet{DBLP:journals/corr/abs-2607-01810} use the same imputation estimator and the same cognitive-complexity metric to test whether the complexity increase crowds out newcomers; and \citet{DBLP:journals/corr/abs-2606-26289} adopt its propensity-score matching procedure to study contributor ecosystems after agent adoption.
+  \citet{DBLP:journals/corr/abs-2608-03329} apply matching and difference-in-differences to the effect of AI governance policies in open-source projects.
+  Independent of this thesis, causal designs are also entering the field's methodological discourse, including a registered report on the causal effect of code coverage~\cite{DBLP:journals/corr/abs-2602-03585}, a structural-causal-model framework for empirical SE~\cite{DBLP:journals/corr/abs-2605-28482}, and a tutorial on applied causal inference in requirements engineering~\cite{DBLP:journals/corr/abs-2511-03875}.
+  These are preprints that have not yet completed peer review, and a handful of studies does not move a decade-long adoption rate; they nevertheless indicate that the outcome-expectancy barrier has started to give.
+}
+
+Ultimately, this thesis does not claim to resolve the empirical software engineering field's longstanding disconnect between causal ambition and methodological practice.
 It claims that the disconnect is bridgeable through an explicit articulation of causal theory and assumptions, and that the four-step framework is one usable operationalisation of that bridge.
 The three empirical chapters demonstrate that the framework is feasible across substantively different questions; the cross-chapter comparison demonstrates that feasibility does not collapse credibility differences across designs but makes them inspectable.
-If future empirical SE research adopts this kind of explicit credibility assessment, even partially, the field will become better equipped to do what it has historically struggled to do: dispel the myths that practitioners hold by accumulating consistent, transparently-justified causal evidence with a clear interpretation of what the evidence actually supports and to what extent.
+If future empirical SE research adopts this kind of explicit credibility assessment, even partially, the field will become better equipped to do what it has historically struggled to do: engage the myths that practitioners hold at the resolution at which they are held, by accumulating transparently justified causal evidence with a clear statement of what the evidence supports, under which assumptions, and to what extent.
+
