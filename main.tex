@@ -25,6 +25,7 @@
 \usepackage{threeparttable}
 \usepackage{makecell}
 \usepackage{framed}
+\usepackage{emptypage}
 \usepackage[backend=biber, style=numeric]{biblatex}\let\citet\textcite\let\citep\parencite
 \usepackage[letterpaper,twoside,vscale=.8,hscale=.75,nomarginpar,hmarginratio=1:1]{geometry}
 \usepackage[
@@ -145,11 +146,7 @@
 \begin{document}
 \frontmatter
 
-\pagestyle{empty}
-
-\title{{\it Thesis}\\
-{\bf Dispelling Software Engineering Myths:\\A Pragmatic Causal Inference Approach
-}}
+\title{{\bf Dispelling Software Engineering Myths:\\A Pragmatic Causal Inference Approach}}
 \author{\textbf{Hao He}}
 \date{September 2026}
 \Year{\the\year}
@@ -163,7 +160,7 @@ Narayan Ramasubbu (University of Pittsburgh)
 }
 
 \support{This work was supported in part by the National Science Foundation (award 2206859 and 2317168).}
-\disclaimer{The views expressed in this work are those of the author and do not necessarily reflect the views of the sponsoring agencies.}
+\disclaimer{The views and conclusions expressed in this document are those of the author and do not necessarily reflect the views of the U.S. government or any sponsoring agencies.}
 
 \keywords{causal inference, empirical software engineering, mining software repositories, research methodology, quasi-experimental design, observational studies, AI coding tools, software supply chain security, GitHub, developer productivity, open-source software}
 
@@ -213,6 +210,8 @@ The work in Chapter~\ref{chp:fake-stars} is also supported by Socket Inc (\url{h
 The work in Chapter~\ref{chp:cursor} was further supported by the National Science Foundation Graduate Research Fellowship Program under Grant Number DGE214073 (Miller). 
 Finally, I thank the Google Cloud for Researchers program for the credits that funded the BigQuery-based analyses in Chapters~\ref{chp:fake-stars} and~\ref{chp:cursor}.
 \end{acknowledgments}
+
+\clearpage\thispagestyle{empty}\null\clearpage
 
 \tableofcontents
 
@@ -337,7 +336,5 @@ Preprint: \href{https://arxiv.org/abs/2511.04427}{arXiv:2511.04427}.%
 \printbibliography[heading=none]
 
 %\appendix
-
-
 
 \end{document}
