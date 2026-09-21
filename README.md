@@ -32,6 +32,7 @@ Three empirical studies demonstrate this approach by challenging widely held sof
 | `analysis-fake-stars.tex` | Causal credibility analysis appended to the fake-stars chapter |
 | `analysis-cursor.tex` | Causal credibility analysis appended to the Cursor chapter |
 | `cmuthesis.cls` | CMU thesis document class |
+| `bib-audit.py` | Reports bibliography entries that deviate from the conventions in `AGENTS.md` (run after editing a `.bib` file) |
 
 ### Bibliography
 
@@ -51,9 +52,9 @@ Three empirical studies demonstrate this approach by challenging widely held sof
 | `figs-tutorial/`, `figs-pinning/`, `figs-fake-stars/`, `figs-cursor/` | Per-chapter figures |
 | `plans/` | Detailed sub-plans (e.g., per-chapter causal credibility analysis plans), named `YYYYMMDD - {Summary}.md` per `AGENTS.md` |
 
-## Open Plans
+## Plans
 
-- [Reference Formatting Consistency Plan](plans/20260921%20-%20Reference%20Formatting%20Consistency%20Plan.md): make the bibliography, assembled from four papers' `.bib` files, render with one set of conventions (venues, journal names, title case, arXiv preprints, web resources, DOIs) and merge duplicate entries.
+- [Reference Formatting Consistency Plan](plans/20260921%20-%20Reference%20Formatting%20Consistency%20Plan.md) (executed 2026-09-21): make the bibliography, assembled from four papers' `.bib` files, render with one set of conventions (venues, journal names, title case, arXiv preprints, web resources, DOIs) and merge duplicate entries.
 
 ## Building
 

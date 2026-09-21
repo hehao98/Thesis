@@ -80,8 +80,17 @@ Within each section, entries must be sorted:
 ### 4. Metadata Requirements
 
 - **DOIs**: Always include the DOI (`doi={...}`) whenever it is available for a given paper.
+- **Web resources**: Use `@online` with an `author` (a person, or the organization or site as a corporate author, e.g. `author={{Stack Overflow}}`), `title`, `year`, `url`, and `urldate={YYYY-MM-DD}` (the access date). Do not use `lastaccessed` (biblatex ignores it) or `note={Accessed ...}`. If a page has gone offline, point `url` at a Wayback Machine copy and say so in `note`.
+- **arXiv preprints**: Use the shape DBLP exports, `@article` with `journal={CoRR}` (or `{arXiv}`), `volume={abs/NNNN.NNNNN}`, `eprinttype={arXiv}`, `eprint={NNNN.NNNNN}`, and `year`. Do not write `journal={arXiv preprint arXiv:...}` or `@unpublished` with an arXiv note. A preprint that has since been published is cited by its published version.
+- **Conference names**: `booktitle` is the proceedings name followed by the acronym and year, e.g. `Proceedings of the 40th International Conference on Software Engineering, {ICSE} 2018`; DBLP's location-and-dates tail may stay because `main.tex` strips it at build time.
+- **Titles**: Title Case, with acronyms and proper nouns brace-protected (`{GitHub}`, `{AI}`).
+- **DBLP housekeeping fields** (`timestamp`, `biburl`, `bibsource`) are dropped; the DBLP key already identifies the record.
 
-### 5. Examples
+### 5. Build-Time Normalization
+
+`main.tex` carries biblatex source maps that expand DBLP journal abbreviations to full names, reduce DBLP conference names to "Name (ACRONYM YEAR)", and render every arXiv preprint as "Title. YEAR. arXiv: NNNN.NNNNN". URLs print only for `@online` entries; DOIs print for everything else; ISBNs never print. Run `python3 bib-audit.py` after editing a `.bib` file; it reports entries that deviate from these conventions.
+
+### 6. Examples
 
 #### BAD
 ```bibtex
@@ -99,7 +108,7 @@ Within each section, entries must be sorted:
   title={The {Sveriges Riksbank} Prize in Economic Sciences in Memory of {Alfred Nobel} 2021},
   year={2021},
   url={https://www.nobelprize.org/prizes/economic-sciences/2021/summary/},
-  note={Accessed 2026-03-20}
+  urldate={2026-03-20}
 }
 ```
 
