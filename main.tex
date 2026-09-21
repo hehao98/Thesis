@@ -191,7 +191,7 @@
 \definecolor{amber}{rgb}{1.0, 0.75, 0.0}
 
 % Chapter front matter: abstract, keywords, and source publication.
-% Usage: \chapterfrontmatter{abstract text}{keywords}{publication note}
+% Usage: \chapterfrontmatter{abstract text}{keywords}{publication note}; leave the third argument empty for unpublished work.
 \newcommand{\chapterfrontmatter}[3]{%
     \vspace{1em}%
     \begingroup
@@ -199,8 +199,9 @@
     \noindent\textbf{Chapter Abstract.} #1\par
     \vspace{0.8em}%
     \noindent\textbf{Keywords:} #2\par
+    \ifblank{#3}{}{%
     \vspace{0.8em}%
-    \noindent\textbf{This chapter is based on:} #3\par
+    \noindent\textbf{This chapter is based on:} #3\par}%
     \end{quote}
     \endgroup
     \vspace{1em}%
@@ -307,11 +308,7 @@ A worked example on the impact of AI coding tools in open-source software illust
 The tutorial closes with a pragmatic stance and an empirical standard for causal inquiries in software engineering research.%
 }{%
 causal inference, empirical software engineering, mining software repositories, research methodology, potential outcomes, directed acyclic graphs, difference-in-differences, quasi-experimental design%
-}{%
-Hao He, Narayan Ramasubbu, Christian Kästner, and Bogdan Vasilescu.
-``Causal Inference for Empirical Software Engineering: A Tutorial.''
-\emph{Manuscript in preparation, targeting} ACM Transactions on Software Engineering and Methodology (TOSEM).%
-}
+}{}
 
 \include{main-tutorial}
 
