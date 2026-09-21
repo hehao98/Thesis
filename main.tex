@@ -26,7 +26,77 @@
 \usepackage{makecell}
 \usepackage{framed}
 \usepackage{emptypage}
-\usepackage[backend=biber, style=numeric, maxbibnames=999]{biblatex}\let\citet\textcite\let\citep\parencite
+\usepackage[backend=biber, style=numeric, maxbibnames=999, isbn=false, url=false, doi=true, eprint=true, urldate=iso]{biblatex}\let\citet\textcite\let\citep\parencite
+% URLs are printed for web resources only; papers are identified by DOI or arXiv id.
+\ExecuteBibliographyOptions[online]{url=true}
+% arXiv preprints are mapped to @misc below; print their titles in quotes like other papers.
+\DeclareFieldFormat[misc]{title}{\mkbibquote{#1\isdot}}
+%%%%%%%%%% Begin: Bibliography normalization (applied by biber at build time; .bib files stay verbatim) %%%%%%%%%%
+% Notes on \regexp: it strips spaces, so literal spaces are written \x{20}; an ampersand must be
+% written \x26 because a raw & breaks the XML control file that biblatex hands to biber.
+\DeclareSourcemap{
+  \maps[datatype=bibtex]{
+    % 1. Expand journal abbreviations used by DBLP exports (verified against the Crossref journal registry).
+    \map[overwrite]{
+      \step[fieldsource=journal, match=\regexp{^\{?ACM\}?\s+Trans\.\s+Softw\.\s+Eng\.\s+Methodol\.$}, replace={ACM Transactions on Software Engineering and Methodology}]
+      \step[fieldsource=journal, match=\regexp{^\{?ACM\}?\s+Trans\.\s+Program\.\s+Lang\.\s+Syst\.$}, replace={ACM Transactions on Programming Languages and Systems}]
+      \step[fieldsource=journal, match=\regexp{^\{?ACM\}?\s+Trans\.\s+Priv\.\s+Secur\.$}, replace={ACM Transactions on Privacy and Security}]
+      \step[fieldsource=journal, match=\regexp{^\{?ACM\}?\s+Trans\.\s+Knowl\.\s+Discov\.\s+Data$}, replace={ACM Transactions on Knowledge Discovery from Data}]
+      \step[fieldsource=journal, match=\regexp{^Proc\.\s+\{?ACM\}?\s+Hum\.\s+Comput\.\s+Interact\.$}, replace={Proceedings of the ACM on Human-Computer Interaction}]
+      \step[fieldsource=journal, match=\regexp{^Commun\.\s+\{?ACM\}?$}, replace={Communications of the ACM}]
+      \step[fieldsource=journal, match=\regexp{^\{?IEEE\}?\s+Trans\.\s+Software\s+Eng\.$}, replace={IEEE Transactions on Software Engineering}]
+      \step[fieldsource=journal, match=\regexp{^\{?IEEE\}?\s+Softw\.$}, replace={IEEE Software}]
+      \step[fieldsource=journal, match=\regexp{^Empir\.\s+Softw\.\s+Eng\.$}, replace={Empirical Software Engineering}]
+      \step[fieldsource=journal, match=\regexp{^Inf\.\s+Softw\.\s+Technol\.$}, replace={Information and Software Technology}]
+      \step[fieldsource=journal, match=\regexp{^J\.\s+Syst\.\s+Softw\.$}, replace={Journal of Systems and Software}]
+      \step[fieldsource=journal, match=\regexp{^Sci\.\s+Comput\.\s+Program\.$}, replace={Science of Computer Programming}]
+      \step[fieldsource=journal, match=\regexp{^J\.\s+Mach\.\s+Learn\.\s+Res\.$}, replace={Journal of Machine Learning Research}]
+      \step[fieldsource=journal, match=\regexp{^J\.\s+Manag\.\s+Inf\.\s+Syst\.$}, replace={Journal of Management Information Systems}]
+      \step[fieldsource=journal, match=\regexp{^Artif\.\s+Intell\.\s+Rev\.$}, replace={Artificial Intelligence Review}]
+      \step[fieldsource=journal, match=\regexp{^Decis\.\s+Support\s+Syst\.$}, replace={Decision Support Systems}]
+      \step[fieldsource=journal, match=\regexp{^Discret\.\s+Appl\.\s+Math\.$}, replace={Discrete Applied Mathematics}]
+      \step[fieldsource=journal, match=\regexp{^Expert\s+Syst\.\s+Appl\.$}, replace={Expert Systems with Applications}]
+      \step[fieldsource=journal, match=\regexp{^Hum\.\s+Centric\s+Intell\.\s+Syst\.$}, replace={Human-Centric Intelligent Systems}]
+      \step[fieldsource=journal, match=\regexp{^Soc\.\s+Netw\.\s+Anal\.\s+Min\.$}, replace={Social Network Analysis and Mining}]
+      \step[fieldsource=journal, match=\regexp{^login\s+Usenix\s+Mag\.$}, replace={;login: The USENIX Magazine}]
+      \step[fieldsource=journal, match=\regexp{^Procurement\s+Law\.$}, replace={The Procurement Lawyer}]
+    }
+    % 2. Reduce DBLP conference names to "Name (ACRONYM YEAR)", dropping location and dates.
+    \map[overwrite]{
+      % "Name {(ACRO} YEAR), dates, place"  ->  "Name {(ACRO} YEAR)"
+      \step[fieldsource=booktitle, match=\regexp{^(.*\d{4}\)),\s.*$}, replace=\regexp{$1}]
+      % "{ACRO} 'YY: Name, place, dates, YEAR"  ->  "Name ({ACRO} 20YY)"
+      \step[fieldsource=booktitle, match=\regexp{^\{?([A-Z][A-Za-z/\x26\\{}]*?)\}?\s+'(\d{2}):?\s+([^,]*?)(?:,.*)?$}, replace=\regexp{$3\x{20}(\{$1\}\x{20}20$2)}]
+      % DBLP's own text for ICSE 2022 repeats the ordinal ("44th {IEEE/ACM} 44th ...")
+      \step[fieldsource=booktitle, match=\regexp{^44th\s+(\{IEEE/ACM\})\s+44th\s+}, replace=\regexp{44th\x{20}$1\x{20}}]
+      % "Name, (ACRO-NN), place, dates, YEAR"  ->  "Name (ACRO-NN)"   (NN is an edition number, not a year)
+      \step[fieldsource=booktitle, match=\regexp{^(.*?),\s+\(([A-Z][A-Za-z/]*)-(\d{2})\)(?:,.*)?$}, replace=\regexp{$1\x{20}($2-$3)}]
+      % "Name, {ACRO} 'YY, ..."  ->  "Name ({ACRO} 20YY)"
+      \step[fieldsource=booktitle, match=\regexp{^(.*?),\s+((?:[\{\(]?[A-Z][A-Za-z/\x26\\{}@\-]*[\}\)]?\s+)*[\{\(]?[A-Z][A-Za-z/\x26\\{}@\-]*[\}\)]?)\s*'(\d{2})\)?(?:,.*)?$}, replace=\regexp{$1\x{20}($2\x{20}20$3)}]
+      % "Name, {ACRO} YEAR, place, dates, YEAR[, Volume n]"  ->  "Name ({ACRO} YEAR)"
+      \step[fieldsource=booktitle, match=\regexp{^(.*?),\s+((?:[\{\(]?[A-Z][A-Za-z/\x26\\{}@\-]*[\}\)]?\s+)*[\{\(]?[A-Z][A-Za-z/\x26\\{}@\-]*[\}\)]?)\s*(\d{4})\)?(?:,.*)?$}, replace=\regexp{$1\x{20}($2\x{20}$3)}]
+      % "Name, place, dates, YEAR" (no acronym)  ->  "Name"
+      \step[fieldsource=booktitle, match=\regexp{^(.*?),\s+(?:[^,]+,\s+){1,3}(?:[A-Z][a-z]+\s+\d{1,2}(?:\s*-\s*(?:[A-Z][a-z]+\s+)?\d{1,2})?|\d{1,2}(?:\s*-\s*\d{1,2})?\s+[A-Z][a-z]+(?:\s*-\s*\d{1,2}\s+[A-Z][a-z]+)?),\s+\d{4}$}, replace=\regexp{$1}]
+    }
+    % 3. Render arXiv preprints uniformly as "Title. YEAR. arXiv: NNNN.NNNNN".
+    \map[overwrite]{
+      \step[fieldsource=journal, match=\regexp{^(CoRR|arXiv)$}, final]
+      \step[fieldsource=volume, match=\regexp{^abs/(.+)$}, final]
+      \step[fieldsource=volume, fieldtarget=eprint]
+      \step[fieldsource=eprint, match=\regexp{^abs/}, replace=\regexp{}]
+      \step[fieldset=eprinttype, fieldvalue={arXiv}]
+      \step[fieldset=journal, null]
+      \step[fieldset=volume, null]
+      \step[typesource=article, typetarget=misc]
+    }
+    % An arXiv DOI duplicates the arXiv id; drop it.
+    \map[overwrite]{
+      \step[fieldsource=doi, match=\regexp{^10\.48550/}, final]
+      \step[fieldset=doi, null]
+    }
+  }
+}
+%%%%%%%%%% End: Bibliography normalization %%%%%%%%%%
 \usepackage[letterpaper,twoside,vscale=.8,hscale=.75,nomarginpar,hmarginratio=1:1]{geometry}
 \usepackage[
     pageanchor=true,
