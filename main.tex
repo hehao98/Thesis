@@ -3,7 +3,7 @@
 \usepackage{newtxtext, newpxmath}
 \usepackage[T1]{fontenc} 
 \usepackage{graphicx}
-\graphicspath{{./}{tutorial/plots/}}
+\graphicspath{{./}}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
 \usepackage{enumitem}
@@ -141,7 +141,7 @@
 \addbibresource{references-pinning.bib}
 \addbibresource{references-fake-stars.bib}
 \addbibresource{references-cursor.bib}
-\addbibresource{tutorial/paper/references.bib}
+\addbibresource{references-tutorial.bib}
 
 \begin{document}
 \frontmatter
@@ -243,23 +243,7 @@ Hao He, Narayan Ramasubbu, Christian Kästner, and Bogdan Vasilescu.
 \emph{Manuscript in preparation, targeting} ACM Transactions on Software Engineering and Methodology (TOSEM).%
 }
 
-\input{tutorial/paper/1-introduction}
-
-\input{tutorial/paper/2-primer}
-
-\input{tutorial/paper/3-worked-example}
-
-\input{tutorial/paper/4-discussion}
-
-\section{Appendix}
-
-\let\origsection\section
-\let\origsubsection\subsection
-\let\section\subsection
-\let\subsection\subsubsection
-\input{tutorial/paper/appendix}
-\let\section\origsection
-\let\subsection\origsubsection
+\include{main-tutorial}
 
 \chapter{Empirical Study I: The Impact of Dependency Pinning on Supply Chain Security}
 \label{chp:pinning}

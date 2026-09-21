@@ -24,6 +24,7 @@ Three empirical studies demonstrate this approach by challenging widely held sof
 |------|-------------|
 | `main.tex` | Main document entry point (preamble, front matter, chapter assembly) |
 | `chap-intro.tex` | Chapter 1: Introduction, thesis statement, and contributions |
+| `main-tutorial.tex` | Chapter 2: Causal inference tutorial (full paper, including its appendix); the tutorial's data, R notebooks, and plot sources live in [hehao98/CausalityInSE](https://github.com/hehao98/CausalityInSE) |
 | `main-pinning.tex` | Chapter 3: Dependency pinning empirical study (full paper) |
 | `main-fake-stars.tex` | Chapter 4: Fake GitHub stars empirical study (full paper) |
 | `main-cursor.tex` | Chapter 5: Cursor AI empirical study (full paper) |
@@ -36,7 +37,8 @@ Three empirical studies demonstrate this approach by challenging widely held sof
 
 | File | Description |
 |------|-------------|
-| `references.bib` | Shared bibliography (intro, tutorial cross-cutting references) |
+| `references.bib` | Shared bibliography (intro, cross-cutting references) |
+| `references-tutorial.bib` | Tutorial chapter bibliography |
 | `references-pinning.bib` | Pinning chapter bibliography |
 | `references-fake-stars.bib` | Fake-stars chapter bibliography |
 | `references-cursor.bib` | Cursor chapter bibliography |
@@ -45,9 +47,8 @@ Three empirical studies demonstrate this approach by challenging widely held sof
 
 | Path | Description |
 |------|-------------|
-| `tutorial/` | Chapter 2 sources: causal inference tutorial paper, data, notebooks, plots, and slides. Included into `main.tex` via `tutorial/paper/{1-introduction,2-primer,3-worked-example,4-discussion,appendix}.tex` |
 | `fake-star-reanalysis/` | R Markdown notebooks (`regression.Rmd`, `robustness.Rmd`) and data (`model_stars.csv`, `repo_labels.csv`) for the fake-stars panel regression and robustness checks |
-| `figs-pinning/`, `figs-fake-stars/`, `figs-cursor/` | Per-chapter figures |
+| `figs-tutorial/`, `figs-pinning/`, `figs-fake-stars/`, `figs-cursor/` | Per-chapter figures |
 | `plans/` | Detailed sub-plans (e.g., per-chapter causal credibility analysis plans), named `YYYYMMDD - {Summary}.md` per `AGENTS.md` |
 
 ## Building

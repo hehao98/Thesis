@@ -1,0 +1,2074 @@
+% =============================================================================
+% references.bib — Bibliography for "Causal Inference for Software Engineering"
+% =============================================================================
+%
+% CONVENTIONS (see also Thesis/references.bib):
+%
+%   0. ONLINE / INSTITUTIONAL RESOURCES come first (e.g., Nobel Prize
+%      announcements, W3C standards, GitHub blog posts).
+%      Keys follow Google Scholar style.
+%
+%   1. NON-CS PUBLICATIONS come next, ordered chronologically by year.
+%      Keys follow Google Scholar style: surname(s)YYYYkeyword
+%      (e.g., hill1965environment, angrist2010credibility).
+%
+%   2. CS PUBLICATIONS follow, also ordered chronologically by year.
+%      Keys use DBLP identifiers when available (e.g., DBLP:conf/sigsoft/RayPFD14).
+%      Entries are retrieved verbatim from the DBLP BibTeX export API
+%      (https://dblp.org/rec/<key>.bib) whenever possible.
+%      Papers not yet indexed by DBLP are given manual DBLP-style keys
+%      and marked with a comment.
+%
+%   3. Within each section, entries are sorted by publication year (ascending),
+%      then alphabetically by first author surname within the same year.
+%
+%   4. DOIs are included whenever available.
+%
+% =============================================================================
+
+
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% ONLINE / INSTITUTIONAL RESOURCES
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+@online{nobelprize2021economics,
+  author={{The Royal Swedish Academy of Sciences}},
+  title={The {Sveriges Riksbank} Prize in Economic Sciences in Memory of {Alfred Nobel} 2021},
+  year={2021},
+  url={https://www.nobelprize.org/prizes/economic-sciences/2021/summary/},
+  note={Awarded to David Card, Joshua D.\ Angrist, and Guido W.\ Imbens.
+        Accessed 2026-03-20}
+}
+
+
+@online{econml2019,
+  author       = {Keith Battocchi and
+                  Eleanor Dillon and
+                  Maggie Hei and
+                  Greg Lewis and
+                  Paul Oka and
+                  Miruna Oprescu and
+                  Vasilis Syrgkanis},
+  title        = {{EconML}: {A} {Python} Package for {ML}-Based Heterogeneous Treatment Effects Estimation},
+  year         = {2019},
+  url          = {https://github.com/py-why/EconML},
+  note         = {Accessed 2026-03-27}
+}
+
+@online{hn2014rayetal,
+  author={Various contributors},
+  title={A Large Scale Study of Programming Languages and Code Quality in {GitHub} [{PDF}] --- {Hacker News} discussion},
+  year={2014},
+  url={https://news.ycombinator.com/item?id=8558740},
+  note={Thread \#8558740, November 4--5, 2014. Accessed 2026-03-27}
+}
+
+@online{claburn2019register,
+  author={Claburn, Thomas},
+  title={Boffins Debunk Study Claiming Certain Languages Lead to More Buggy Code},
+  year={2019},
+  url={https://www.theregister.com/2019/01/30/programming_bugs/},
+  note={\emph{The Register}, January 30, 2019. Accessed 2026-03-27}
+}
+
+@online{huang2021bugprone,
+  author={Huang, Edward},
+  title={5 Programming Language That Produce Code Least Prone to Bugs},
+  year={2021},
+  url={https://edward-huang.com/programming/software-development/2021/03/02/5-programming-language-that-produce-code-least-prone-to-bugs/},
+  note={Personal blog, March 2, 2021. Accessed 2026-03-27}
+}
+
+@online{metr2026uplift,
+  author={Becker, Joel and Rush, Nate and Cunningham, Tom and Rein, David and Mahamud, Khalid},
+  title={We Are Changing Our Developer Productivity Experiment Design},
+  year={2026},
+  url={https://metr.org/blog/2026-02-24-uplift-update/},
+  note={{METR} research blog, February 24, 2026. Accessed 2026-04-23}
+}
+
+@online{vasilescu17803,
+  author={Vasilescu, Bogdan},
+  title={Empirical Methods, Lecture 13: Designing Experiments {I}---Causal Relationships},
+  year={2026},
+  url={https://bvasiles.github.io/empirical-methods/slides/13-experiments-pt1.pdf},
+  note={Graduate course 17-803, Carnegie Mellon University. Accessed 2026-05-19}
+}
+
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% NON-CS PUBLICATIONS (Google Scholar style keys, time-ordered)
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+@book{hume1748enquiry,
+  title={An Enquiry Concerning Human Understanding},
+  author={Hume, David},
+  year={1748},
+  note={Reprinted in the Clarendon Edition, edited by T.\,L.\ Beauchamp, Oxford University Press, 2000},
+  doi={10.1093/actrade/9780199266340.book.1}
+}
+
+@book{snow1855mode,
+  title={On the Mode of Communication of Cholera},
+  author={Snow, John},
+  year={1855},
+  edition={2nd},
+  publisher={John Churchill},
+  address={London}
+}
+
+@article{neyman1923application,
+  title={On the Application of Probability Theory to Agricultural Experiments. Essay on Principles. Section 9},
+  author={Neyman, Jerzy},
+  journal={Statistical Science},
+  volume={5},
+  number={4},
+  pages={465--472},
+  year={1990},
+  note={Translated and edited by D. M. Dabrowska and T. P. Speed from the Polish original, 1923},
+  doi={10.1214/ss/1177012031}
+}
+
+@book{fisher1935design,
+  title={The Design of Experiments},
+  author={Fisher, Ronald A.},
+  year={1935},
+  publisher={Oliver and Boyd},
+  address={Edinburgh}
+}
+
+@article{lewis1973causation,
+  title={Causation},
+  author={Lewis, David},
+  journal={The Journal of Philosophy},
+  volume={70},
+  number={17},
+  pages={556--567},
+  year={1973},
+  doi={10.2307/2025310}
+}
+
+@article{berkson1946limitations,
+  title={Limitations of the Application of Fourfold Table Analysis to Hospital Data},
+  author={Berkson, Joseph},
+  journal={Biometrics Bulletin},
+  volume={2},
+  number={3},
+  pages={47--53},
+  year={1946},
+  doi={10.2307/3002000}
+}
+
+@article{horvitz1952generalization,
+  title={A Generalization of Sampling Without Replacement From a Finite Universe},
+  author={Horvitz, Daniel G. and Thompson, Donovan J.},
+  journal={Journal of the American Statistical Association},
+  volume={47},
+  number={260},
+  pages={663--685},
+  year={1952},
+  doi={10.1080/01621459.1952.10483446}
+}
+
+@article{hill1965environment,
+  title={The Environment and Disease: Association or Causation?},
+  author={Hill, Austin Bradford},
+  journal={Proceedings of the Royal Society of Medicine},
+  volume={58},
+  number={5},
+  pages={295--300},
+  year={1965},
+  publisher={SAGE Publications}
+}
+
+@article{rubin1974estimating,
+  title={Estimating Causal Effects of Treatments in Randomized and Nonrandomized Studies},
+  author={Rubin, Donald B.},
+  journal={Journal of Educational Psychology},
+  volume={66},
+  number={5},
+  pages={688--701},
+  year={1974},
+  publisher={American Psychological Association},
+  doi={10.1037/h0037350}
+}
+
+@article{rosenbaum1983central,
+  title={The Central Role of the Propensity Score in Observational Studies for Causal Effects},
+  author={Rosenbaum, Paul R. and Rubin, Donald B.},
+  journal={Biometrika},
+  volume={70},
+  number={1},
+  pages={41--55},
+  year={1983},
+  publisher={Oxford University Press},
+  doi={10.1093/biomet/70.1.41}
+}
+
+@article{heckman1979sample,
+  title={Sample Selection Bias as a Specification Error},
+  author={Heckman, James J.},
+  journal={Econometrica},
+  volume={47},
+  number={1},
+  pages={153--161},
+  year={1979},
+  publisher={The Econometric Society},
+  doi={10.2307/1912352}
+}
+
+@article{leamer1983let,
+  title={Let's Take the Con out of Econometrics},
+  author={Leamer, Edward E.},
+  journal={American Economic Review},
+  volume={73},
+  number={1},
+  pages={31--43},
+  year={1983},
+  publisher={American Economic Association}
+}
+
+@article{mackinnon1985heteroskedasticity,
+  title={Some Heteroskedasticity-Consistent Covariance Matrix Estimators with Improved Finite Sample Properties},
+  author={MacKinnon, James G. and White, Halbert},
+  journal={Journal of Econometrics},
+  volume={29},
+  number={3},
+  pages={305--325},
+  year={1985},
+  publisher={Elsevier},
+  doi={10.1016/0304-4076(85)90158-7}
+}
+
+@article{holland1986statistics,
+  title={Statistics and Causal Inference},
+  author={Holland, Paul W.},
+  journal={Journal of the American Statistical Association},
+  volume={81},
+  number={396},
+  pages={945--960},
+  year={1986},
+  publisher={Taylor \& Francis},
+  doi={10.1080/01621459.1986.10478354}
+}
+
+@book{pearl1988probabilistic,
+  title={Probabilistic Reasoning in Intelligent Systems: Networks of Plausible Inference},
+  author={Pearl, Judea},
+  year={1988},
+  publisher={Morgan Kaufmann},
+  address={San Mateo, CA},
+  doi={10.1016/C2009-0-27609-4}
+}
+
+@article{card1994minimum,
+  title={Minimum Wages and Employment: A Case Study of the Fast-Food Industry in {New Jersey} and {Pennsylvania}},
+  author={Card, David and Krueger, Alan B.},
+  journal={American Economic Review},
+  volume={84},
+  number={4},
+  pages={772--793},
+  year={1994}
+}
+
+@article{angrist1996identification,
+  title={Identification of Causal Effects Using Instrumental Variables},
+  author={Angrist, Joshua D. and Imbens, Guido W. and Rubin, Donald B.},
+  journal={Journal of the American Statistical Association},
+  volume={91},
+  number={434},
+  pages={444--455},
+  year={1996},
+  publisher={Taylor \& Francis},
+  doi={10.1080/01621459.1996.10476902}
+}
+
+@incollection{card1999causal,
+  title={The Causal Effect of Education on Earnings},
+  author={Card, David},
+  booktitle={Handbook of Labor Economics},
+  editor={Ashenfelter, Orley and Card, David},
+  volume={3},
+  part={A},
+  pages={1801--1863},
+  year={1999},
+  publisher={Elsevier},
+  doi={10.1016/S1573-4463(99)03011-4}
+}
+
+@book{spirtes2001causation,
+  title={Causation, Prediction, and Search},
+  author={Spirtes, Peter and Glymour, Clark N. and Scheines, Richard},
+  edition={2nd},
+  year={2001},
+  publisher={MIT Press},
+  address={Cambridge, MA}
+}
+
+@article{hausman2001mismeasured,
+  title={Mismeasured Variables in Econometric Analysis: Problems from the Right and Problems from the Left},
+  author={Hausman, Jerry},
+  journal={Journal of Economic Perspectives},
+  volume={15},
+  number={4},
+  pages={57--67},
+  year={2001},
+  publisher={American Economic Association},
+  doi={10.1257/jep.15.4.57}
+}
+
+@book{rosenbaum2002observational,
+  title={Observational Studies},
+  author={Rosenbaum, Paul R.},
+  year={2002},
+  edition={2nd},
+  publisher={Springer},
+  address={New York},
+  doi={10.1007/978-1-4757-3692-2}
+}
+
+@book{shadish2002experimental,
+  title={Experimental and Quasi-Experimental Designs for Generalized Causal Inference},
+  author={Shadish, William R. and Cook, Thomas D. and Campbell, Donald T.},
+  year={2002},
+  publisher={Houghton Mifflin},
+  address={Boston}
+}
+
+@book{woodward2003making,
+  title={Making Things Happen: A Theory of Causal Explanation},
+  author={Woodward, James},
+  year={2003},
+  publisher={Oxford University Press},
+  address={Oxford},
+  doi={10.1093/0195155270.001.0001}
+}
+
+@article{ho2007matching,
+  title={Matching as Nonparametric Preprocessing for Reducing Model Dependence in Parametric Causal Inference},
+  author={Ho, Daniel E. and Imai, Kosuke and King, Gary and Stuart, Elizabeth A.},
+  journal={Political Analysis},
+  volume={15},
+  number={3},
+  pages={199--236},
+  year={2007},
+  publisher={Cambridge University Press},
+  doi={10.1093/pan/mpl013}
+}
+
+@article{imbens2009recent,
+  title={Recent Developments in the Econometrics of Program Evaluation},
+  author={Imbens, Guido W. and Wooldridge, Jeffrey M.},
+  journal={Journal of Economic Literature},
+  volume={47},
+  number={1},
+  pages={5--86},
+  year={2009},
+  publisher={American Economic Association},
+  doi={10.1257/jel.47.1.5}
+}
+
+@book{angrist2009mostly,
+  title={Mostly Harmless Econometrics: An Empiricist's Companion},
+  author={Angrist, Joshua D. and Pischke, J{\"o}rn-Steffen},
+  year={2009},
+  publisher={Princeton University Press},
+  address={Princeton},
+  doi={10.1515/9781400829828}
+}
+
+@article{austin2009balance,
+  title={Balance Diagnostics for Comparing the Distribution of Baseline Covariates Between Treatment Groups in Propensity-Score Matched Samples},
+  author={Austin, Peter C.},
+  journal={Statistics in Medicine},
+  volume={28},
+  number={25},
+  pages={3083--3107},
+  year={2009},
+  publisher={Wiley},
+  doi={10.1002/sim.3697}
+}
+
+@book{pearl2009causality,
+  title={Causality: Models, Reasoning, and Inference},
+  author={Pearl, Judea},
+  year={2009},
+  edition={2nd},
+  publisher={Cambridge University Press},
+  address={Cambridge},
+  doi={10.1017/CBO9780511803161}
+}
+
+@article{angrist2010credibility,
+  title={The Credibility Revolution in Empirical Economics: How Better Research Design Is Taking the Con out of Econometrics},
+  author={Angrist, Joshua D. and Pischke, J{\"o}rn-Steffen},
+  journal={Journal of Economic Perspectives},
+  volume={24},
+  number={2},
+  pages={3--30},
+  year={2010},
+  publisher={American Economic Association},
+  doi={10.1257/jep.24.2.3}
+}
+
+@article{deaton2010instruments,
+  title={Instruments, Randomization, and Learning about Development},
+  author={Deaton, Angus},
+  journal={Journal of Economic Literature},
+  volume={48},
+  number={2},
+  pages={424--455},
+  year={2010},
+  publisher={American Economic Association},
+  doi={10.1257/jel.48.2.424}
+}
+
+@book{dunning2012natural,
+  title={Natural Experiments in the Social Sciences: A Design-Based Approach},
+  author={Dunning, Thad},
+  year={2012},
+  publisher={Cambridge University Press},
+  doi={10.1017/CBO9781139084444}
+}
+
+@article{westreich2013table2,
+  title={The Table 2 Fallacy: Presenting and Interpreting Confounder and Modifier Coefficients},
+  author={Westreich, Daniel and Greenland, Sander},
+  journal={American Journal of Epidemiology},
+  volume={177},
+  number={4},
+  pages={292--298},
+  year={2013},
+  publisher={Oxford University Press},
+  doi={10.1093/aje/kws412}
+}
+
+@article{elwert2014endogenous,
+  title={Endogenous Selection Bias: The Problem of Conditioning on a Collider Variable},
+  author={Elwert, Felix and Winship, Christopher},
+  journal={Annual Review of Sociology},
+  volume={40},
+  pages={31--53},
+  year={2014},
+  publisher={Annual Reviews},
+  doi={10.1146/annurev-soc-071913-043455}
+}
+
+@article{calonico2014robust,
+  title={Robust Nonparametric Confidence Intervals for Regression-Discontinuity Designs},
+  author={Calonico, Sebasti{\'a}n and Cattaneo, Matias D. and Titiunik, Roc{\'\i}o},
+  journal={Econometrica},
+  volume={82},
+  number={6},
+  pages={2295--2326},
+  year={2014},
+  publisher={Wiley},
+  doi={10.3982/ECTA11757}
+}
+
+@book{morgan2015counterfactuals,
+  title={Counterfactuals and Causal Inference: Methods and Principles for Social Research},
+  author={Morgan, Stephen L. and Winship, Christopher},
+  year={2015},
+  edition={2nd},
+  publisher={Cambridge University Press},
+  address={Cambridge},
+  doi={10.1017/CBO9781107587991}
+}
+
+@article{athey2016recursive,
+  title={Recursive Partitioning for Heterogeneous Causal Effects},
+  author={Athey, Susan and Imbens, Guido W.},
+  journal={Proceedings of the National Academy of Sciences},
+  volume={113},
+  number={27},
+  pages={7353--7360},
+  year={2016},
+  publisher={National Academy of Sciences},
+  doi={10.1073/pnas.1510489113}
+}
+
+@book{halpern2016actual,
+  title={Actual Causality},
+  author={Halpern, Joseph Y.},
+  year={2016},
+  publisher={The MIT Press},
+  address={Cambridge, MA},
+  doi={10.7551/mitpress/9780262035026.001.0001}
+}
+
+@article{lawlor2016triangulation,
+  title={Triangulation in Aetiological Epidemiology},
+  author={Lawlor, Debbie A. and Tilling, Kate and Davey Smith, George},
+  journal={International Journal of Epidemiology},
+  volume={45},
+  number={6},
+  pages={1866--1886},
+  year={2016},
+  publisher={Oxford University Press},
+  doi={10.1093/ije/dyw314}
+}
+
+@article{samet2016epidemiology,
+  title={Epidemiology and the Tobacco Epidemic: How Research on Tobacco and Health Shaped Epidemiology},
+  author={Samet, Jonathan M.},
+  journal={American Journal of Epidemiology},
+  volume={183},
+  number={5},
+  pages={394--402},
+  year={2016},
+  publisher={Oxford University Press},
+  doi={10.1093/aje/kwv156}
+}
+
+@article{bernal2017interrupted,
+  title={Interrupted Time Series Regression for the Evaluation of Public Health Interventions: A Tutorial},
+  author={Bernal, James Lopez and Cummins, Steven and Gasparrini, Antonio},
+  journal={International Journal of Epidemiology},
+  volume={46},
+  number={1},
+  pages={348--355},
+  year={2017},
+  publisher={Oxford University Press},
+  doi={10.1093/ije/dyw098}
+}
+
+@article{vanderweele2017sensitivity,
+  title={Sensitivity Analysis in Observational Research: Introducing the {E-Value}},
+  author={VanderWeele, Tyler J. and Ding, Peng},
+  journal={Annals of Internal Medicine},
+  volume={167},
+  number={4},
+  pages={268--274},
+  year={2017},
+  publisher={American College of Physicians},
+  doi={10.7326/M16-2607}
+}
+
+@article{abadie2018econometric,
+  title={Econometric Methods for Program Evaluation},
+  author={Abadie, Alberto and Cattaneo, Matias D.},
+  journal={Annual Review of Economics},
+  volume={10},
+  pages={465--503},
+  year={2018},
+  publisher={Annual Reviews},
+  doi={10.1146/annurev-economics-080217-053402}
+}
+
+@article{hausman2018regression,
+  author       = {Catherine Hausman and
+                  David S. Rapson},
+  title        = {Regression Discontinuity in Time: Considerations for Empirical Applications},
+  journal      = {Annual Review of Resource Economics},
+  volume       = {10},
+  pages        = {533--552},
+  year         = {2018},
+  doi          = {10.1146/annurev-resource-121517-033306},
+}
+
+@article{hernan2018cword,
+  title={The {C-Word}: Scientific Euphemisms Do Not Improve Causal Inference From Observational Data},
+  author={Hern{\'a}n, Miguel A.},
+  journal={American Journal of Public Health},
+  volume={108},
+  number={5},
+  pages={616--619},
+  year={2018},
+  publisher={American Public Health Association},
+  doi={10.2105/AJPH.2018.304337}
+}
+
+@article{rohrer2018thinking,
+  title={Thinking Clearly About Correlations and Causation: Graphical Causal Models for Observational Data},
+  author={Rohrer, Julia M.},
+  journal={Advances in Methods and Practices in Psychological Science},
+  volume={1},
+  number={1},
+  pages={27--42},
+  year={2018},
+  publisher={SAGE Publications},
+  doi={10.1177/2515245917745629}
+}
+
+@article{chernozhukov2018double,
+  title={Double/Debiased Machine Learning for Treatment and Structural Parameters},
+  author={Chernozhukov, Victor and Chetverikov, Denis and Demirer, Mert and Duflo, Esther and Hansen, Christian and Newey, Whitney and Robins, James},
+  journal={The Econometrics Journal},
+  volume={21},
+  number={1},
+  pages={C1--C68},
+  year={2018},
+  publisher={Oxford University Press},
+  doi={10.1111/ectj.12097}
+}
+
+@article{wager2018estimation,
+  title={Estimation and Inference of Heterogeneous Treatment Effects Using Random Forests},
+  author={Wager, Stefan and Athey, Susan},
+  journal={Journal of the American Statistical Association},
+  volume={113},
+  number={523},
+  pages={1228--1242},
+  year={2018},
+  publisher={Taylor \& Francis},
+  doi={10.1080/01621459.2017.1319839}
+}
+
+@article{lederer2019control,
+  title={Control of Confounding and Reporting of Results in Causal Inference Studies: Guidance for Authors from Editors of Respiratory, Sleep, and Critical Care Journals},
+  author={Lederer, David J. and Bell, Scott C. and Branson, Richard D. and Chalmers, James D. and Marshall, Rachel and Maslove, David M. and Ost, David E. and Punjabi, Naresh M. and Schatz, Michael and Smyth, Alan R. and Stewart, Paul W. and Suber, Timothy L. and Swick, Thomas T. and Turner, Anne M. and Wagers, Scott S. and Walsh, Timothy S.},
+  journal={Annals of the American Thoracic Society},
+  volume={16},
+  number={1},
+  pages={22--28},
+  year={2019},
+  publisher={American Thoracic Society},
+  doi={10.1513/AnnalsATS.201808-564PS}
+}
+
+@article{oster2019unobservable,
+  title={Unobservable Selection and Coefficient Stability: Theory and Evidence},
+  author={Oster, Emily},
+  journal={Journal of Business \& Economic Statistics},
+  volume={37},
+  number={2},
+  pages={187--204},
+  year={2019},
+  publisher={Taylor \& Francis},
+  doi={10.1080/07350015.2016.1227711}
+}
+
+@article{grosz2020taboo,
+  title={The Taboo Against Explicit Causal Inference in Nonexperimental Psychology},
+  author={Grosz, Michael P. and Rohrer, Julia M. and Thoemmes, Felix},
+  journal={Perspectives on Psychological Science},
+  volume={15},
+  number={5},
+  pages={1243--1255},
+  year={2020},
+  publisher={SAGE Publications},
+  doi={10.1177/1745691620921521}
+}
+
+@article{chang2020double,
+  title={Double/Debiased Machine Learning for Difference-in-Differences Models},
+  author={Chang, Neng-Chieh},
+  journal={The Econometrics Journal},
+  volume={23},
+  number={2},
+  pages={177--191},
+  year={2020},
+  publisher={Oxford University Press},
+  doi={10.1093/ectj/utaa001}
+}
+
+@article{cinelli2020making,
+  title={Making Sense of Sensitivity: Extending Omitted Variable Bias},
+  author={Cinelli, Carlos and Hazlett, Chad},
+  journal={Journal of the Royal Statistical Society: Series B (Statistical Methodology)},
+  volume={82},
+  number={1},
+  pages={39--67},
+  year={2020},
+  publisher={Wiley},
+  doi={10.1111/rssb.12348}
+}
+
+@article{dechaisemartin2020two,
+  title={Two-Way Fixed Effects Estimators with Heterogeneous Treatment Effects},
+  author={de Chaisemartin, Cl{\'e}ment and D'Haultf{\oe}uille, Xavier},
+  journal={American Economic Review},
+  volume={110},
+  number={9},
+  pages={2964--2996},
+  year={2020},
+  publisher={American Economic Association},
+  doi={10.1257/aer.20181169}
+}
+
+@article{imbens2020potential,
+  title={Potential Outcome and Directed Acyclic Graph Approaches to Causality: Relevance for Empirical Practice in Economics},
+  author={Imbens, Guido W.},
+  journal={Journal of Economic Literature},
+  volume={58},
+  number={4},
+  pages={1129--1179},
+  year={2020},
+  publisher={American Economic Association},
+  doi={10.1257/jel.20191597}
+}
+
+@book{hernan2020causal,
+  title={Causal Inference: What If},
+  author={Hern{\'a}n, Miguel A. and Robins, James M.},
+  year={2020},
+  publisher={Chapman \& Hall/CRC},
+  address={Boca Raton}
+}
+
+@article{santanna2020doubly,
+  title={Doubly Robust Difference-in-Differences Estimators},
+  author={Sant'Anna, Pedro H. C. and Zhao, Jun},
+  journal={Journal of Econometrics},
+  volume={219},
+  number={1},
+  pages={101--122},
+  year={2020},
+  publisher={Elsevier},
+  doi={10.1016/j.jeconom.2020.06.003}
+}
+
+@article{lundberg2021estimand,
+  title={What Is Your Estimand? {Defining} the Target Quantity Connects Statistical Evidence to Theory},
+  author={Lundberg, Ian and Johnson, Rebecca and Stewart, Brandon M.},
+  journal={American Sociological Review},
+  volume={86},
+  number={3},
+  pages={532--565},
+  year={2021},
+  publisher={SAGE Publications},
+  doi={10.1177/00031224211004187}
+}
+
+@article{tennant2021dags,
+  title={Use of Directed Acyclic Graphs ({DAGs}) to Identify Confounders in Applied Health Research: Review and Recommendations},
+  author={Tennant, Peter W. G. and Murray, Eleanor J. and Arnold, Kellyn F. and Berrie, Laurie and Fox, Matthew P. and Gadd, Sarah C. and Harrison, Wendy J. and Keeble, Claire and Ranker, Lynsie R. and Textor, Johannes and Tomova, Georgia D. and Gilthorpe, Mark S. and Ellison, George T. H.},
+  journal={International Journal of Epidemiology},
+  volume={50},
+  number={2},
+  pages={620--632},
+  year={2021},
+  publisher={Oxford University Press},
+  doi={10.1093/ije/dyaa213}
+}
+
+@book{huntingtonklein2021effect,
+  title={The Effect: An Introduction to Research Design and Causality},
+  author={Huntington-Klein, Nick},
+  year={2021},
+  publisher={Chapman and Hall/CRC},
+  address={Boca Raton},
+  doi={10.1201/9781003226055}
+}
+
+@article{callaway2021difference,
+  title={Difference-in-Differences with Multiple Time Periods},
+  author={Callaway, Brantly and Sant'Anna, Pedro H. C.},
+  journal={Journal of Econometrics},
+  volume={225},
+  number={2},
+  pages={200--230},
+  year={2021},
+  publisher={Elsevier},
+  doi={10.1016/j.jeconom.2020.12.001}
+}
+
+@article{goodman2021difference,
+  title={Difference-in-Differences with Variation in Treatment Timing},
+  author={Goodman-Bacon, Andrew},
+  journal={Journal of Econometrics},
+  volume={225},
+  number={2},
+  pages={254--277},
+  year={2021},
+  publisher={Elsevier},
+  doi={10.1016/j.jeconom.2021.03.014}
+}
+
+@book{cunningham2021causal,
+  title={Causal Inference: The Mixtape},
+  author={Cunningham, Scott},
+  year={2021},
+  publisher={Yale University Press},
+  address={New Haven},
+  doi={10.2307/j.ctv1c29t27}
+}
+
+@article{forastiere2021identification,
+  title={Identification and Estimation of Treatment and Interference Effects in Observational Studies on Networks},
+  author={Forastiere, Laura and Airoldi, Edoardo M. and Mealli, Fabrizia},
+  journal={Journal of the American Statistical Association},
+  volume={116},
+  number={534},
+  pages={901--918},
+  year={2021},
+  publisher={Taylor \& Francis},
+  doi={10.1080/01621459.2020.1768100}
+}
+
+@article{savje2021average,
+  title={Average Treatment Effects in the Presence of Unknown Interference},
+  author={S{\"a}vje, Fredrik and Aronow, Peter M. and Hudgens, Michael G.},
+  journal={Annals of Statistics},
+  volume={49},
+  number={2},
+  pages={673--701},
+  year={2021},
+  publisher={Institute of Mathematical Statistics},
+  doi={10.1214/20-AOS1973}
+}
+
+@article{haber2022causal,
+  title={Causal and Associational Language in Observational Health Research: {A} Systematic Evaluation},
+  author={Haber, Noah A. and Wieten, Sarah E. and Englj{\"a}hringer, Audrey M. and Gatto, Nicolle M. and Harper, Sam and Gelman, Andrew and Vander Weele, Tyler J. and Fox, Matthew P. and Patel, Chirag J.},
+  journal={American Journal of Epidemiology},
+  volume={191},
+  number={12},
+  pages={2084--2097},
+  year={2022},
+  publisher={Oxford University Press},
+  doi={10.1093/aje/kwac137}
+}
+
+@article{wysocki2022statistical,
+  title={Statistical Control Requires Causal Justification},
+  author={Wysocki, Anna C. and Lawson, Katherine M. and Rhemtulla, Mijke},
+  journal={Advances in Methods and Practices in Psychological Science},
+  volume={5},
+  number={2},
+  pages={25152459221095823},
+  year={2022},
+  publisher={SAGE Publications},
+  doi={10.1177/25152459221095823}
+}
+
+@article{roth2022pretest,
+  title={Pretest with Caution: Event-Study Estimates after Testing for Parallel Trends},
+  author={Roth, Jonathan},
+  journal={American Economic Review: Insights},
+  volume={4},
+  number={3},
+  pages={305--322},
+  year={2022},
+  publisher={American Economic Association},
+  doi={10.1257/aeri.20210236}
+}
+
+@book{hansen2022econometrics,
+  title={Econometrics},
+  author={Hansen, Bruce E.},
+  year={2022},
+  publisher={Princeton University Press},
+  address={Princeton},
+  isbn={978-0-691-23589-9}
+}
+
+@article{rambachan2023more,
+  title={A More Credible Approach to Parallel Trends},
+  author={Rambachan, Ashesh and Roth, Jonathan},
+  journal={Review of Economic Studies},
+  volume={90},
+  number={5},
+  pages={2555--2591},
+  year={2023},
+  publisher={Oxford University Press},
+  doi={10.1093/restud/rdad018}
+}
+
+@article{roth2023whats,
+  title={What's Trending in Difference-in-Differences? {A} Synthesis of the Recent Econometrics Literature},
+  author={Roth, Jonathan and Sant'Anna, Pedro H. C. and Bilinski, Alyssa and Poe, John},
+  journal={Journal of Econometrics},
+  volume={235},
+  number={2},
+  pages={2218--2244},
+  year={2023},
+  publisher={Elsevier},
+  doi={10.1016/j.jeconom.2023.03.008}
+}
+
+@unpublished{peng2023impact,
+  title={The Impact of {AI} on Developer Productivity: Evidence from {GitHub} {Copilot}},
+  author={Peng, Sida and Kalliamvakou, Eirini and Cihon, Peter and Demirer, Mert},
+  year={2023},
+  note={arXiv preprint arXiv:2302.06590},
+  doi={10.48550/arXiv.2302.06590}
+}
+
+@article{killingsworth2023income,
+  title={Income and Emotional Well-Being: {A} Conflict Resolved},
+  author={Killingsworth, Matthew A. and Kahneman, Daniel and Mellers, Barbara},
+  journal={Proceedings of the National Academy of Sciences},
+  volume={120},
+  number={10},
+  pages={e2208661120},
+  year={2023},
+  publisher={National Academy of Sciences},
+  doi={10.1073/pnas.2208661120}
+}
+
+@article{rohrer2024causal,
+  title={Causal Inference for Psychologists Who Think That Causal Inference Is Not for Them},
+  author={Rohrer, Julia M.},
+  journal={Social and Personality Psychology Compass},
+  volume={18},
+  number={3},
+  pages={e12948},
+  year={2024},
+  publisher={Wiley},
+  doi={10.1111/spc3.12948}
+}
+
+
+@article{rohrer2024inappropriate,
+  title={Inappropriate Causal Assumptions Underlie {Killingsworth}, {Kahneman}, and {Mellers}' Conclusions},
+  author={Rohrer, Julia M. and Wenz, Sebastian E.},
+  journal={Proceedings of the National Academy of Sciences},
+  volume={121},
+  number={46},
+  pages={e2408672121},
+  year={2024},
+  publisher={National Academy of Sciences},
+  doi={10.1073/pnas.2313712121}
+}
+
+@article{borusyak2024revisiting,
+  title={Revisiting Event-Study Designs: Robust and Efficient Estimation},
+  author={Borusyak, Kirill and Jaravel, Xavier and Spiess, Jann},
+  journal={The Review of Economic Studies},
+  volume={91},
+  number={6},
+  pages={3253--3285},
+  year={2024},
+  publisher={Oxford University Press},
+  doi={10.1093/restud/rdae007}
+}
+
+@unpublished{becker2025measuring,
+  title={Measuring the Impact of Early-2025 {AI} on Experienced Open-Source Developer Productivity},
+  author={Becker, Joel and Rush, Nate and Barnes, Elizabeth and Rein, David},
+  year={2025},
+  note={arXiv preprint arXiv:2507.09089}
+}
+
+@article{cui2025effects,
+  title={The Effects of Generative {AI} on High-Skilled Work: Evidence from Three Field Experiments with Software Developers},
+  author={Cui, Zheyuan (Kevin) and Demirer, Mert and Jaffe, Sonia and Musolff, Leon and Peng, Sida and Salz, Tobias},
+  journal={Management Science},
+  year={2025},
+  publisher={INFORMS},
+  doi={10.1287/mnsc.2025.00535}
+}
+
+@unpublished{masten2025sign,
+  title={The Effect of Omitted Variables on the Sign of Regression Coefficients},
+  author={Masten, Matthew A. and Poirier, Alexandre},
+  year={2025},
+  note={arXiv preprint arXiv:2208.00552, revision requested at \emph{Journal of Economic Literature}}
+}
+
+@unpublished{diegert2026endogenous,
+  title={Assessing Omitted Variable Bias when the Controls are Endogenous},
+  author={Diegert, Paul and Masten, Matthew A. and Poirier, Alexandre},
+  year={2026},
+  note={arXiv preprint arXiv:2206.02303}
+}
+
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+% CS PUBLICATIONS (DBLP-style keys, time-ordered)
+% Retrieved from DBLP BibTeX export API where available.
+% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+@article{DBLP:journals/jss/TichyLPH95,
+  author       = {Walter F. Tichy and
+                  Paul Lukowicz and
+                  Lutz Prechelt and
+                  Ernst A. Heinz},
+  title        = {Experimental evaluation in computer science: {A} quantitative study},
+  journal      = {J. Syst. Softw.},
+  volume       = {28},
+  number       = {1},
+  pages        = {9--18},
+  year         = {1995},
+  url          = {https://doi.org/10.1016/0164-1212(94)00111-Y},
+  doi          = {10.1016/0164-1212(94)00111-Y},
+  timestamp    = {Sun, 02 Oct 2022 15:42:42 +0200},
+  biburl       = {https://dblp.org/rec/journals/jss/TichyLPH95.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/computer/Prechelt00,
+  author       = {Lutz Prechelt},
+  title        = {An Empirical Comparison of Seven Programming Languages},
+  journal      = {Computer},
+  volume       = {33},
+  number       = {10},
+  pages        = {23--29},
+  year         = {2000},
+  url          = {https://doi.org/10.1109/2.876288},
+  doi          = {10.1109/2.876288},
+  timestamp    = {Sun, 02 Oct 2022 15:31:31 +0200},
+  biburl       = {https://dblp.org/rec/journals/computer/Prechelt00.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/tse/GravesKMS00,
+  author       = {Todd L. Graves and
+                  Alan F. Karr and
+                  J. S. Marron and
+                  Harvey P. Siy},
+  title        = {Predicting Fault Incidence Using Software Change History},
+  journal      = {{IEEE} Trans. Software Eng.},
+  volume       = {26},
+  number       = {7},
+  pages        = {653--661},
+  year         = {2000},
+  url          = {https://doi.org/10.1109/32.859533},
+  doi          = {10.1109/32.859533},
+  timestamp    = {Wed, 17 May 2017 10:56:36 +0200},
+  biburl       = {https://dblp.org/rec/journals/tse/GravesKMS00.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/tse/EmamBGR01,
+  author       = {Khaled El Emam and
+                  Sa{\"i}da Benlarbi and
+                  Nishith Goel and
+                  Shesh N. Rai},
+  title        = {The Confounding Effect of Class Size on the Validity of Object-Oriented
+                  Metrics},
+  journal      = {{IEEE} Trans. Software Eng.},
+  volume       = {27},
+  number       = {7},
+  pages        = {630--650},
+  year         = {2001},
+  url          = {https://doi.org/10.1109/32.935855},
+  doi          = {10.1109/32.935855},
+  timestamp    = {Wed, 17 May 2017 10:56:35 +0200},
+  biburl       = {https://dblp.org/rec/journals/tse/EmamBGR01.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@incollection{DBLP:books/sp/08/EasterbrookSSD08,
+  author       = {Steve Easterbrook and
+                  Janice Singer and
+                  Margaret{-}Anne D. Storey and
+                  Daniela E. Damian},
+  editor       = {Forrest Shull and
+                  Janice Singer and
+                  Dag I. K. Sj{\o}berg},
+  title        = {Selecting Empirical Methods for Software Engineering Research},
+  booktitle    = {Guide to Advanced Empirical Software Engineering},
+  pages        = {285--311},
+  publisher    = {Springer},
+  year         = {2008},
+  url          = {https://doi.org/10.1007/978-1-84800-044-5\_11},
+  doi          = {10.1007/978-1-84800-044-5\_11},
+  timestamp    = {Sat, 19 Oct 2019 19:02:49 +0200},
+  biburl       = {https://dblp.org/rec/books/sp/08/EasterbrookSSD08.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/oopsla/Hanenberg10,
+  author       = {Stefan Hanenberg},
+  editor       = {William R. Cook and
+                  Siobh{\'{a}}n Clarke and
+                  Martin C. Rinard},
+  title        = {An experiment about static and dynamic type systems: doubts about
+                  the positive impact of static type systems on development time},
+  booktitle    = {Proceedings of the 25th Annual {ACM} {SIGPLAN} Conference on Object-Oriented
+                  Programming, Systems, Languages, and Applications, {OOPSLA} 2010,
+                  October 17-21, 2010, Reno/Tahoe, Nevada, {USA}},
+  pages        = {22--35},
+  publisher    = {{ACM}},
+  year         = {2010},
+  doi          = {10.1145/1869459.1869462},
+  biburl       = {https://dblp.org/rec/conf/oopsla/Hanenberg10.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@incollection{DBLP:books/oreilly/11/HerraizH11,
+  author       = {Israel Herraiz and
+                  Ahmed E. Hassan},
+  editor       = {Andy Oram and
+                  Greg Wilson},
+  title        = {Beyond Lines of Code: Do We Need More Complexity Metrics?},
+  booktitle    = {Making Software - What Really Works, and Why We Believe It},
+  series       = {Theory in practice},
+  pages        = {125--144},
+  publisher    = {O'Reilly},
+  year         = {2011},
+  timestamp    = {Thu, 14 May 2020 15:40:06 +0200},
+  biburl       = {https://dblp.org/rec/books/oreilly/11/HerraizH11.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/icse/BhattacharyaN11,
+  author       = {Pamela Bhattacharya and
+                  Iulian Neamtiu},
+  editor       = {Richard N. Taylor and
+                  Harald C. Gall and
+                  Nenad Medvidovic},
+  title        = {Assessing programming language impact on development and maintenance:
+                  a study on c and c++},
+  booktitle    = {Proceedings of the 33rd International Conference on Software Engineering,
+                  {ICSE} 2011, Waikiki, Honolulu , HI, USA, May 21-28, 2011},
+  pages        = {171--180},
+  publisher    = {{ACM}},
+  year         = {2011},
+  url          = {https://doi.org/10.1145/1985793.1985817},
+  doi          = {10.1145/1985793.1985817},
+  biburl       = {https://dblp.org/rec/conf/icse/BhattacharyaN11.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/esem/CruzesD11,
+  author       = {Daniela S. Cruzes and
+                  Tore Dyb{\aa}},
+  title        = {Recommended Steps for Thematic Synthesis in Software Engineering},
+  booktitle    = {Proceedings of the 5th International Symposium on Empirical Software
+                  Engineering and Measurement, {ESEM} 2011, Banff, AB, Canada, September
+                  22-23, 2011},
+  pages        = {275--284},
+  publisher    = {{IEEE} Computer Society},
+  year         = {2011},
+  url          = {https://doi.org/10.1109/ESEM.2011.36},
+  doi          = {10.1109/ESEM.2011.36},
+  biburl       = {https://dblp.org/rec/conf/esem/CruzesD11.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/oopsla/MayerHRTS12,
+  author       = {Clemens Mayer and
+                  Stefan Hanenberg and
+                  Romain Robbes and
+                  {\'{E}}ric Tanter and
+                  Andreas Stefik},
+  editor       = {Gary T. Leavens and
+                  Matthew B. Dwyer},
+  title        = {An empirical study of the influence of static type systems on the
+                  usability of undocumented software},
+  booktitle    = {Proceedings of the 27th Annual {ACM} {SIGPLAN} Conference on Object-Oriented
+                  Programming, Systems, Languages, and Applications, {OOPSLA} 2012,
+                  part of {SPLASH} 2012, Tucson, AZ, USA, October 21-25, 2012},
+  pages        = {683--702},
+  publisher    = {{ACM}},
+  year         = {2012},
+  url          = {https://doi.org/10.1145/2384616.2384666},
+  doi          = {10.1145/2384616.2384666},
+  timestamp    = {Sun, 25 Jul 2021 11:49:22 +0200},
+  biburl       = {https://dblp.org/rec/conf/oopsla/MayerHRTS12.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/compsac/BissyandeTLJR13,
+  author       = {Tegawend{\'{e}} F. Bissyand{\'{e}} and
+                  Ferdian Thung and
+                  David Lo and
+                  Lingxiao Jiang and
+                  Laurent R{\'{e}}veill{\`{e}}re},
+  title        = {Popularity, Interoperability, and Impact of Programming Languages
+                  in 100, 000 Open Source Projects},
+  booktitle    = {37th Annual {IEEE} Computer Software and Applications Conference,
+                  {COMPSAC} 2013, Kyoto, Japan, July 22-26, 2013},
+  pages        = {303--312},
+  publisher    = {{IEEE} Computer Society},
+  year         = {2013},
+  url          = {https://doi.org/10.1109/COMPSAC.2013.55},
+  doi          = {10.1109/COMPSAC.2013.55},
+  biburl       = {https://dblp.org/rec/conf/compsac/BissyandeTLJR13.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/oopsla/MeyerovichR13,
+  author       = {Leo A. Meyerovich and
+                  Ariel S. Rabkin},
+  editor       = {Antony L. Hosking and
+                  Patrick Th. Eugster and
+                  Cristina V. Lopes},
+  title        = {Empirical analysis of programming language adoption},
+  booktitle    = {Proceedings of the 2013 {ACM} {SIGPLAN} International Conference on
+                  Object Oriented Programming Systems Languages {\&} Applications, {OOPSLA}
+                  2013, part of {SPLASH} 2013, Indianapolis, IN, USA, October 26-31,
+                  2013},
+  pages        = {1--18},
+  publisher    = {{ACM}},
+  year         = {2013},
+  url          = {https://doi.org/10.1145/2509136.2509515},
+  doi          = {10.1145/2509136.2509515},
+  timestamp    = {Sun, 06 Oct 2024 21:12:41 +0200},
+  biburl       = {https://dblp.org/rec/conf/oopsla/MeyerovichR13.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/ese/HanenbergKRTS14,
+  author       = {Stefan Hanenberg and
+                  Sebastian Kleinschmager and
+                  Romain Robbes and
+                  {\'{E}}ric Tanter and
+                  Andreas Stefik},
+  title        = {An empirical study on the impact of static typing on software maintainability},
+  journal      = {Empir. Softw. Eng.},
+  volume       = {19},
+  number       = {5},
+  pages        = {1335--1382},
+  year         = {2014},
+  doi          = {10.1007/S10664-013-9289-1},
+  biburl       = {https://dblp.org/rec/journals/ese/HanenbergKRTS14.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/icse/EndrikatHRS14,
+  author       = {Stefan Endrikat and
+                  Stefan Hanenberg and
+                  Romain Robbes and
+                  Andreas Stefik},
+  editor       = {Pankaj Jalote and
+                  Lionel C. Briand and
+                  Andr{\'{e}} van der Hoek},
+  title        = {How do {API} documentation and static typing affect {API} usability?},
+  booktitle    = {36th International Conference on Software Engineering, {ICSE} '14,
+                  Hyderabad, India - May 31 - June 07, 2014},
+  pages        = {632--642},
+  publisher    = {{ACM}},
+  year         = {2014},
+  url          = {https://doi.org/10.1145/2568225.2568299},
+  doi          = {10.1145/2568225.2568299},
+  biburl       = {https://dblp.org/rec/conf/icse/EndrikatHRS14.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/sigsoft/RayPFD14,
+  author       = {Baishakhi Ray and
+                  Daryl Posnett and
+                  Vladimir Filkov and
+                  Premkumar T. Devanbu},
+  editor       = {Shing{-}Chi Cheung and
+                  Alessandro Orso and
+                  Margaret{-}Anne D. Storey},
+  title        = {A large scale study of programming languages and code quality in github},
+  booktitle    = {Proceedings of the 22nd {ACM} {SIGSOFT} International Symposium on
+                  Foundations of Software Engineering, (FSE-22), Hong Kong, China, November
+                  16 - 22, 2014},
+  pages        = {155--165},
+  publisher    = {{ACM}},
+  year         = {2014},
+  url          = {https://doi.org/10.1145/2635868.2635922},
+  doi          = {10.1145/2635868.2635922},
+  timestamp    = {Tue, 01 Feb 2022 10:45:16 +0100},
+  biburl       = {https://dblp.org/rec/conf/sigsoft/RayPFD14.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/icse/NanzF15,
+  author       = {Sebastian Nanz and
+                  Carlo A. Furia},
+  editor       = {Antonia Bertolino and
+                  Gerardo Canfora and
+                  Sebastian G. Elbaum},
+  title        = {A Comparative Study of Programming Languages in Rosetta Code},
+  booktitle    = {37th {IEEE/ACM} International Conference on Software Engineering,
+                  {ICSE} 2015, Florence, Italy, May 16-24, 2015, Volume 1},
+  pages        = {778--788},
+  publisher    = {{IEEE} Computer Society},
+  year         = {2015},
+  doi          = {10.1109/ICSE.2015.90},
+  biburl       = {https://dblp.org/rec/conf/icse/NanzF15.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/icse/SiegmundSA15,
+  author       = {Janet Siegmund and
+                  Norbert Siegmund and
+                  Sven Apel},
+  title        = {Views on Internal and External Validity in Empirical Software Engineering},
+  booktitle    = {37th {IEEE/ACM} International Conference on Software Engineering,
+                  {ICSE} 2015, Florence, Italy, May 16-24, 2015, Volume 1},
+  pages        = {9--19},
+  publisher    = {{IEEE} Computer Society},
+  year         = {2015},
+  url          = {https://doi.org/10.1109/ICSE.2015.24},
+  doi          = {10.1109/ICSE.2015.24},
+  timestamp    = {Wed, 16 Oct 2019 14:14:49 +0200},
+  biburl       = {https://dblp.org/rec/conf/icse/SiegmundSA15.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/icse/Devanbu0B16,
+  author       = {Premkumar T. Devanbu and
+                  Thomas Zimmermann and
+                  Christian Bird},
+  editor       = {Laura K. Dillon and
+                  Willem Visser and
+                  Laurie A. Williams},
+  title        = {Belief {\&} evidence in empirical software engineering},
+  booktitle    = {Proceedings of the 38th International Conference on Software Engineering,
+                  {ICSE} 2016, Austin, TX, USA, May 14-22, 2016},
+  pages        = {108--119},
+  publisher    = {{ACM}},
+  year         = {2016},
+  url          = {https://doi.org/10.1145/2884781.2884812},
+  doi          = {10.1145/2884781.2884812},
+  timestamp    = {Sun, 19 Jan 2025 13:14:44 +0100},
+  biburl       = {https://dblp.org/rec/conf/icse/Devanbu0B16.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/kbse/HiltonTHMD16,
+  author       = {Michael Hilton and
+                  Timothy Tunnell and
+                  Kai Huang and
+                  Darko Marinov and
+                  Danny Dig},
+  editor       = {David Lo and
+                  Sven Apel and
+                  Sarfraz Khurshid},
+  title        = {Usage, costs, and benefits of continuous integration in open-source
+                  projects},
+  booktitle    = {Proceedings of the 31st {IEEE/ACM} International Conference on Automated
+                  Software Engineering, {ASE} 2016, Singapore, September 3-7, 2016},
+  pages        = {426--437},
+  publisher    = {{ACM}},
+  year         = {2016},
+  url          = {https://doi.org/10.1145/2970276.2970358},
+  doi          = {10.1145/2970276.2970358},
+  timestamp    = {Sat, 30 Sep 2023 09:51:40 +0200},
+  biburl       = {https://dblp.org/rec/conf/kbse/HiltonTHMD16.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/wcre/KochharWL16,
+  author       = {Pavneet Singh Kochhar and
+                  Dinusha Wijedasa and
+                  David Lo},
+  title        = {A Large Scale Study of Multiple Programming Languages and Code Quality},
+  booktitle    = {{IEEE} 23rd International Conference on Software Analysis, Evolution,
+                  and Reengineering, {SANER} 2016, Suita, Osaka, Japan, March 14-18,
+                  2016 - Volume 1},
+  pages        = {563--573},
+  publisher    = {{IEEE} Computer Society},
+  year         = {2016},
+  url          = {https://doi.org/10.1109/SANER.2016.112},
+  doi          = {10.1109/SANER.2016.112},
+  timestamp    = {Fri, 24 Mar 2023 00:04:44 +0100},
+  biburl       = {https://dblp.org/rec/conf/wcre/KochharWL16.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/ese/McIntoshKAH16,
+  author       = {Shane McIntosh and
+                  Yasutaka Kamei and
+                  Bram Adams and
+                  Ahmed E. Hassan},
+  title        = {An empirical study of the impact of modern code review practices on
+                  software quality},
+  journal      = {Empir. Softw. Eng.},
+  volume       = {21},
+  number       = {5},
+  pages        = {2146--2189},
+  year         = {2016},
+  url          = {https://doi.org/10.1007/s10664-015-9381-9},
+  doi          = {10.1007/S10664-015-9381-9},
+  timestamp    = {Mon, 28 Aug 2023 21:35:24 +0200},
+  biburl       = {https://dblp.org/rec/journals/ese/McIntoshKAH16.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/ese/KalliamvakouGBS16,
+  author       = {Eirini Kalliamvakou and
+                  Georgios Gousios and
+                  Kelly Blincoe and
+                  Leif Singer and
+                  Daniel M. Germ{\'{a}}n and
+                  Daniela Damian},
+  title        = {An in-depth study of the promises and perils of mining {GitHub}},
+  journal      = {Empir. Softw. Eng.},
+  volume       = {21},
+  number       = {5},
+  pages        = {2035--2071},
+  year         = {2016},
+  url          = {https://doi.org/10.1007/s10664-015-9393-5},
+  doi          = {10.1007/S10664-015-9393-5},
+  biburl       = {https://dblp.org/rec/journals/ese/KalliamvakouGBS16.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/icse/GaoBB17,
+  author       = {Zheng Gao and
+                  Christian Bird and
+                  Earl T. Barr},
+  editor       = {Sebasti{\'{a}}n Uchitel and
+                  Alessandro Orso and
+                  Martin P. Robillard},
+  title        = {To type or not to type: quantifying detectable bugs in JavaScript},
+  booktitle    = {Proceedings of the 39th International Conference on Software Engineering,
+                  {ICSE} 2017, Buenos Aires, Argentina, May 20-28, 2017},
+  pages        = {758--769},
+  publisher    = {{IEEE} / {ACM}},
+  year         = {2017},
+  doi          = {10.1109/ICSE.2017.75},
+  biburl       = {https://dblp.org/rec/conf/icse/GaoBB17.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/cacm/RayPDF17,
+  author       = {Baishakhi Ray and
+                  Daryl Posnett and
+                  Premkumar T. Devanbu and
+                  Vladimir Filkov},
+  title        = {A large-scale study of programming languages and code quality in GitHub},
+  journal      = {Commun. {ACM}},
+  volume       = {60},
+  number       = {10},
+  pages        = {91--100},
+  year         = {2017},
+  url          = {https://doi.org/10.1145/3126905},
+  doi          = {10.1145/3126905},
+  timestamp    = {Sun, 19 Jan 2025 14:03:22 +0100},
+  biburl       = {https://dblp.org/rec/journals/cacm/RayPDF17.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/toplas/BergerHMVV19,
+  author       = {Emery D. Berger and
+                  Celeste Hollenbeck and
+                  Petr Maj and
+                  Olga Vitek and
+                  Jan Vitek},
+  title        = {On the Impact of Programming Languages on Code Quality: {A} Reproduction
+                  Study},
+  journal      = {{ACM} Trans. Program. Lang. Syst.},
+  volume       = {41},
+  number       = {4},
+  pages        = {21:1--21:24},
+  year         = {2019},
+  url          = {https://doi.org/10.1145/3340571},
+  doi          = {10.1145/3340571},
+  timestamp    = {Sun, 19 Jan 2025 13:56:10 +0100},
+  biburl       = {https://dblp.org/rec/journals/toplas/BergerHMVV19.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/corr/abs-1911-07393,
+  author       = {Baishakhi Ray and
+                  Prem Devanbu and
+                  Vladimir Filkov},
+  title        = {Rebuttal to Berger et al., {TOPLAS} 2019},
+  journal      = {CoRR},
+  volume       = {abs/1911.07393},
+  year         = {2019},
+  url          = {http://arxiv.org/abs/1911.07393},
+  eprinttype    = {arXiv},
+  eprint       = {1911.07393},
+  timestamp    = {Mon, 02 Dec 2019 17:48:37 +0100},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-1911-07393.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/corr/abs-1911-11894,
+  author       = {Emery D. Berger and
+                  Petr Maj and
+                  Olga Vitek and
+                  Jan Vitek},
+  title        = {{FSE/CACM} Rebuttal\({}^{\mbox{2}}\): Correcting {A} Large-Scale Study
+                  of Programming Languages and Code Quality in GitHub},
+  journal      = {CoRR},
+  volume       = {abs/1911.11894},
+  year         = {2019},
+  url          = {http://arxiv.org/abs/1911.11894},
+  eprinttype    = {arXiv},
+  eprint       = {1911.11894},
+  timestamp    = {Tue, 03 Dec 2019 20:41:07 +0100},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-1911-11894.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/ese/GarousiBO20,
+  author       = {Vahid Garousi and
+                  Markus Borg and
+                  Markku Oivo},
+  title        = {Practical relevance of software engineering research: Synthesizing
+                  the community's voice},
+  journal      = {Empir. Softw. Eng.},
+  volume       = {25},
+  number       = {3},
+  pages        = {1687--1754},
+  year         = {2020},
+  url          = {https://doi.org/10.1007/s10664-020-09803-0},
+  doi          = {10.1007/S10664-020-09803-0},
+  timestamp    = {Sun, 19 Jan 2025 14:15:39 +0100},
+  biburl       = {https://dblp.org/rec/journals/ese/GarousiBO20.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@incollection{DBLP:books/sp/20/0001G0S20,
+  author       = {Daniel M{'{e}}ndez and
+                  Daniel Graziotin and
+                  Stefan Wagner and
+                  Heidi Seibold},
+  editor       = {Michael Felderer and
+                  Guilherme Horta Travassos},
+  title        = {Open Science in Software Engineering},
+  booktitle    = {Contemporary Empirical Methods in Software Engineering},
+  pages        = {477--501},
+  publisher    = {Springer},
+  year         = {2020},
+  url          = {https://doi.org/10.1007/978-3-030-32489-6\_17},
+  doi          = {10.1007/978-3-030-32489-6\_17},
+  biburl       = {https://dblp.org/rec/books/sp/20/0001G0S20.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/corr/abs-2010-03525,
+  author       = {Paul Ralph and
+                  Sebastian Baltes and
+                  Domenico Bianculli and
+                  Yvonne Dittrich and
+                  Michael Felderer and
+                  Robert Feldt and
+                  Antonio Filieri and
+                  Carlo Alberto Furia and
+                  Daniel Graziotin and
+                  Pinjia He and
+                  Rashina Hoda and
+                  Natalia Juristo and
+                  Barbara A. Kitchenham and
+                  Romain Robbes and
+                  Daniel M{\'{e}}ndez and
+                  Jefferson Seide Moll{\'{e}}ri and
+                  Diomidis Spinellis and
+                  Miroslaw Staron and
+                  Klaas{-}Jan Stol and
+                  Damian A. Tamburri and
+                  Marco Torchiano and
+                  Christoph Treude and
+                  Burak Turhan and
+                  Sira Vegas},
+  title        = {{ACM} {SIGSOFT} Empirical Standards},
+  journal      = {CoRR},
+  volume       = {abs/2010.03525},
+  year         = {2020},
+  url          = {https://arxiv.org/abs/2010.03525},
+  eprinttype    = {arXiv},
+  eprint       = {2010.03525},
+  timestamp    = {Sun, 06 Oct 2024 21:22:50 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-2010-03525.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/corr/abs-2011-04216,
+  author       = {Amit Sharma and
+                  Emre Kiciman},
+  title        = {DoWhy: An End-to-End Library for Causal Inference},
+  journal      = {CoRR},
+  volume       = {abs/2011.04216},
+  year         = {2020},
+  url          = {https://arxiv.org/abs/2011.04216},
+  eprinttype   = {arXiv},
+  eprint       = {2011.04216}
+}
+
+@inproceedings{DBLP:conf/wcre/CasseeVS20,
+  author       = {Nathan Cassee and
+                  Bogdan Vasilescu and
+                  Alexander Serebrenik},
+  title        = {The Silent Helper: The Impact of Continuous Integration on Code Reviews},
+  booktitle    = {27th {IEEE} International Conference on Software Analysis, Evolution
+                  and Reengineering, {SANER} 2020, London, ON, Canada, February 18-21,
+                  2020},
+  pages        = {423--434},
+  publisher    = {{IEEE}},
+  year         = {2020},
+  doi          = {10.1109/SANER48275.2020.9054818},
+}
+
+@inproceedings{DBLP:conf/esem/SaarimakiLVJ020,
+  author       = {Nyyti Saarim{\"{a}}ki and
+                  Valentina Lenarduzzi and
+                  Sira Vegas and
+                  Natalia Juristo and
+                  Davide Taibi},
+  editor       = {Maria Teresa Baldassarre and
+                  Filippo Lanubile and
+                  Marcos Kalinowski and
+                  Federica Sarro},
+  title        = {Cohort Studies in Software Engineering: {A} Vision of the Future},
+  booktitle    = {{ESEM} '20: {ACM} / {IEEE} International Symposium on Empirical Software
+                  Engineering and Measurement, Bari, Italy, October 5-7, 2020},
+  pages        = {33:1--33:6},
+  publisher    = {{ACM}},
+  year         = {2020},
+  doi          = {10.1145/3382494.3422160},
+}
+
+@article{DBLP:journals/queue/ForsgrenSMZHB21,
+  author       = {Nicole Forsgren and
+                  Margaret{-}Anne Storey and
+                  Chandra Maddila and
+                  Thomas Zimmermann and
+                  Brian Houck and
+                  Jenna Butler},
+  title        = {The {SPACE} of Developer Productivity: There's More to It Than You Think},
+  journal      = {{ACM} Queue},
+  volume       = {19},
+  number       = {1},
+  pages        = {45--48},
+  year         = {2021},
+  url          = {https://doi.org/10.1145/3454122.3454124},
+  doi          = {10.1145/3454122.3454124}
+}
+
+@article{DBLP:journals/ese/ShrikanthNFM21,
+  author       = {N. C. Shrikanth and
+                  William Nichols and
+                  Fahmid Morshed Fahid and
+                  Tim Menzies},
+  title        = {Assessing practitioner beliefs about software engineering},
+  journal      = {Empir. Softw. Eng.},
+  volume       = {26},
+  number       = {4},
+  pages        = {73},
+  year         = {2021},
+  url          = {https://doi.org/10.1007/s10664-021-09957-5},
+  doi          = {10.1007/S10664-021-09957-5},
+  timestamp    = {Mon, 05 Feb 2024 20:21:51 +0100},
+  biburl       = {https://dblp.org/rec/journals/ese/ShrikanthNFM21.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/tosem/FuriaTF22,
+  author       = {Carlo A. Furia and
+                  Richard Torkar and
+                  Robert Feldt},
+  title        = {Applying Bayesian Analysis Guidelines to Empirical Software Engineering
+                  Data: The Case of Programming Languages and Code Quality},
+  journal      = {{ACM} Trans. Softw. Eng. Methodol.},
+  volume       = {31},
+  number       = {3},
+  pages        = {40:1--40:38},
+  year         = {2022},
+  url          = {https://doi.org/10.1145/3490953},
+  doi          = {10.1145/3490953},
+  timestamp    = {Tue, 16 Aug 2022 23:08:33 +0200},
+  biburl       = {https://dblp.org/rec/journals/tosem/FuriaTF22.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/ese/ErnstB23,
+  author       = {Neil A. Ernst and
+                  Maria Teresa Baldassarre},
+  title        = {Registered reports in software engineering},
+  journal      = {Empir. Softw. Eng.},
+  volume       = {28},
+  number       = {2},
+  pages        = {55},
+  year         = {2023},
+  url          = {https://doi.org/10.1007/s10664-022-10277-5},
+  doi          = {10.1007/S10664-022-10277-5},
+  biburl       = {https://dblp.org/rec/journals/ese/ErnstB23.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/softx/ZhaoL23,
+  author       = {Yang Zhao and
+                  Qing Liu},
+  title        = {Causal {ML:} Python package for causal inference machine learning},
+  journal      = {SoftwareX},
+  volume       = {21},
+  pages        = {101294},
+  year         = {2023},
+  doi          = {10.1016/J.SOFTX.2022.101294},
+  biburl       = {https://dblp.org/rec/journals/softx/ZhaoL23.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/tse/HeHZZ23,
+  author       = {Runzhi He and
+                  Hao He and
+                  Yuxia Zhang and
+                  Minghui Zhou},
+  title        = {Automating Dependency Updates in Practice: An Exploratory Study on
+                  GitHub Dependabot},
+  journal      = {{IEEE} Trans. Software Eng.},
+  volume       = {49},
+  number       = {8},
+  pages        = {4004--4022},
+  year         = {2023},
+  doi          = {10.1109/TSE.2023.3278129},
+}
+
+@article{DBLP:journals/infsof/Siebert23,
+  author       = {Julien Siebert},
+  title        = {Applications of statistical causal inference in software engineering},
+  journal      = {Inf. Softw. Technol.},
+  volume       = {159},
+  pages        = {107198},
+  year         = {2023},
+  url          = {https://doi.org/10.1016/j.infsof.2023.107198},
+  doi          = {10.1016/J.INFSOF.2023.107198},
+  timestamp    = {Sun, 19 Jan 2025 14:13:02 +0100},
+  biburl       = {https://dblp.org/rec/journals/infsof/Siebert23.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/msr/BognerM22,
+  author       = {Justus Bogner and
+                  Manuel Merkel},
+  title        = {To Type or Not to Type? {A} Systematic Comparison of the Software
+                  Quality of JavaScript and TypeScript Applications on GitHub},
+  booktitle    = {19th {IEEE/ACM} International Conference on Mining Software Repositories,
+                  {MSR} 2022, Pittsburgh, PA, USA, May 23-24, 2022},
+  pages        = {658--669},
+  publisher    = {{ACM}},
+  year         = {2022},
+  doi          = {10.1145/3524842.3528454},
+  biburl       = {https://dblp.org/rec/conf/msr/BognerM22.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/sigsoft/ChengMCJGKZ022,
+  author       = {Lan Cheng and
+                  Emerson R. Murphy{-}Hill and
+                  Mark Canning and
+                  Ciera Jaspan and
+                  Collin Green and
+                  Andrea Knight and
+                  Nan Zhang and
+                  Elizabeth Kammer},
+  title        = {What Improves Developer Productivity at Google? Code Quality},
+  booktitle    = {Proceedings of the 30th {ACM} Joint European Software Engineering
+                  Conference and Symposium on the Foundations of Software Engineering,
+                  {ESEC/FSE} 2022, Singapore, November 14-18, 2022},
+  pages        = {1302--1313},
+  publisher    = {{ACM}},
+  year         = {2022},
+  doi          = {10.1145/3540250.3558940},
+}
+
+@inproceedings{DBLP:conf/icse/FangLHV22,
+  author       = {Hongbo Fang and
+                  Hemank Lamba and
+                  James D. Herbsleb and
+                  Bogdan Vasilescu},
+  title        = {``This Is Damn Slick!'' Estimating the Impact of Tweets on Open Source
+                  Project Popularity and New Contributors},
+  booktitle    = {44th {IEEE/ACM} International Conference on Software Engineering,
+                  {ICSE} 2022, Pittsburgh, PA, USA, May 25-27, 2022},
+  pages        = {2116--2129},
+  publisher    = {{ACM}},
+  year         = {2022},
+  doi          = {10.1145/3510003.3510121},
+}
+
+@article{DBLP:journals/cacm/ZieglerKLRRSSA24,
+  author       = {Albert Ziegler and
+                  Eirini Kalliamvakou and
+                  X. Alice Li and
+                  Andrew Rice and
+                  Devon Rifkin and
+                  Shawn Simister and
+                  Ganesh Sittampalam and
+                  Edward Aftandilian},
+  title        = {Measuring {GitHub} {Copilot}'s Impact on Productivity},
+  journal      = {Commun. {ACM}},
+  volume       = {67},
+  number       = {3},
+  pages        = {54--63},
+  year         = {2024},
+  url          = {https://doi.org/10.1145/3633453},
+  doi          = {10.1145/3633453},
+  biburl       = {https://dblp.org/rec/journals/cacm/ZieglerKLRRSSA24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/jmlr/ZhengH0RGCSS024,
+  author       = {Yujia Zheng and
+                  Biwei Huang and
+                  Wei Chen and
+                  Joseph D. Ramsey and
+                  Mingming Gong and
+                  Ruichu Cai and
+                  Shohei Shimizu and
+                  Peter Spirtes and
+                  Kun Zhang},
+  title        = {Causal-learn: Causal Discovery in Python},
+  journal      = {J. Mach. Learn. Res.},
+  volume       = {25},
+  pages        = {60:1--60:8},
+  year         = {2024},
+  url          = {https://jmlr.org/papers/v25/23-0970.html},
+  biburl       = {https://dblp.org/rec/journals/jmlr/ZhengH0RGCSS024.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/tosem/FuriaTF24,
+  author       = {Carlo A. Furia and
+                  Richard Torkar and
+                  Robert Feldt},
+  title        = {Towards Causal Analysis of Empirical Software Engineering Data:
+                  The Impact of Programming Languages on Coding Competitions},
+  journal      = {{ACM} Trans. Softw. Eng. Methodol.},
+  volume       = {33},
+  number       = {1},
+  pages        = {13:1--13:35},
+  year         = {2024},
+  url          = {https://doi.org/10.1145/3611667},
+  doi          = {10.1145/3611667},
+  biburl       = {https://dblp.org/rec/journals/tosem/FuriaTF24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/tosem/GrafVlachyW24,
+  author       = {Lorenz Graf{-}Vlachy and
+                  Stefan Wagner},
+  title        = {Cleaning Up Confounding: Accounting for Endogeneity Using Instrumental
+                  Variables and Two-Stage Models},
+  journal      = {{ACM} Trans. Softw. Eng. Methodol.},
+  volume       = {33},
+  number       = {8},
+  pages        = {199:1--199:31},
+  year         = {2024},
+  url          = {https://doi.org/10.1145/3674730},
+  doi          = {10.1145/3674730},
+  timestamp    = {Sat, 25 Jan 2025 23:34:32 +0100},
+  biburl       = {https://dblp.org/rec/journals/tosem/GrafVlachyW24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/tosem/RobillardAEGLNNSSS24,
+  author       = {Martin P. Robillard and
+                  Deeksha M. Arya and
+                  Neil A. Ernst and
+                  Jin L. C. Guo and
+                  Maxime Lamothe and
+                  Mathieu Nassif and
+                  Nicole Novielli and
+                  Alexander Serebrenik and
+                  Igor Steinmacher and
+                  Klaas{-}Jan Stol},
+  title        = {Communicating Study Design Trade-offs in Software Engineering},
+  journal      = {{ACM} Trans. Softw. Eng. Methodol.},
+  volume       = {33},
+  number       = {5},
+  pages        = {112:1--112:10},
+  year         = {2024},
+  url          = {https://doi.org/10.1145/3649598},
+  doi          = {10.1145/3649598},
+  timestamp    = {Sun, 19 Jan 2025 14:22:51 +0100},
+  biburl       = {https://dblp.org/rec/journals/tosem/RobillardAEGLNNSSS24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@book{DBLP:books/sp/WohlinRHORW24,
+  author       = {Claes Wohlin and
+                  Per Runeson and
+                  Martin H{\"{o}}st and
+                  Magnus C. Ohlsson and
+                  Bj{\"{o}}rn Regnell and
+                  Anders Wessl{\'{e}}n},
+  title        = {Experimentation in Software Engineering},
+  edition      = {3rd},
+  publisher    = {Springer},
+  year         = {2024},
+  url          = {https://doi.org/10.1007/978-3-662-69306-3},
+  doi          = {10.1007/978-3-662-69306-3},
+  isbn         = {978-3-662-69305-6},
+  timestamp    = {Fri, 04 Jul 2025 22:16:39 +0200},
+  biburl       = {https://dblp.org/rec/books/sp/WohlinRHORW24.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+% Not yet indexed by DBLP as of 2026-03-18.
+@article{journals/ese/HulseEM25,
+  author       = {Jeremy Hulse and
+                  Nasir U. Eisty and
+                  Tim Menzies},
+  title        = {Shaky Structures: The Wobbly World of Causal Graphs in Software Analytics},
+  journal      = {Empir. Softw. Eng.},
+  volume       = {30},
+  pages        = {142},
+  year         = {2025},
+  doi          = {10.1007/s10664-025-10690-6}
+}
+
+@article{DBLP:journals/corr/abs-2501-17026,
+  author       = {Carlo A. Furia and
+                  Richard Torkar},
+  title        = {Mitigating Omitted Variable Bias in Empirical Software Engineering},
+  journal      = {CoRR},
+  volume       = {abs/2501.17026},
+  year         = {2025},
+  url          = {https://doi.org/10.48550/arXiv.2501.17026},
+  doi          = {10.48550/ARXIV.2501.17026},
+  eprinttype    = {arXiv},
+  eprint       = {2501.17026},
+  timestamp    = {Wed, 26 Feb 2025 21:16:35 +0100},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-2501-17026.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{DBLP:journals/infsof/GiamatteiGPR25,
+  author       = {Luca Giamattei and
+                  Antonio Guerriero and
+                  Roberto Pietrantuono and
+                  Stefano Russo},
+  title        = {Causal reasoning in Software Quality Assurance: {A} systematic review},
+  journal      = {Inf. Softw. Technol.},
+  volume       = {178},
+  pages        = {107599},
+  year         = {2025},
+  url          = {https://doi.org/10.1016/j.infsof.2024.107599},
+  doi          = {10.1016/J.INFSOF.2024.107599},
+  timestamp    = {Fri, 04 Jul 2025 22:13:24 +0200},
+  biburl       = {https://dblp.org/rec/journals/infsof/GiamatteiGPR25.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/icse-seip/ParadisGMNMMZFC25,
+  author       = {Elise Paradis and
+                  Kate Grey and
+                  Quinn Madison and
+                  Daye Nam and
+                  Andrew Macvean and
+                  Vahid Meimand and
+                  Nan Zhang and
+                  Benjamin Ferrari{-}Church and
+                  Satish Chandra},
+  title        = {How Much Does {AI} Impact Development Speed? an Enterprise-Based Randomized
+                  Controlled Trial},
+  booktitle    = {47th {IEEE/ACM} International Conference on Software Engineering:
+                  Software Engineering in Practice, SEIP@ICSE 2025, Ottawa, ON, Canada,
+                  April 27 - May 3, 2025},
+  pages        = {618--629},
+  publisher    = {{IEEE}},
+  year         = {2025},
+  url          = {https://doi.org/10.1109/ICSE-SEIP66354.2025.00060},
+  doi          = {10.1109/ICSE-SEIP66354.2025.00060},
+  timestamp    = {Sun, 07 Dec 2025 22:11:09 +0100},
+  biburl       = {https://dblp.org/rec/conf/icse-seip/ParadisGMNMMZFC25.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+% Not yet indexed by DBLP as of 2026-03-18.
+@article{journals/infsof/SiebertTGWKS25,
+  author       = {Julien Siebert and
+                  Adam Trendowicz and
+                  Gregor G{\"{o}}ssler and
+                  Hironori Washizaki and
+                  Michael Kl{\"{a}}s and
+                  Martin Shepperd},
+  title        = {Special Issue on Causal Modeling and Inference in {SE}},
+  journal      = {Inf. Softw. Technol.},
+  volume       = {183},
+  pages        = {107754},
+  year         = {2025},
+  doi          = {10.1016/j.infsof.2025.107754}
+}
+
+@article{DBLP:journals/corr/abs-2511-03875,
+  author       = {Julian Frattini and
+                  Hans{-}Martin Heyn and
+                  Robert Feldt and
+                  Richard Torkar},
+  title        = {Tutorial Debriefing: Applied Statistical Causal Inference in Requirements
+                  Engineering},
+  journal      = {CoRR},
+  volume       = {abs/2511.03875},
+  year         = {2025},
+  url          = {https://doi.org/10.48550/arXiv.2511.03875},
+  doi          = {10.48550/ARXIV.2511.03875},
+  eprinttype    = {arXiv},
+  eprint       = {2511.03875},
+  timestamp    = {Thu, 27 Nov 2025 20:57:32 +0100},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-2511-03875.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{DBLP:conf/icsme/ZimmermannC19,
+  author       = {Th{\'{e}}o Zimmermann and
+                  Annal{\'{\i}} Casanueva Art{\'{\i}}s},
+  title        = {Impact of Switching Bug Trackers: {A} Case Study on a Medium-Sized
+                  Open Source Project},
+  booktitle    = {{IEEE} International Conference on Software Maintenance and
+                  Evolution, {ICSME} 2019, Cleveland, OH, USA, September 29 - October
+                  4, 2019},
+  pages        = {13--23},
+  publisher    = {{IEEE}},
+  year         = {2019},
+  doi          = {10.1109/ICSME.2019.00011},
+}
+
+@article{DBLP:journals/ese/WesselSWSG22,
+  author       = {Mairieli Wessel and
+                  Alexander Serebrenik and
+                  Igor Wiese and
+                  Igor Steinmacher and
+                  Marco A. Gerosa},
+  title        = {Quality gatekeepers: investigating the effects of code review bots
+                  on pull request activities},
+  journal      = {Empirical Software Engineering},
+  volume       = {27},
+  number       = {6},
+  pages        = {108},
+  year         = {2022},
+  doi          = {10.1007/s10664-022-10130-9},
+}
+
+
+
+% Not yet indexed by DBLP as of 2026-03-22.
+@inproceedings{DBLP:conf/icse/ChenSSGT26,
+  author       = {Yunqi Chen and
+                  Klaas-Jan Stol and
+                  Fabio Santos and
+                  Daniel German and
+                  Bianca Trinkenreich},
+  title        = {How Does Core Contributor Disengagement Impact Open Source Project
+                  Activity? {A} Quasi-Experiment},
+  booktitle    = {48th {IEEE/ACM} International Conference on Software Engineering,
+                  {ICSE} 2026, Rio de Janeiro, Brazil, April 12-18, 2026},
+  year         = {2026},
+  doi          = {10.1145/3744916.3773135},
+}
+
+% Not yet indexed by DBLP as of 2026-05-19.
+@inproceedings{DBLP:conf/icse/MailachSAS26,
+  author       = {Alina Mailach and
+                  Janet Siegmund and
+                  Sven Apel and
+                  Norbert Siegmund},
+  title        = {Views on Internal and External Validity in Empirical Software
+                  Engineering: 10 Years Later and Beyond},
+  booktitle    = {48th {IEEE/ACM} International Conference on Software Engineering,
+                  {ICSE} 2026, Rio de Janeiro, Brazil, April 12-18, 2026},
+  year         = {2026},
+  url          = {https://sws.informatik.uni-leipzig.de/wp-content/uploads/2025/09/10-years-validity.pdf}
+}
+
+% Not yet indexed by DBLP as of 2026-03-18.
+@article{journals/corr/abs-2601-21814,
+  title={Folklore in Software Engineering: A Definition and Conceptual Foundations},
+  author={Enoiu, Eduard and Malm, Jean and Gay, Gregory},
+  journal={arXiv preprint arXiv:2601.21814},
+  year={2026}
+}
+
+% Not yet indexed by DBLP as of 2026-03-23.
+@inproceedings{DBLP:conf/msr/NoceraSLTV26,
+  author       = {Sabato Nocera and
+                  Nyyti Saarim{\"{a}}ki and
+                  Valentina Lenarduzzi and
+                  Davide Taibi and
+                  Sira Vegas},
+  title        = {Stop Comparing Apples and Oranges: Matching for Better Results
+                  in Mining Software Repositories Studies},
+  booktitle    = {Proceedings of the 23rd International Conference on Mining Software
+                  Repositories, {MSR} 2026, Rio de Janeiro, Brazil},
+  year         = {2026},
+  doi          = {10.1145/3793302.3793338}
+}
+
+% Not yet indexed by DBLP as of 2026-03-22.
+@inproceedings{DBLP:conf/msr/HeMAKV26,
+  author       = {Hao He and
+                  Courtney Miller and
+                  Shyam Agarwal and
+                  Christian K{\"{a}}stner and
+                  Bogdan Vasilescu},
+  title        = {Speed at the Cost of Quality: How {Cursor AI} Increases Short-Term
+                  Velocity and Long-Term Complexity in Open-Source Projects},
+  booktitle    = {Proceedings of the 23rd International Conference on Mining Software
+                  Repositories, {MSR} 2026, Rio de Janeiro, Brazil},
+  year         = {2026},
+  doi          = {10.48550/arXiv.2511.04427}
+}
