@@ -20,7 +20,7 @@ This creates a productive tension.
 The questions we care about most (e.g., does code review reduce defects? does remote work affect coordination? does AI-assisted development improve velocity?) are questions about causal effects, yet the studies we can feasibly conduct are often observational, because randomized experiments in software engineering are frequently impractical, expensive, or ethically constrained. 
 However, it does not mean that we cannot conduct credible causal inference on observational SE data.
 In fact, observational data has supported credible causal conclusions across many sciences, from epidemiology's landmark work linking smoking to cancer~\cite{samet2016epidemiology} to economics' studies of policy interventions~\cite{abadie2018econometric}.
-In those fields, researchers have developed systematic frameworks for deriving the assumptions under which certain type of observational data can support a causal interpretation, communicating those assumptions transparently so that readers can evaluate them, and iteratively developing stronger observational designs by scrutizing and relaxing assumptions from prior studies (see, e.g., \citet{angrist2010credibility, pearl2009causality, cunningham2021causal}).
+In those fields, researchers have developed systematic frameworks for deriving the assumptions under which certain type of observational data can support a causal interpretation, communicating those assumptions transparently so that readers can evaluate them, and iteratively developing stronger observational designs by scrutinizing and relaxing assumptions from prior studies (see, e.g., \citet{angrist2010credibility, pearl2009causality, cunningham2021causal}).
 
 Empirical SE has not yet widely adopted such frameworks (see Section~\ref{sec:bg-adoption} for a literature review). 
 The discipline draws researchers from computer science and engineering backgrounds where typical training emphasizes building and evaluating technical artifacts, not designing observational studies of human behavior. 
@@ -103,7 +103,7 @@ Our tutorial fills this gap with an integrative treatment, covering multiple int
 
 The preceding sections document a growing awareness of causal reasoning in SE, but how widespread is its actual use?
 To quantify the gap between causal ambition and methodological practice, we conducted a classification of all main-research-track papers published at three premier SE venues---ICSE, FSE, and ASE---from 2015 to 2025.
-We do not aim to achieve methodological perfection in this analysis, but even a simple exploration reveals a substantial gap between the interevention-outcome questions SE researchers ask and the methods they employ to answer them.
+We do not aim to achieve methodological perfection in this analysis, but even a simple exploration reveals a substantial gap between the intervention-outcome questions SE researchers ask and the methods they employ to answer them.
 
 \paragraph{Corpus and Classification.}
 For each venue (ICSE, FSE, ASE), we obtained a list of papers, paper titles, and DOIs from DBLP, and retrieved the paper abstracts via the Semantic Scholar batch API, using OpenAlex as a backfill source.
@@ -124,7 +124,7 @@ We adopt deterministic decoding and an explicit classification schema to maximiz
 Of the 5,341 papers, 2,136 (40\%) are empirical SE studies; 621 (29\%) explicitly ask or are implicitly motivated by a causal RQ about interventions and outcomes;\footnote{
   We consider an empirical SE paper as having no implicit causal motivation if it describes an SE phenomenon (e.g., practices, tools, conventions) or mines a certain type of SE data (e.g., Stack Overflow, issue trackers, code review systems) without linking the study to some kind of causal outcomes, either implicitly or explicitly, \emph{in the abstract}. Thus, this number should be viewed as a lower bound as papers may only link this in the discussion.
 } but only 99 (1.9\%) papers claim to employ any recognizable causal inference method (Table~\ref{tab:taxonomy}).
-The dominating approach is to propose and investigate RQs that are framed ascorrelational, descriptive, or qualitative, and to only links back to the original causal motivation in the discussion.
+The dominating approach is to propose and investigate RQs that are framed as correlational, descriptive, or qualitative, and to only links back to the original causal motivation in the discussion.
 Figure~\ref{fig:causal-trends} plots this gap over time: While the absolute number of papers asking or motivated by causal RQs has grown steadily---from 23 in 2015 to 131 in 2025---the number claiming to employ causal inference methods has grown far more slowly, from 3 to 14 over the same period.
 The ratio of causal motivation to causal inference methods has remained roughly 7-to-1 throughout the decade, indicating that the gap is structural rather than transitional.
 
@@ -645,7 +645,7 @@ One can strengthen the evidentiary basis by triangulating across multiple outcom
 More broadly, \emph{measurement} and \emph{identification} are orthogonal challenges: A perfectly identified design still produces misleading conclusions if the outcome proxy is invalid, and a perfectly measured outcome still conflates causal effects with confounding if the design lacks identification.
 The causal inference toolkit addresses identification; measurement validity requires its own careful attention---including construct definition, proxy validation, and sensitivity to measurement error---that this tutorial acknowledges but does not attempt to resolve.
 Importantly, each peril on the identification side has a principled response within the toolkit so that SE researchers can engage with the specific threats in their settings.
-To faciliate constructive evaluation of SE studies with causal claims, we provide an empirical standard for causal inquiries following the format of the ACM SIGSOFT Empirical Standards (Appendix~\ref{sec:appendix-standard}).
+To facilitate constructive evaluation of SE studies with causal claims, we provide an empirical standard for causal inquiries following the format of the ACM SIGSOFT Empirical Standards (Appendix~\ref{sec:appendix-standard}).
 
 \section{Worked Example: The Impact of AI Coding Tools in Open-Source Projects}
 \label{sec:worked-example}
@@ -727,7 +727,7 @@ Whether the same dynamics hold for smaller, less visible, or proprietary project
 
 We begin with the approach commonly seen in mining software repositories studies, in which the researcher may: (1) start with a comparison of treated and control repositories using a cross-sectional snapshot, and then (2) run a regression with all available covariates, and interpret the surviving coefficient as suggestive evidence of an effect.
 We then use the toolkit from Section~\ref{sec:primer} to diagnose the problems with this approach and show a DAG-justified regression with pre-treatment covariates and the use of two more sophisticated estimators (i.e., propensity score matching and inverse probability weighting).
-Finally, we will use the same toolkit to demostrate the foundamental limitation of unobserved confounders to motivate the use of longitudinal data and design based identification.
+Finally, we will use the same toolkit to demonstrate the fundamental limitation of unobserved confounders to motivate the use of longitudinal data and design based identification.
 
 \subsubsection{Na\"ive Group Comparison}
 \label{sec:naive-comparison}
@@ -794,7 +794,7 @@ In this tutorial, we are going to push one step further: \textbf{Under what assu
 Recall in Section~\ref{sec:primer-po} that the formal identifying assumption for linear regressions to carry a causal interpretation is conditional ignorability according to the potential outcomes framework.
 Also recall in Section~\ref{sec:primer-dags} that causal DAGs and the back-door criterion provides a principled rule for the researcher to argue whether the covariates have been appropriately selected to satisfy the conditional ignorability assumption.
 We have already provided an example DAG in Figure~\ref{fig:ai-dag} for illustrative purposes but the sharp reader may have already noticed that the DAG is ambiguous without accounting the temporal nature of software repository data.
-Here, we resolve this ambiguity and constructing a proper \emph{temporal DAG} that describes what might be a plauible causal theory (Figure~\ref{fig:temporal-dag}).
+Here, we resolve this ambiguity and constructing a proper \emph{temporal DAG} that describes what might be a plausible causal theory (Figure~\ref{fig:temporal-dag}).
 
 Consider Popularity as an example.
 In the true data-generating process, Popularity accumulate over time, so the actual causal DAG has time-indexed nodes:
@@ -985,7 +985,7 @@ No single sensitivity measure is definitive; the pragmatic recommendation is to 
 Another common response to the limitations of linear regression is to try a ``better'' estimator that are ``known to be a causal inference method,'' among which two popular methods are propensity score matching (PSM)~\cite{rosenbaum1983central} and inverse probability weighting (IPW)~\cite{horvitz1952generalization}.
 The main advantage of these methods is that they reduce dependence on the parametric specification of the outcome model~\cite{ho2007matching}: By balancing the covariate distributions between treatment and control groups through matching or reweighting, they lessen the sensitivity of the estimate to functional-form choices such as linearity.
 However, and more importantly, PSM and IPW still belong to the selection-on-observables family~\cite{imbens2009recent}, which shares the same identifying assumption as linear regression: conditional ignorability given the observed pre-treatment covariates.
-With the problem is unobserved confounding, all three estimators will still have omitted variable bias that can be aribitarily large in either direction.
+With the problem is unobserved confounding, all three estimators will still have omitted variable bias that can be arbitrarily large in either direction.
 In other words, using PSM or IPW does not automatically make a study ``causal inference,'' and the researcher would still need to argue the plausibility of the identifying assumption through a DAG-encoded causal theory.
 
 \begin{table}[t]
@@ -1023,7 +1023,7 @@ First, cross-sectional designs suffer from \emph{temporal collapse}: The measure
 Second, even when panel data are available to recover pre-treatment covariate values, the resulting estimates may be sensitive to unobserved confounding by factors such as developer skill and team culture that no repository-level API data can capture.
 Switching to another selection-on-observables estimator such as PSM or IPW does not resolve this limitation, because the bottleneck is the identifying assumption---conditional ignorability given observables---not the choice of estimator.
 Despite the limitations, cross-sectional studies remain valuable---and in many settings they are the only feasible design---but researchers should pair them with sensitivity analyses that transparently assess how robust the conclusions are to plausible unobserved confounders.
-On the other hand, with longitudinal data, research designs that exploit within-unit variation---comparing the \emph{same} project before and after adoption, thereby absorbing all time-invariant confounders---are particualry powerful and can strengthen identification in the presence of unobserved confounders.
+On the other hand, with longitudinal data, research designs that exploit within-unit variation---comparing the \emph{same} project before and after adoption, thereby absorbing all time-invariant confounders---are particularly powerful and can strengthen identification in the presence of unobserved confounders.
 We turn to this approach in Section~\ref{sec:longitudinal}.
 
 \subsection{Longitudinal Methods}
@@ -1033,7 +1033,7 @@ The cross-sectional analysis in Section~\ref{sec:cross-sectional} revealed an im
 One powerful way to address this limitation is to exploit \emph{longitudinal} data and its panel structure.
 Specifically, instead of comparing \emph{different} repositories (cross-section), we compare the \emph{same} repository before and after it adopts AI coding tools.
 When we look at the same repository over time, every time-invariant characteristic---team skill, project culture, codebase complexity, programming language---is held constant by construction.
-This high-level idea motivates longitudinal statisical modeling methods such as the interrupted time series (ITS) analyses and two-way fixed effect (TWFE) models.
+This high-level idea motivates longitudinal statistical modeling methods such as the interrupted time series (ITS) analyses and two-way fixed effect (TWFE) models.
 More importantly, the limitations of these methods motivates a powerful design-based identification idea (Section~\ref{sec:primer-design}), \emph{difference in differences}.
 We will cover all of them in this section.
 
@@ -1304,7 +1304,7 @@ DiD: Borusyak (with covariates) & Parallel trends (conditional on $X_{it}$) & 0.
 Table~\ref{tab:all-estimates} compares all estimates from Sections~\ref{sec:cross-sectional} and~\ref{sec:longitudinal}, along with each method's identifying assumption and its key vulnerability.
 It is important to note that the \emph{design} matters more than the estimator.
 The na\"ive comparison ($+911\%$) drops to $+158\%$ once we add snapshot controls, and further to $+101\%$ once we condition only on pre-treatment confounders justified by the temporal DAG---each step removes a different source of bias.
-Yet within the DAG-justified cross-section, switching from OLS to PSM to IPW still yields esimates higher than the DiD estimates: All three share the conditional ignorability assumption which is violated by the unobserved confounders that no GitHub API data can capture.
+Yet within the DAG-justified cross-section, switching from OLS to PSM to IPW still yields estimates higher than the DiD estimates: All three share the conditional ignorability assumption which is violated by the unobserved confounders that no GitHub API data can capture.
 Across longitudinal designs, the estimates change dramatically: the before/after estimate (156\%) drops to 120\% with ITS (which absorbs secular trends) and further to 32--52\% with DiD (which absorbs common shocks via a control group).
 Each step trades a strong assumption for a weaker one, and the estimates shrink accordingly.
 The identifying assumption is progressively weaker and more plausible as we move from the cross-sectional to the longitudinal designs.
@@ -1419,7 +1419,7 @@ The repository includes the LLM-classified corpus of 5,341 SE papers (Section~\r
 \section{The Causal Inference Toolkit: Historical Development and Parallels with Other Disciplines}
 \label{sec:appendix-history}
 
-This appendix provides a detailed account of the intellectual traditions that produced the causal inference toolkit introduced in Section~\ref{sec:bg-causal-history}, followed by a summary of methodological reforms in psychology and epidemiology in which they recently started to address causal infernece problems similar to those we identify in SE\@.
+This appendix provides a detailed account of the intellectual traditions that produced the causal inference toolkit introduced in Section~\ref{sec:bg-causal-history}, followed by a summary of methodological reforms in psychology and epidemiology in which they recently started to address causal inference problems similar to those we identify in SE\@.
 
 \subsection{The Development of the Causal Inference Toolkit}
 \label{sec:appendix-toolkit-history}
@@ -1637,7 +1637,7 @@ The pragmatic stance in Section~\ref{sec:guide} walks the researcher through thi
 
 This is a legitimate concern, and the tutorial does not claim that design-based identification is easy.
 The pragmatic stance (Section~\ref{sec:guide}) exists precisely to walk SE researchers through the reasoning process, and the empirical standard (Appendix~\ref{sec:appendix-standard}) provides verifiable criteria for reviewers.
-We beleive that SE researchers, who are trained to reason about complex systems, dependencies, and graph structures, can learn to construct and defend identification arguments if given the right conceptual framework.
+We believe that SE researchers, who are trained to reason about complex systems, dependencies, and graph structures, can learn to construct and defend identification arguments if given the right conceptual framework.
 The alternative---continuing to make implicit causal claims from regression without any identification strategy---is not more credible; it is simply less transparent.
 A DiD study that states the parallel trends assumption, tests it with pre-trend plots, and discusses remaining threats is epistemically superior to a regression study that makes causal claims without acknowledging any identification assumption at all.
 
