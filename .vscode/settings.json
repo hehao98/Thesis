@@ -12,7 +12,9 @@
                 "-outdir=%OUTDIR%",
                 "%DOC%"
             ],
-            "env": {}
+            "env": {
+                "PATH": "/Library/TeX/texbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            }
         },
         {
             "name": "tectonic",
@@ -25,7 +27,9 @@
                 "shell-escape",
                 "%DOC%.tex"
             ],
-            "env": {}
+            "env": {
+                "PATH": "/Library/TeX/texbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            }
         },
         {
             "name": "pdflatex",
@@ -36,38 +40,60 @@
                 "-file-line-error",
                 "-shell-escape",
                 "%DOC%"
-            ]
+            ],
+            "env": {
+                "PATH": "/Library/TeX/texbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            }
         },
         {
             "name": "biber",
             "command": "biber",
-            "args": ["%DOCFILE%"]
+            "args": [
+                "%DOCFILE%"
+            ],
+            "env": {
+                "PATH": "/Library/TeX/texbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            }
         }
     ],
     "latex-workshop.latex.recipes": [
         {
             "name": "latexmk",
-            "tools": ["latexmk"]
+            "tools": [
+                "latexmk"
+            ]
         },
         {
             "name": "pdflatex -> biber -> pdflatex x2",
-            "tools": ["pdflatex", "biber", "pdflatex", "pdflatex"]
+            "tools": [
+                "pdflatex",
+                "biber",
+                "pdflatex",
+                "pdflatex"
+            ]
         },
         {
             "name": "pdflatex x2",
-            "tools": ["pdflatex", "pdflatex"]
+            "tools": [
+                "pdflatex",
+                "pdflatex"
+            ]
         },
         {
             "name": "pdflatex only",
-            "tools": ["pdflatex"]
+            "tools": [
+                "pdflatex"
+            ]
         },
         {
             "name": "tectonic",
-            "tools": ["tectonic"]
+            "tools": [
+                "tectonic"
+            ]
         }
     ],
     "latex-workshop.latex.recipe.default": "lastUsed",
     "latex-workshop.latex.autoBuild.run": "onSave",
-    "latex-workshop.latex.autoClean.run": "onBuilt",
+    "latex-workshop.latex.autoClean.run": "never",
     "latex-workshop.view.pdf.viewer": "tab"
 }
