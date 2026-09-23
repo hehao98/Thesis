@@ -101,6 +101,7 @@ However, as we will quantify, this intervention could be substantially more effe
 The findings align with the opinions of npm developers~\cite{DBLP:journals/tse/JafariCAST22} but contradict the views of security practitioners~\cite{DBLP:conf/sp/LadisaPMB23, DBLP:journals/ieeesp/ZahanKHSW23}, suggesting that pinning direct dependencies is futile (and can be even counter-productive) as protection against malicious package updates.
 The chapter also presents evidence that a new ecosystem-wide intervention, along with tooling changes and ecosystem-wide allocation of collectively pooled resources, can be an effective intervention against malicious package updates.
 These findings lead to concrete advice for developers and ecosystem policy makers to improve the state of software supply chain security (Section~\ref{sec:pinning-discussion}).
+Within this thesis, the chapter challenges the software engineering myth that pinning dependency versions improves project security against malicious package updates, and Section~\ref{sec:pinning-credibility} applies the four-step causal credibility assessment introduced in Section~\ref{sec:thesis-statement} to make explicit the causal theory and assumptions on which this evidence rests.
 
 \section{Background and Related Work}
 \label{sec:pinning-background}
@@ -679,5 +680,6 @@ Again, we expect all these concerns to manifest differently in different ecosyst
 This chapter has presented a counterfactual analysis and simulation study on the impact of version constraints in the npm ecosystem.
 The chapter explored the security and maintenance impact of locally pinning direct dependencies and the effectiveness of pinning on ``important'' packages against possible malicious package updates.
 The findings provide counter-evidence for the use of local pinning as a security best practice, but support the effectiveness of coordinated pinning in critical open-source packages, leading to a series of implications for the design of dependency management tools and ecosystem-level coordination to enhance software supply chain security.
+With respect to the thesis statement in Section~\ref{sec:thesis-statement}, the chapter does not dispel the pinning myth outright: The causal credibility assessment in Section~\ref{sec:pinning-credibility} specifies the conditions---dependency graph size and the pinning decisions made upstream---under which pinning protects against malicious package updates and the conditions under which it does not, and identifies simulation fidelity as the one assumption on which this reading rests.
 A replication package is available at \url{https://doi.org/10.5281/zenodo.14693233}.
 

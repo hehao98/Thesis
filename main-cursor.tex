@@ -32,6 +32,7 @@ To address this gap, we ask:
 We focus on Cursor, one of the most widely adopted LLM agent assistants~\cite{global-ai-trends}, as our empirical case.
 We employ a difference-in-differences (DiD) design with staggered adoption~\cite{callaway2021difference, borusyak2024revisiting}, comparing repositories that adopt Cursor at different times to a matched control group that never adopts during our observation period.
 This quasi-experimental approach uses naturally occurring variation in adoption timing to identify causal effects while controlling for repository-specific characteristics and common temporal trends.
+Within this thesis, the chapter challenges the software engineering myth that AI coding tools unambiguously improve developer productivity, and Section~\ref{sec:cursor-credibility} applies the four-step causal credibility assessment introduced in Section~\ref{sec:thesis-statement} to this design to make explicit the causal theory, the estimand, and the assumptions under which the estimates admit a causal interpretation.
 
 By scanning Cursor configuration files (e.g., \Code{.cursorrules}) in GitHub repositories, we identify \numtreated repositories that adopted Cursor between January 2024 and March 2025.
 To construct a comparable control group, we use propensity score matching~\cite{austin2011introduction} to select 1,380 similar repositories from those never adopting Cursor during observation.
@@ -626,6 +627,7 @@ This chapter has presented a large-scale empirical investigation of how LLM agen
 Through a difference-in-differences design comparing Cursor-adopting repositories with matched control group repositories, complemented by dynamic panel GMM analysis, the chapter offers evidence that challenges both unbridled optimism and categorical pessimism surrounding AI-assisted coding:
 Cursor adoption produces substantial but transient velocity gains alongside persistent increases in technical debt; such technical debt accumulation subsequently dampens future development velocity.
 The findings suggest a self-reinforcing cycle where initial productivity surges give way to maintenance burdens.
+With respect to the thesis statement in Section~\ref{sec:thesis-statement}, the chapter does not dispel the AI-productivity myth outright: The causal credibility assessment in Section~\ref{sec:cursor-credibility} specifies that the velocity gain holds only in the short run, that the quality cost persists, and that both readings rest on parallel trends and sequential exogeneity, assumptions that matching and cross-direction GMM agreement support but cannot enforce.
 
 However, several considerations suggest this picture may not be as bleak as it initially appears.
 First, the analysis captures a snapshot of rapidly evolving technology during 2024-2025.
