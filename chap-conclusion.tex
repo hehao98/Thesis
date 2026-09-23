@@ -18,7 +18,6 @@ Chapter~\ref{chp:pinning} challenges the software engineering myth that pinning 
 The chapter builds a counterfactual simulation that constructs both the pinning and the floating outcome for every project-time unit from the same \Code{package.json}, leveraging an experimental time-traveling feature of the npm dependency resolver to evaluate 10{,}000 npm packages and 10{,}000 GitHub repositories under both regimes.
 A fixed-effects panel regression on the simulated data shows that pinning direct dependencies is futile or counter-productive in dependency graphs of 498 nodes or more, an effect driven by npm's deduplication algorithm and corroborated by a minimal worked example.
 A complementary ecosystem-wide network propagation simulation shows that coordinated pinning at $\sim$100 important upstream packages reduces the spread of malicious updates by up to 75\%.
-The methodological lesson is that identification by construction is achievable in observational software-engineering data when the underlying data-generating process can be simulated faithfully against a fixed historical snapshot.
 
 \subsection{Empirical Study II: Fake GitHub Stars and Repository Promotion}
 
@@ -100,7 +99,7 @@ The four-step framework introduced in Chapter~\ref{chp:background} operationaliz
 \end{enumerate}
 Each empirical chapter instantiates the four steps in a dedicated Causal Credibility Assessment section (Section~\ref{sec:pinning-credibility}, Section~\ref{sec:fake-stars-credibility}, Section~\ref{sec:cursor-credibility}).
 
-The thesis statement claims feasibility, not certainty.
+The thesis statement claims \emph{feasibility}.
 The fact that the same four-step framework operates uniformly across designs that differ as much as a counterfactual simulation, a staggered-adoption difference-in-differences, and a panel autoregression on observational data is the argument that the feasibility claim is broadly applicable rather than tied to any single design tradition.
 I list a few important caveats regarding what this thesis does not claim and where the statement cannot be extended:
 \begin{itemize}[leftmargin=20pt]
@@ -146,10 +145,6 @@ The four-step framework cannot prevent miscitation, but it offers a partial resp
 For producers of empirical work, the framework imposes a discipline that forces the identifying assumptions into the open before the study reaches downstream readers.
 For consumers of empirical work, the framework provides a checklist for distinguishing studies whose authors have stress-tested their identification and reported what survived from studies that have not.
 For misciting downstream readers, the framework cannot police behaviour, but it makes the gap between what a study claims and what a downstream reader infers visible and challengeable.
-
-The fake-stars chapter is the clearest illustration of this asymmetry.
-A downstream reader who reads only the abstract still receives the policy claim that buying fake stars is ineffective; a downstream reader who engages with Section~\ref{sec:fake-stars-credibility} understands why the claim survives, what it depends on, and what residual threats a careful reader would still want to inspect.
-The framework is therefore a piece of communicative infrastructure as much as it is a methodological one: it gives a downstream reader the tools to read a study honestly even when that reader is not in a position to redo the analysis.
 
 \subsection{Assumptions Are Universal, and Transparent Disclosure Is the Key}
 \label{sec:conclusion-transparency}
