@@ -42,7 +42,7 @@ Many studies provided evidence that the number of GitHub stars is widely used wh
 However, it is merely a popularity signal (i.e., the attention received from GitHub users), with only moderate correlation to actual usage or importance as shown in prior studies~\cite{koch2024fault, schueller2024modeling, DBLP:journals/corr/abs-2405-07508}. 
 
 More concerning, \emph{GitHub stars can be artificially inflated}~\cite{wired-news}, just as all other popularity signals in social media~\cite{DBLP:journals/compsec/CatalanPVT23}.
-For example, a Google search for ``buy GitHub stars'' will reveal a dozen providers (see Appendix, Section~\ref{sec:conclusion}).
+For example, a Google search for ``buy GitHub stars'' will reveal a dozen providers (see Appendix, Section~\ref{sec:fake-stars-appendix-providers}).
 From prior reports, we know that GitHub repositories may buy GitHub stars for growth hacking~\cite{oceanbase}, spamming~\cite{dagster}, r\'{e}sum\'{e} fraud~\cite{DBLP:conf/acsac/DuYZDWH0020}, or even for spreading malware~\cite{stargazer-goblin}.
 Whatever their purpose, these bought GitHub stars (hereafter ``fake stars'' to match online discussions) corrupt the GitHub star count as a decision-making signal and pose a security threat to all GitHub users (see Figure~\ref{fig:malware-example} for an example).
 
@@ -138,7 +138,7 @@ Despite studies arguing the limited reliability of GitHub stars, the lack of obv
 The widespread use of GitHub stars catalyzed the emergence of a GitHub star black market~\cite{wired-news},
 which operates similarly to other black markets in social media that sell Twitter followers~\cite{DBLP:conf/imc/StringhiniWEKVZZ13}, Facebook likes~\cite{DBLP:conf/www/BeutelXGPF13}, etc. %Instagram followers~\cite{DBLP:conf/websci/SenAMSKD18}, etc.
 From the gray literature, we know that the GitHub star black market operates in at least three different ways:
-(1)~Merchants can sell GitHub stars in batches of (usually) 50 or 100 stars on their own websites (examples in Appendix, Section~\ref{sec:conclusion}), instant messaging apps~\cite{DBLP:conf/acsac/DuYZDWH0020}, or in e-commerce platforms such as Taobao~\cite{taobao-github-star};
+(1)~Merchants can sell GitHub stars in batches of (usually) 50 or 100 stars on their own websites (examples in Appendix, Section~\ref{sec:fake-stars-appendix-providers}), instant messaging apps~\cite{DBLP:conf/acsac/DuYZDWH0020}, or in e-commerce platforms such as Taobao~\cite{taobao-github-star};
 (2)~GitHub users may form exchange platforms (e.g., GitStar~\cite{gitstar} or instant messaging groups), where they incentivize mutual starring of their GitHub repositories~\cite{DBLP:conf/acsac/DuYZDWH0020};
 (3)~A GitHub repository may directly incentivize the audience of its advertising campaign with gifts if they star the repository (e.g., as it happened in OceanBase~\cite{oceanbase}).
 All these ways of operation violate the GitHub Acceptable Use Policy~\cite{github-policy}, which prohibits any inauthentic interactions, rank abuse, and reward-incentivized activities. 
@@ -192,7 +192,7 @@ To detect the low activity signature, \SystemName finds GitHub accounts with onl
 This heuristic is inspired by a heuristic proposed in the gray literature~\cite{dagster}, but further simplified and tuned to avoid costly interactions with the rate-limited GitHub APIs and easy-to-obfuscate rules. % in their proposed heuristic.
 While the detected accounts may be throw-away bot accounts controlled by fake star merchants, they may also be real users wrongly identified (e.g., someone legitimately registered an account, starred a repository, and then gave up using GitHub).
 To partially address such cases, we also look at fake star counts at the repository level. 
-That is, we only consider repositories with at least 50 stars suspected as fake, based on the observation that fake star merchants often sell a minimum of 50 stars (see Appendix, Section~\ref{sec:conclusion}).
+That is, we only consider repositories with at least 50 stars suspected as fake, based on the observation that fake star merchants often sell a minimum of 50 stars (see Appendix, Section~\ref{sec:fake-stars-appendix-providers}).
 Consequently, we ignore the fake stars (and corresponding users) in repositories with fewer than 50 fake stars in total.
 We will also use this cutoff of 50 in the lockstep signature detector and the postprocessing step, based on the same intuition.
 
@@ -632,7 +632,7 @@ World of Code~\cite{DBLP:journals/ese/MaDBAVTKZM21} (WoC), another possible sour
 Despite this, we can still glean some information from a term frequency analysis of their \emph{repository names} (Table~\ref{tab:common-words}). 
 We find that most of the deleted repositories carry names indicating pirated software (e.g., \Code{Adobe-Animate-Crack}), cryptocurrency bots (e.g., \Code{pixel-wallet-bot-free}, \Code{Solana-Sniper-Bot}), or game cheats (e.g., \Code{GTA5-cheat}).
 While GitHub may have taken some of them down due to copyright violations, it is probably not the majority case: The gray literature shows that fake star campaigns are used to promote phishing malware repositories~\cite{stargazer-goblin}. %banshee, game-engine}.
-Combining with the evidence we obtained from non-deleted repositories sharing similar names with deleted ones (e.g., Figure~\ref{fig:malware-example}, more examples in Appendix, Section~\ref{sec:conclusion}),
+Combining with the evidence we obtained from non-deleted repositories sharing similar names with deleted ones (e.g., Figure~\ref{fig:malware-example}, more examples in Appendix, Section~\ref{sec:fake-stars-appendix}),
 %\Code{Phantom-Sniper-Solana} for the repository in Figure~\ref{fig:malware-example}
 we infer that most of these repositories could be phishing malware repositories masquerading as pirated software, game cheats, and cryptocurrency bots.
 
@@ -652,7 +652,7 @@ From this analysis, we identify eight major categories of repositories (Table~\r
 Among them, the most common---and also most concerning---category, is \textsf{Spam/Phishing} (31.1\% in Other, 22.6\% in All), where the repository is either an obvious clickbait (e.g., claiming game cheats, pirated software, cryptocurrency bots) to trick download of suspicious files or spreading spam content (e.g.,  used for search-engine-optimizations).\footnote{Note that while we try our best to identify spam/phishing repositories, it is still possible that we miss better-obfuscated malicious repositories and mis-categorize them into other categories.
 We will discuss more on this limitation in Section~\ref{sec:fake-stars-discussion}.}
 The remaining popular categories include: (1) \textsf{AI/LLM}, many of which are academic paper repositories or LLM-related startup products, (2) \textsf{Blockchain} or cryptocurrency related repositories, (3) \textsf{Tool/Applications}, or (4) \textsf{Tutorials/Demos} that seem to serve a reference or demonstration purpose (e.g., Python coding examples or list of awesome LLM tools).
-We provide definition of each category, analysis of inter-rater reliability, and examples of \textsf{Spam/Phishing} repositories in Appendix (Section~\ref{sec:conclusion}).
+We provide definition of each category, analysis of inter-rater reliability, and examples of \textsf{Spam/Phishing} repositories in Appendix (Section~\ref{sec:fake-stars-appendix}).
 
 \begin{summary-rq}
 \textbf{Finding 7:} 
@@ -746,7 +746,7 @@ Section~\ref{sec:fake-stars-credibility} revisits these limitations through the 
 
 \textbf{Results.}
 In the main text, we report results from the $AR(2)$ fixed effect and random effect model in Table~\ref{tab:regression}.
-It is worth noting that we obtain consistent findings across all $AR(k)$ models; the remaining results and additional robustness checks are available in the Appendix (Section~\ref{sec:conclusion}).
+It is worth noting that we obtain consistent findings across all $AR(k)$ models; the remaining results and additional robustness checks are available in the Appendix (Section~\ref{sec:fake-stars-appendix-regression}).
 We find strong support for  \textbf{H$_1$}:
 According to the fixed-effects model,  a 1\% increase of real stars in month $t-1$ is correlated with an expected 0.36\% increase of real stars in month $t$ 
 % (0.36\%=$1.01^{0.364}$, 
@@ -813,7 +813,7 @@ Stack Overflow's reputation system and Yelp's review filtering are examples of d
 Our \SystemName tool is immediately actionable for a shadowbanning approach.
 
 Another key takeaway from our research findings is that \emph{fake stars are highly related to malicious activities and should be considered as such in platform moderation.}
-Our manual investigation of repositories in RQ3 reveals multiple cases of malicious repositories that had been stripped of all their stars but still remained accessible on GitHub (examples in Appendix, Section~\ref{sec:conclusion}).
+Our manual investigation of repositories in RQ3 reveals multiple cases of malicious repositories that had been stripped of all their stars but still remained accessible on GitHub (examples in Appendix, Section~\ref{sec:fake-stars-appendix}).
 We speculate that GitHub may %better at 
 routinely take down known fake accounts or malware repositories, %can easily apply hard-to-detect obfuscation and 
 but may not link them together.
@@ -907,8 +907,10 @@ The source code of \SystemName, the data and scripts used in the measurement stu
 The supplementary appendix is also available in the arXiv version~\cite{DBLP:journals/corr/abs-2412-13459}.
 
 \section{Appendix}
+\label{sec:fake-stars-appendix}
 
 \subsection{GitHub Star Provider Examples}
+\label{sec:fake-stars-appendix-providers}
 
 Table~\ref{tab:fake-star-providers} shows a non-exhaustive list collected in July 2024 through Google Search.
 Their prices range from \$0.10 to \$2.00 per star, and they often claim to deliver their stars in days or even hours.
@@ -992,6 +994,7 @@ For example, the repository in Figure~\ref{fig:example-malware-later} is initial
 It also has a very high level of fake star retention (175 out of 197 fake stars remain even after a year).
 
 \subsection{Additional Regression Results} 
+\label{sec:fake-stars-appendix-regression}
 
 \begin{table}
     \small
