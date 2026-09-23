@@ -131,13 +131,13 @@ They are addressed in the existing ``Limitations and Threats to Validity'' parag
 
 %Two alternative causal structures could in principle explain the central RQ1 findings without the proposed mechanism; this subsection considers each and explains how the design rules them out, partially addresses them, or leaves them open.
 
-%\paragraph{Alternative 1: The crossover finding is a simulation artefact.}
-The only alternative causal structure that could explain the central RQ1 findings without the proposed mechanism is that the crossover finding is merely a simulation artefact.
-For example, the counter-intuitive result that pinning increases \Code{n\_floating} for large dependency graphs (Figure~\ref{fig:n-floating}) could be a simulation artefact if the \Code{-{}-before} resolver produces systematically different deduplication behavior for pinned versus floating \Code{package.json} files at high graph complexity.
+%\paragraph{Alternative 1: The crossover finding is a simulation artifact.}
+The only alternative causal structure that could explain the central RQ1 findings without the proposed mechanism is that the crossover finding is merely a simulation artifact.
+For example, the counter-intuitive result that pinning increases \Code{n\_floating} for large dependency graphs (Figure~\ref{fig:n-floating}) could be a simulation artifact if the \Code{-{}-before} resolver produces systematically different deduplication behavior for pinned versus floating \Code{package.json} files at high graph complexity.
 The design is defensible against this alternative: the mechanism---deduplication producing additional transitive version copies when pinning forces version conflicts---is structurally documented in npm's resolver implementation~\cite{how-npm3-works} and is illustrated with a minimal worked example in Figure~\ref{fig:rq2-example}.
 The crossover point at 498 nodes is consistent with the mechanism activating only once enough version conflicts accumulate in the transitive graph, a continuous rather than discontinuous process.
 The finding replicates across four robustness checks---npm packages only, GitHub repositories only, $t_0$ only, and development dependencies included---each representing a distinct subpopulation.
-A simulation artefact would need to produce the same spurious crossover point in all four populations, which we believe is unlikely.
+A simulation artifact would need to produce the same spurious crossover point in all four populations, which we believe is unlikely.
 
 %\paragraph{Alternative 2: Unobserved selection on project quality drives the within-project comparison.}
 %A reader could ask whether projects whose maintainers chose pinning are systematically different in unobserved ways---more security-conscious, better resourced, more careful about updates---and whether those differences, rather than the pinning intervention itself, drive the observed effects.
@@ -151,7 +151,7 @@ A simulation artefact would need to produce the same spurious crossover point in
 The simulation design in RQ1 eliminates common selection bias, such as more security-conscious, better-maintained, or differently-typed projects being the ones who chose to pin.
 The one remaining assumption the design does not guarantee is \textit{simulation fidelity}, that npm's resolver faithfully reproduces, at the historical timestamp, what would actually have been installed.
 Additionally, another concrete validity threat is that 12--16\% of project-time observations fail to resolve, and these failures cluster on projects whose dependencies are already most conflict-prone, so the reported costs of pinning (more outdated, vulnerable, bloated, and auto-updating dependencies) should be read as lower bounds---especially for projects with large dependency graphs.
-The counter-intuitive crossover at 498 nodes, where pinning starts to \emph{increase} rather than reduce floating dependencies, survives four independent robustness checks and follows from a documented property of npm's deduplication algorithm, so it is best read as a genuine consequence of the mechanism rather than a simulator artefact.
+The counter-intuitive crossover at 498 nodes, where pinning starts to \emph{increase} rather than reduce floating dependencies, survives four independent robustness checks and follows from a documented property of npm's deduplication algorithm, so it is best read as a genuine consequence of the mechanism rather than a simulator artifact.
 
 \begin{summary-rq}
 \textbf{Causal credibility, in plain language:} As every project is its own control during simulations, the pinning study has the strongest causal credibility in this thesis. 

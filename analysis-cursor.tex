@@ -147,13 +147,13 @@ Anticipatory experimentation earlier than $h=-1$ cannot be ruled out from config
 A repository's outcomes under its own adoption status do not depend on adoption decisions made by other repositories.
 A3 is \emph{plausibly satisfied with caveats}.
 Most repositories are independent codebases, and ecosystem-level common shocks (e.g., a Cursor model upgrade that lifts adoption everywhere) are absorbed by month fixed effects.
-The borderline cases---repositories with shared maintainers, organisation-level rollouts where a developer adopts Cursor across several projects simultaneously---do not admit a clean construction-based argument and are discussed under Step~3.
+The borderline cases---repositories with shared maintainers, organization-level rollouts where a developer adopts Cursor across several projects simultaneously---do not admit a clean construction-based argument and are discussed under Step~3.
 
 \paragraph{A4. Stable treatment definition.}
-The treatment ``Cursor adoption'' has a single, well-defined operationalisation across the panel.
+The treatment ``Cursor adoption'' has a single, well-defined operationalization across the panel.
 A4 is \emph{satisfied by construction at the level of the simulated estimand} but with the caveat that real-world adoption is heterogeneous in intensity, model backend, and engagement pattern.
-The estimate is best read as the ATT of \emph{deliberate, visible adoption of Cursor as a development practice}, averaged over the realised heterogeneity of how repositories use the tool.
-Generalisation to specific adoption intensities is an external-validity concern and is handled in the existing Limitations subsection (Section~\ref{sec:cursor-limitations}).
+The estimate is best read as the ATT of \emph{deliberate, visible adoption of Cursor as a development practice}, averaged over the realized heterogeneity of how repositories use the tool.
+Generalization to specific adoption intensities is an external-validity concern and is handled in the existing Limitations subsection (Section~\ref{sec:cursor-limitations}).
 
 \paragraph{A5. Treatment-effect heterogeneity correctly handled by the estimator.}
 The estimator does not produce ``forbidden comparisons'' that would bias the average treatment effect under heterogeneous, time-varying ATTs.
@@ -193,7 +193,7 @@ Upon revisiting this study with the proposed causal credibility framework, we id
 A senior contributor joining a project who simultaneously brings Cursor and a more aggressive coding style cannot be separated from the treatment effect by any observational design.
 This threatens A1: the parallel-trends assumption fails when an unobserved shock occurs exactly at the adoption month and affects the outcome independently of Cursor.
 Repository fixed effects absorb time-invariant differences and the propensity-score model absorbs observable trajectory differences, but neither absorbs an unobserved coincident shock.
-Direction of bias depends on the confounder; the most plausible scenario is a ``modernisation push'' that bundles tool adoption with pace acceleration, which would reinforce the velocity-up and quality-down pattern, so the central findings are robust in sign but possibly inflated in magnitude.
+Direction of bias depends on the confounder; the most plausible scenario is a ``modernization push'' that bundles tool adoption with pace acceleration, which would reinforce the velocity-up and quality-down pattern, so the central findings are robust in sign but possibly inflated in magnitude.
 
 \paragraph{Time-varying adoption of other AI tools.}
 Adoption of GitHub Copilot, Claude Code, Windsurf, Cline, or OpenHands is not uniformly time-invariant within the study window; some repositories adopt these tools mid-panel.
@@ -211,7 +211,7 @@ The direction of bias is to attenuate the immediate post-adoption ATT, since the
 \paragraph{Sequential exogeneity in the GMM.}
 Persistent unobserved shocks that affect both the contemporaneous regressor and the next-period outcome (e.g., a sustained period of maintainer disengagement) violate B1 and bias the lagged-outcome instruments.
 The Arellano-Bond AR(2) test does not directly probe this scenario---it tests for residual correlation rather than for the persistence of an underlying shock.
-The chapter's interpretation of the $C_t \to L_{t+1}$ and $W_t \to L_{t+1}$ feedback as causal therefore rests on the auxiliary judgement that no such persistent shock dominates the data; the cross-direction agreement between the two contemporaneous and two lagged specifications (Table~\ref{tab:causal-paths}) is the principal evidence in favour of this judgement.
+The chapter's interpretation of the $C_t \to L_{t+1}$ and $W_t \to L_{t+1}$ feedback as causal therefore rests on the auxiliary judgment that no such persistent shock dominates the data; the cross-direction agreement between the two contemporaneous and two lagged specifications (Table~\ref{tab:causal-paths}) is the principal evidence in favor of this judgment.
 
 The remaining limitations of the study are concerns about external validity, measurement validity, treatment definition, or ecosystem-specific scope rather than threats to the internal identification of the DiD or GMM estimates.
 They are addressed in the existing ``Limitations and Threats to Validity'' subsection (Section~\ref{sec:cursor-limitations}) and the ``Robustness Checks'' subsection (Section~\ref{sec:cursor-robustness}); we do not re-litigate them here.
@@ -220,7 +220,7 @@ They are addressed in the existing ``Limitations and Threats to Validity'' subse
 \label{sec:cursor-credibility-alternatives}
 
 Seven alternative causal structures could in principle explain the chapter's central findings without the proposed mechanism.
-Five of them are already addressed by the existing chapter through dedicated robustness checks (Section~\ref{sec:cursor-robustness}, Figure~\ref{fig:robustness-checks-all}) and the cross-estimator comparison (Section~\ref{sec:appendix-alternative-estimators}); we summarise their resolution and pointers in the table below.
+Five of them are already addressed by the existing chapter through dedicated robustness checks (Section~\ref{sec:cursor-robustness}, Figure~\ref{fig:robustness-checks-all}) and the cross-estimator comparison (Section~\ref{sec:appendix-alternative-estimators}); we summarize their resolution and pointers in the table below.
 The remaining two are flagged here because the existing chapter does not explicitly canvass them.
 
 \paragraph{Alternatives already addressed in the existing chapter.}
@@ -235,7 +235,7 @@ Table~\ref{tab:cursor-alternatives-pointers} maps each alternative to the existi
 \toprule
 \textbf{Alternative} & \textbf{Addressed by} \\
 \midrule
-The transient velocity finding is an artefact of OSS repository mortality rather than Cursor. &
+The transient velocity finding is an artifact of OSS repository mortality rather than Cursor. &
 \emph{Active Months} ($>0$ commits) and \emph{Very Active} ($\geq 10$ commits) subset robustness checks (Section~\ref{sec:cursor-robustness}, Figure~\ref{fig:robustness-checks-all} Row~2) show the velocity-then-decay pattern persists in the active sample. \\
 \addlinespace
 The pattern reflects an excitement--frustration--abandonment cycle rather than a sustained Cursor effect. &
@@ -258,7 +258,7 @@ A reader could ask whether projects whose maintainers chose Cursor are systemati
 The design partially addresses this concern: repository fixed effects $\mu_i$ absorb all time-invariant project characteristics, the propensity-score model on six-month pre-adoption dynamics absorbs observable trajectory differences (AUC 0.83--0.91), and the pre-trend tests pass for all five outcomes.
 What remains unaddressed is the canonical residual threat to A1: a time-varying unobserved shock occurring exactly at the adoption month, such as a senior contributor joining who simultaneously brings Cursor and a different coding style.
 This shock cannot be separated from the treatment effect by any observational design, and is the principal assumption the chapter's findings ultimately rest on.
-The most plausible candidate scenarios---a ``modernisation push'' that bundles tool adoption with pace acceleration, or a project entering a feature-development phase that coincides with Cursor adoption---would reinforce the velocity-up and quality-down pattern, so the central findings are robust in sign but possibly inflated in magnitude.
+The most plausible candidate scenarios---a ``modernization push'' that bundles tool adoption with pace acceleration, or a project entering a feature-development phase that coincides with Cursor adoption---would reinforce the velocity-up and quality-down pattern, so the central findings are robust in sign but possibly inflated in magnitude.
 
 \paragraph{Alternative 2: SonarQube warning increases reflect a measurement-side change in coding style rather than a quality decline.}
 A reader could argue that LLM-generated code triggers SonarQube rules that human-written code triggers less often---verbose patterns, unconventional naming, leftover scaffolding---without a corresponding change in defect proneness or maintainability.
@@ -275,7 +275,7 @@ The credibility of the chapter's causal interpretation rests primarily on the re
 The cross-direction agreement between the four GMM specifications, the persistence of the main findings across the three robustness-check axes, and the conservative direction of the residual biases together support a measured but not absolute causal interpretation of the chapter's results.
 
 The chapter's discussion and practical recommendations (Section~\ref{sec:cursor-discussion}, Section~\ref{sec:practical-implications}) survive this scrutiny.
-The most plausible residual confounder---a modernisation push that bundles Cursor adoption with pace acceleration or with the arrival of an experienced contributor---reinforces both the velocity-up and the quality-down pattern, so the call for quality assurance to scale with AI-era velocity is robust in sign even if individual coefficient magnitudes are inflated.
+The most plausible residual confounder---a modernization push that bundles Cursor adoption with pace acceleration or with the arrival of an experienced contributor---reinforces both the velocity-up and the quality-down pattern, so the call for quality assurance to scale with AI-era velocity is robust in sign even if individual coefficient magnitudes are inflated.
 Mid-window adoption of competing AI tools rebases the estimate from a no-AI counterfactual to a partly-AI baseline, which sharpens rather than weakens the qualitative recommendation that any AI-assisted development setting needs proportionally stronger quality processes.
 Pre-commit experimentation attenuates the immediate post-adoption velocity gain, so the reported transient velocity effect is best read as a conservative lower bound, and the velocity-then-decay narrative survives at full strength.
 The GMM-based finding that code complexity exhibits a per-line effect surviving the volume control---which underpins the call for readability-aware tooling and complexity-triggered refactoring---rests on B1 and on the cross-direction agreement of the four GMM specifications, both of which the chapter defends through the Arellano-Bond AR(2) and Sargan diagnostics and the cross-coefficient sign pattern (Table~\ref{tab:causal-paths}).

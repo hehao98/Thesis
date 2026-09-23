@@ -146,12 +146,12 @@ Repositories deleted before the observation window closes drop out of the panel,
 This is the most severe selection concern in the design and motivates the survivor-stratification check in Step~4.
 
 \paragraph{A6. Stable treatment definition.}
-``Buying fake stars'' has a single, well-defined operationalisation across the panel.
+``Buying fake stars'' has a single, well-defined operationalization across the panel.
 A6 is \emph{satisfied at the level of the simulated estimand} but with the caveat that purchasing strategies are heterogeneous in volume, vendor, and intent (growth-hacking startups vs.\ malware promotion vs.\ search-engine spam).
-The estimate is best read as the average elasticity over the realised heterogeneity of detected campaigns; generalisation to specific strategies is an external-validity concern handled in the existing Limitations subsection (Section~\ref{sec:limitations}).
+The estimate is best read as the average elasticity over the realized heterogeneity of detected campaigns; generalization to specific strategies is an external-validity concern handled in the existing Limitations subsection (Section~\ref{sec:limitations}).
 
 If A1--A6 hold, the FE coefficient on $\textit{fake}_{i, t-1}$ identifies the average within-repository elasticity of next-month real stars with respect to detected fake-star intensity, averaged over the sub-population of repositories surviving in the panel.
-The discussion's counterfactual claim (``buying fake stars is ineffective'') generalises only to the extent that this average partial effect is informative about the population of practitioners who would consider buying.
+The discussion's counterfactual claim (``buying fake stars is ineffective'') generalizes only to the extent that this average partial effect is informative about the population of practitioners who would consider buying.
 The credibility of the causal claim therefore rests on A1, A2, and A5---the assumptions that the design's construction does not guarantee.
 The next subsection identifies the residual threats; Step~4 reports the executed robustness checks that bound them.
 
@@ -178,11 +178,11 @@ The chapter reports a 90.42\% deletion rate among detected campaign repositories
 The surviving subset is not a random slice of campaigns---it is precisely the repositories whose maintainers (and GitHub) kept them alive long enough to be observed at horizons of three months or more, while the deleted majority drops out of the regression entirely.
 This makes the long-run negative coefficient on $\log \textit{all\_fake}_{i, t-3}$ ambiguous between two readings.
 A real user-disengagement effect is consistent with the sign: over time, real users notice the inflated history and stop starring.
-A mechanical selection artefact is equally consistent: the repositories with the largest fake-star histories tended to be deleted earliest, so the cases pulling the long-run coefficient negative are precisely those whose campaigns failed to convert into sustained attention before exit.
+A mechanical selection artifact is equally consistent: the repositories with the largest fake-star histories tended to be deleted earliest, so the cases pulling the long-run coefficient negative are precisely those whose campaigns failed to convert into sustained attention before exit.
 Direction of bias on the short-run $\hat\beta_1$ is similarly unclear a priori---upward if repositories with successful short-run lift survive longer, downward if survival is dominated by failure---and the panel-FE estimator alone cannot separate the two channels.
 
 \paragraph{Cumulative-real series is monotone non-decreasing by construction.}
-Another separate sub-mechanism of survivorship concerns whether GitHub retroactively removes stars from heavily faked repositories, generating part of the long-run negative coefficient through platform action rather than user behaviour.
+Another separate sub-mechanism of survivorship concerns whether GitHub retroactively removes stars from heavily faked repositories, generating part of the long-run negative coefficient through platform action rather than user behavior.
 The chapter's data source---GHArchive \Code{WatchEvent} records---registers only star-creation events, so the cumulative real-star series is monotone non-decreasing by construction; an empirical check on the AR(2) panel finds zero non-monotone repositories, as expected.
 This is therefore a design limitation rather than a testable robustness check: distinguishing the user-disengagement and platform-moderation channels behind the long-run penalty would require periodic snapshots of total star counts from a non-event-stream source (e.g., scheduled GitHub REST API polls), which is out of scope for the chapter's existing data pipeline.
 
@@ -193,14 +193,14 @@ They are addressed in the existing ``Limitations'' paragraph in Section~\ref{sec
 \label{sec:fake-stars-credibility-alternatives}
 
 Four alternative causal structures could in principle explain the chapter's central RQ4 findings without the proposed mechanism.
-We pair the first three with a concrete robustness check that operationalises the response, and explain why the fourth is not amenable to a within-sample test.
-We summarise the headline coefficients in Table~\ref{tab:fake-stars-robustness}. %; full scripts and results are available in the Thesis repository \Code{https://github.com/hehao98/Thesis}.
+We pair the first three with a concrete robustness check that operationalizes the response, and explain why the fourth is not amenable to a within-sample test.
+We summarize the headline coefficients in Table~\ref{tab:fake-stars-robustness}. %; full scripts and results are available in the Thesis repository \Code{https://github.com/hehao98/Thesis}.
 The three executed checks all re-fit the AR(2) fixed-effects specification of Table~\ref{tab:regression}, varying either the sample or the regression equation:
 \textbf{R1 (survivor-length stratification)} addresses the survivorship concern from Alternative~1 by computing each repository's panel length as a proxy for eventual deletion (the dataset does not flag deletion directly) and refitting AR(2) FE separately on long-survivors (panel length $\geq 12$ months) and short-survivors (panel length $< 12$ months);
-\textbf{R2 (topic stratification)} addresses the topic-momentum concern from Alternative~2 in two complementary slices, refitting AR(2) FE first on three calendar-period subsets (pre-2024, the 2024 LLM surge from January to August, and post-surge) and then within each manually labelled \Code{domain} of the 580-repository labelling exercise of Section~\ref{sec:rq3} (\Code{repo\_labels.csv}; 375 of the 580 also appear in the AR(2) panel, with strata smaller than 30 repositories or 100 panel observations omitted as too small for stable within-FE estimation);
+\textbf{R2 (topic stratification)} addresses the topic-momentum concern from Alternative~2 in two complementary slices, refitting AR(2) FE first on three calendar-period subsets (pre-2024, the 2024 LLM surge from January to August, and post-surge) and then within each manually labeled \Code{domain} of the 580-repository labeling exercise of Section~\ref{sec:rq3} (\Code{repo\_labels.csv}; 375 of the 580 also appear in the AR(2) panel, with strata smaller than 30 repositories or 100 panel observations omitted as too small for stable within-FE estimation);
 \textbf{R3 (lead-lag swap regression)} addresses the reverse-causality concern from Alternative~3 by swapping the dependent variable to $\log \textit{fake}_{i,t}$ and refitting AR(2) FE with lagged real-star intensity as the regressor, so that the sign of the lagged-real coefficients distinguishes panic-buying (negative) from hype amplification (positive).
 
-\paragraph{Alternative 1: The long-run negative coefficient is a survivorship artefact.}
+\paragraph{Alternative 1: The long-run negative coefficient is a survivorship artifact.}
 The coefficient on $\log \textit{all\_fake}_{i, t-3}$ is significantly negative across all $AR(k)$ specifications.
 A reader could ask whether the negative sign reflects user disengagement (the chapter's preferred reading) or whether it reflects selective deletion---repositories with larger and more obvious fake histories are deleted earlier, so the surviving panel observations at large cumulative-fake values are precisely those whose campaigns failed to convert into real attention.
 Robustness check R1 reports the negative long-run coefficient persisting in long-survivors (panel length $\geq 12$) and flipping positive in short-survivors (Table~\ref{tab:fake-stars-robustness}), leaving the user-disengagement and selective-survival readings jointly compatible.
@@ -211,7 +211,7 @@ The 2024 surge in fake-star activity coincides with topic-level surges in AI/LLM
 A maintainer in a hyped topic at month $t-1$ has both higher incentive to buy fake stars and higher organic real-star arrivals in month $t$, generating a positive coefficient that does not reflect a causal effect of buying on attention.
 Robustness check R2 addresses this alternative in two complementary slices (Table~\ref{tab:fake-stars-robustness}).
 The calendar-period slice shows that the headline positive short-run coefficient is significant only during the 2024 LLM-surge window and statistically indistinguishable from zero before and after it.
-The domain slice shows that the pooled coefficient on labelled repositories ($+0.067^{***}$) hides an order-of-magnitude variation across topics: the short-run effect is significant in \texttt{tool/application}, \texttt{tutorial/demo}, \texttt{ai}, and \texttt{suspicious}, and null in \texttt{blockchain} and \texttt{web}.
+The domain slice shows that the pooled coefficient on labeled repositories ($+0.067^{***}$) hides an order-of-magnitude variation across topics: the short-run effect is significant in \texttt{tool/application}, \texttt{tutorial/demo}, \texttt{ai}, and \texttt{suspicious}, and null in \texttt{blockchain} and \texttt{web}.
 The pattern does not cleanly map to a simple AI/LLM hype story---\texttt{tutorial/demo}, which is not a hype-driven category, has the largest short-run coefficient---so the underlying confounder is more accurately framed as topic-by-time and topic-by-channel hype rather than the 2024 LLM surge alone.
 Read together, the two slices establish that the pooled estimate is not a single causal parameter; it is an average over heterogeneous within-period and within-domain effects, and topic confounding remains a concern with multiple possible channels.
 
@@ -227,7 +227,7 @@ The Discussion's conclusion (``buying fake stars is ineffective'') is strengthen
 \paragraph{Alternative 4: Detection-induced selection and SUTVA via Trending.}
 A reader could argue that the estimated effect corresponds to the population of \emph{detectable} fake-star campaigns---the cheapest, most easily flagged tier of the market---while sophisticated merchants who use realistic accounts, dispersed timing, or smaller batch sizes are systematically under-detected.
 A second concern under this alternative is that Trending or search-ranking spillovers from faked repositories to organic competitors could violate SUTVA.
-Neither concern is operationalised as a robustness check.
+Neither concern is operationalized as a robustness check.
 Whether sophisticated campaigns convert better into real attention cannot be tested with data \SystemName failed to flag, and the SUTVA violation magnitude is bounded by the small share of campaign repositories that ever reach Trending (0.42\%, Section~\ref{sec:rq1})---too small to materially shift any of the headline coefficients.
 The estimate is therefore best understood as the effect of \emph{detectable} fake-star buying on detectable real-star arrivals; the policy recommendation against buying fake stars applies for non-sophisticated buyers (the dominant case in the chapter's data) but may not extend to actors with the resources to evade detection.
 
@@ -254,7 +254,7 @@ The estimate is therefore best understood as the effect of \emph{detectable} fak
     Month $\geq$ 2024-09 & 1{,}207 & 479 & $+0.030$ (0.033) & $+0.011$ (0.026) & $-0.072^{.}$ (0.042) \\
     \midrule
     \multicolumn{6}{l}{\emph{Alternative 2, R2: topic stratification (domain slice)}} \\
-    Labelled repositories (pooled) & 5{,}198 & 375 & $+0.067^{***}$ (0.019) & $+0.021$ (0.017) & $-0.076^{***}$ (0.020) \\
+    Labeled repositories (pooled) & 5{,}198 & 375 & $+0.067^{***}$ (0.019) & $+0.021$ (0.017) & $-0.076^{***}$ (0.020) \\
     \quad domain $=$ blockchain & 1{,}241 & 51 & $+0.023$ (0.046) & $-0.019$ (0.032) & $-0.069^{***}$ (0.018) \\
     \quad domain $=$ web & 895 & 48 & $+0.003$ (0.048) & $+0.004$ (0.024) & $-0.054^{.}$ (0.031) \\
     \quad domain $=$ tool/application & 683 & 54 & $+0.120^{*}$ (0.047) & $-0.040$ (0.051) & $-0.171^{**}$ (0.057) \\

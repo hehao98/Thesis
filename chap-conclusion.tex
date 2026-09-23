@@ -3,12 +3,12 @@
 
 This thesis has argued that causal credibility assessments are feasible in empirical software engineering through an explicit articulation of causal theory and assumptions.
 The argument is developed through one tutorial chapter and three empirical chapters, each instantiating the four-step framework introduced in Chapter~\ref{chp:background}.
-The contributions of each chapter are summarised below; the cross-chapter comparison in Section~\ref{sec:conclusion-comparison} makes their relative causal credibility explicit.
+The contributions of each chapter are summarized below; the cross-chapter comparison in Section~\ref{sec:conclusion-comparison} makes their relative causal credibility explicit.
 
 \subsection{A Tutorial on Causal Inference for Empirical Software Engineering}
 
 Chapter~\ref{chp:background} provides the methodological infrastructure on which the three empirical chapters build.
-A literature review of 5{,}341 main-track papers at ICSE, FSE, and ASE between 2015 and 2025 documents a structural gap in the field: 29\% of empirical studies are motivated by a causal research question, but only 1.9\% employ a recognised causal inference method, and the ratio has remained flat for a decade.
+A literature review of 5{,}341 main-track papers at ICSE, FSE, and ASE between 2015 and 2025 documents a structural gap in the field: 29\% of empirical studies are motivated by a causal research question, but only 1.9\% employ a recognized causal inference method, and the ratio has remained flat for a decade.
 The tutorial closes this gap with a self-contained primer on the potential-outcomes framework, graphical causal models, and design-based identification strategies including difference-in-differences, instrumental variables, regression discontinuity, and panel fixed effects.
 A worked example on the impact of AI coding tools illustrates how progressively stronger designs collapse a naive +911\% cross-sectional estimate to a credible +32--52\% difference-in-differences estimate, demonstrating that the choice of identification strategy is not a matter of statistical refinement but of which causal claim the data can actually license.
 
@@ -32,19 +32,19 @@ The methodological lesson is that even when the maintainer's treatment decision 
 Chapter~\ref{chp:cursor} challenges the software engineering myth that AI coding tools unambiguously improve developer productivity.
 The chapter applies the \citet{borusyak2024revisiting} difference-in-differences estimator with propensity-score matching on six-month pre-adoption dynamics, comparing Cursor-adopting GitHub repositories with a matched control group of similar non-adopting repositories.
 The DiD analysis finds a large but transient velocity gain in the first one to two months after adoption, alongside a substantial and persistent increase in static-analysis warnings and cognitive complexity.
-A complementary panel generalised method-of-moments analysis decomposes the velocity-quality feedback and shows that the accumulated technical debt subsequently dampens future development velocity.
+A complementary panel generalized method-of-moments analysis decomposes the velocity-quality feedback and shows that the accumulated technical debt subsequently dampens future development velocity.
 The methodological lesson is that a quasi-experimental design can reach close-to-strong causal credibility when the assignment mechanism cannot be controlled but matching, an estimator robust to heterogeneous treatment effects, and cross-direction GMM agreement substitute for the missing experimental variation.
 
 \section{Comparing the Three Studies on Causal Credibility}
 \label{sec:conclusion-comparison}
 
-The three empirical chapters apply the same four-step framework but achieve distinctly different levels of causal credibility, governed by what the research settings and treatment assignment mechanisms permit and extended to the author's best rigour in their analyses.
+The three empirical chapters apply the same four-step framework but achieve distinctly different levels of causal credibility, governed by what the research settings and treatment assignment mechanisms permit and extended to the author's best rigor in their analyses.
 The pinning study (Chapter~\ref{chp:pinning}) achieves identification by construction: both potential outcomes are simulated for every project from the same \Code{package.json}, so maintainer-choice confounders are blocked at the assignment mechanism rather than absorbed in expectation, and only simulation fidelity remains as an empirical argument.
 The fake-stars study (Chapter~\ref{chp:fake-stars}) operates on fully observational panel data where the maintainer purchase decision is endogenous; three residual threats---reverse causality, topic-by-time confounding, and panel survivorship---are bounded by post-hoc robustness checks rather than by the design itself, and the identifying assumptions A1, A2, and A5 all require empirical argument.
 The Cursor study (Chapter~\ref{chp:cursor}) sits between the two: It is stronger than the fake-stars study because the propensity-score matching procedure aligns observable pre-adoption trajectories, the \citet{borusyak2024revisiting} imputation estimator avoids forbidden comparisons under heterogeneous treatment effects, and the cross-direction GMM agreement substitutes for the missing experimental variation in distinguishing the velocity-quality feedback.
 It is weaker than the pinning study because identification still rests on assumptions the design's construction does not enforce---parallel trends in the post-period and sequential exogeneity in the GMM---rather than on properties guaranteed by the assignment mechanism.
 
-Table~\ref{tab:conclusion-comparison} summarises the comparison along the four dimensions of the framework.
+Table~\ref{tab:conclusion-comparison} summarizes the comparison along the four dimensions of the framework.
 
 \begin{table}[t]
     \scriptsize
@@ -144,7 +144,7 @@ The Ray et al.\ controversy documented in Chapter~\ref{chp:intro} illustrates th
 The four-step framework cannot prevent miscitation, but it offers a partial response along three lines.
 For producers of empirical work, the framework imposes a discipline that forces the identifying assumptions into the open before the study reaches downstream readers.
 For consumers of empirical work, the framework provides a checklist for distinguishing studies whose authors have stress-tested their identification and reported what survived from studies that have not.
-For misciting downstream readers, the framework cannot police behaviour, but it makes the gap between what a study claims and what a downstream reader infers visible and challengeable.
+For misciting downstream readers, the framework cannot police behavior, but it makes the gap between what a study claims and what a downstream reader infers visible and challengeable.
 
 \subsection{Assumptions Are Universal, and Transparent Disclosure Is the Key}
 \label{sec:conclusion-transparency}
@@ -152,7 +152,7 @@ For misciting downstream readers, the framework cannot police behaviour, but it 
 Every causal inference rests on assumptions, and observational designs are not uniquely vulnerable in this respect.
 Randomized controlled trials rest on assumptions of stable unit treatment values, full compliance, no spillover between units, construct validity of the chosen outcome measure, and generalisability beyond the trial population.
 The novelty of the four-step framework is not that it makes assumptions visible---every method does, somewhere---but that it makes them visible uniformly across the observational designs that the empirical SE field has historically treated as if they had no assumptions to articulate.
-The shift the thesis advocates is therefore one of expectation rather than of method: A study that claims a causal effect should be expected to name the assumptions the claim rests on, just as a randomised trial is expected to report its compliance rate.
+The shift the thesis advocates is therefore one of expectation rather than of method: A study that claims a causal effect should be expected to name the assumptions the claim rests on, just as a randomized trial is expected to report its compliance rate.
 Still, this shift will not satisfy the most cynical critic, who can refuse to believe any observational study, and it will not protect against the uninformed reader, who can misread any descriptive result as causal.
 Neither failure mode is the framework's responsibility to solve.
 The framework's value is for the practitioner in between---the researcher, reviewer, or practitioner-engineer who is willing to engage with the evidence but needs a structured way to calibrate confidence in what the evidence supports.
@@ -255,7 +255,7 @@ Overall, inertia is the barrier that none of these moves individually, and it yi
 }
 
 Ultimately, this thesis does not claim to resolve the empirical software engineering field's longstanding disconnect between causal ambition and methodological practice.
-It claims that the disconnect is bridgeable through an explicit articulation of causal theory and assumptions, and that the four-step framework is one usable operationalisation of that bridge.
+It claims that the disconnect is bridgeable through an explicit articulation of causal theory and assumptions, and that the four-step framework is one usable operationalization of that bridge.
 The three empirical chapters demonstrate that the framework is feasible across substantively different questions; the cross-chapter comparison demonstrates that feasibility does not collapse credibility differences across designs but makes them inspectable.
 If future empirical SE research adopts this kind of explicit credibility assessment, even partially, the field will become better equipped to do what it has historically struggled to do: engage the myths that practitioners hold at the resolution at which they are held, by accumulating transparently justified causal evidence with a clear statement of what the evidence supports, under which assumptions, and to what extent.
 

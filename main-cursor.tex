@@ -487,7 +487,7 @@ However, even with strong controls for codebase size dynamics, the adoption of C
 
 The last two models show that, on average, and \emph{holding all other temporal dynamic factors constant}: (1) A 100\% increase in code complexity and static analysis warnings causes a 64.5\% and 50.3\% decrease in development velocity as measured by lines added, respectively.
 (2) The adoption of Cursor results in a 1.84x baseline increase in lines added post adoption.
-Thus, the velocity gain from Cursor adoption would be fully cancelled out by a $\sim$5x increase in static analysis warnings or a $\sim$3x increase in code complexity, according to the dynamic panel GMM estimations.
+Thus, the velocity gain from Cursor adoption would be fully canceled out by a $\sim$5x increase in static analysis warnings or a $\sim$3x increase in code complexity, according to the dynamic panel GMM estimations.
 
 To summarize, the dynamic panel GMM models suggest that: (1) \emph{The adoption of Cursor leads to an inherently more complex codebase}; and (2) \emph{The accumulation of static analysis warnings and code complexity decreases development velocity in the future}.
 
@@ -821,7 +821,7 @@ Code Complexity & 0.2314$^{***}$ (0.0446) & +26.04\% ($\pm$5.62\%) & $-$0.0387$^
 \end{figure*}
 
 We summarize the $ATT$ and $ATT_h$ estimations from all three estimators in Table~\ref{tab:average-te-comparison} and Figure~\ref{fig:all-estimators}. 
-For pre-trend tests, we use the same heteroskedasticity- and cluster-robust Wald tests~\citep{borusyak2024revisiting} to test the joint null hypothesis that all ``placebo'' pre-treatment effect estimates are equal to zero.
+For pre-trend tests, we use the same heteroscedasticity- and cluster-robust Wald tests~\citep{borusyak2024revisiting} to test the joint null hypothesis that all ``placebo'' pre-treatment effect estimates are equal to zero.
 Most models pass the pre-trend test at the 0.05 significance level. 
 The one exception is code complexity estimated with TWFE, which shows marginally significant pre-trends visible in Figure~\ref{fig:all-estimators}. This violation likely stems from the ``forbidden comparisons'' inherent to the TWFE estimator~\citep{dechaisemartin2020two}, as both the \citet{borusyak2024revisiting} and \citet{callaway2021difference} estimators show no significant pre-trends for this outcome.
 
